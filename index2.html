@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Exámenes ASIR - Seguridad y Servicios en Red</title>
+    <title>Exámenes ASIR - Seguridad, Servicios e Inglés Técnico</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,6 @@
             margin: 0 auto;
         }
 
-        /* Header y navegación */
         .header {
             text-align: center;
             margin-bottom: 30px;
@@ -43,7 +42,6 @@
             margin-bottom: 20px;
         }
 
-        /* Timer en esquina superior derecha */
         .timer-container {
             position: fixed;
             top: 20px;
@@ -97,7 +95,6 @@
             color: white;
         }
 
-        /* Panel de control */
         .control-panel {
             background: #1a1f2e;
             border-radius: 20px;
@@ -185,7 +182,6 @@
             background: #8a2a2a;
         }
 
-        /* Zona de preguntas */
         .questions-area {
             background: #0f1420;
             border-radius: 20px;
@@ -287,7 +283,6 @@
             border-radius: 50px;
         }
 
-        /* Modal de repaso */
         .modal {
             display: none;
             position: fixed;
@@ -348,6 +343,55 @@
             margin-bottom: 15px;
         }
 
+        /* Historial de exámenes */
+        .history-section {
+            background: #1a1f2e;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .history-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #6c9eff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .history-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-table th, .history-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #2a3a5a;
+        }
+
+        .history-table th {
+            background: #0f1420;
+            color: #6c9eff;
+        }
+
+        .history-table tr:hover {
+            background: #2a2f3e;
+        }
+
+        .clear-history {
+            margin-top: 15px;
+            background: #8a2a2a;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -377,6 +421,10 @@
                 flex-direction: column;
                 align-items: center;
             }
+            .history-table th, .history-table td {
+                padding: 8px;
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
@@ -391,6 +439,7 @@
         <div class="nav-menu">
             <button class="nav-btn active" data-exam="seguridad">🛡️ Seguridad y Alta Disponibilidad</button>
             <button class="nav-btn" data-exam="servicios">🌐 Servicios en Red e Internet</button>
+            <button class="nav-btn" data-exam="ingles">🇬🇧 Inglés Técnico</button>
         </div>
     </div>
 
@@ -400,207 +449,263 @@
             <p>Elige arriba qué materia quieres practicar</p>
         </div>
     </div>
+
+    <div class="history-section" id="historySection">
+        <div class="history-title">
+            📊 Historial de exámenes
+            <button class="btn clear-history" id="clearHistoryBtn">🗑️ Borrar historial</button>
+        </div>
+        <div id="historyContent" class="history-table">
+            <p style="text-align: center; color: #8a8a8a;">Aún no hay exámenes realizados</p>
+        </div>
+    </div>
 </div>
 
 <script>
     // ============================================
-    // BASE DE DATOS DE PREGUNTAS - SEGURIDAD (100 preguntas)
+    // PREGUNTAS DE INGLÉS TÉCNICO (40 preguntas)
     // ============================================
-    const preguntasSeguridad = [
-        { id: 1, texto: "¿Cuáles son tres principales objetivos en seguridad informática?", a: "Conectividad, Privacidad y Encriptación", b: "Conectividad, Integridad y Excentricidad", c: "Confidencialidad, Disponibilidad y Regularidad", d: "Confidencialidad, Integridad y Disponibilidad", correcta: "d" },
-        { id: 2, texto: "Un ataque que provoca un DoS (Denegación de servicio) afecta ¿a qué objetivo básico en seguridad?", a: "No repudio", b: "Integridad", c: "Confidencialidad", d: "Disponibilidad", correcta: "d" },
-        { id: 3, texto: "Un ataque que provoque la modificación de datos ¿a qué objetivo básico en seguridad afecta?", a: "No repudio", b: "Integridad", c: "Confidencialidad", d: "Disponibilidad", correcta: "b" },
-        { id: 4, texto: "¿Cuáles de las siguientes afirmaciones no es un objetivo planteado por la seguridad lógica de un sistema?", a: "Restringir el acceso a los programas y archivos.", b: "Garantizar que los datos enviados a un destinatario solo puedan ser interpretados por el auténtico destinatario y no por otros.", c: "La información emitida por el emisor debe ser idéntica a la recibida por el receptor.", d: "Impedir el acceso a la instalación mediante técnicas biométricas.", correcta: "d" },
-        { id: 5, texto: "¿Qué elemento NO forma parte de un plan de seguridad física?", a: "Control de accesos", b: "Protección contra incendios", c: "Configuración de Firewall de red", d: "Ubicación de servidores", correcta: "c" },
-        { id: 6, texto: "¿Cuál de las siguientes opciones es una amenaza física para un sistema informático?", a: "Un virus informático", b: "Un ataque de denegación de servicio (DoS)", c: "Un corte de energía", d: "Un ataque de phishing", correcta: "c" },
-        { id: 7, texto: "En el contexto de valoración de riesgos, ¿qué se entiende por 'impacto'?", a: "Número de vulnerabilidades existentes", b: "Probabilidad de ocurrencia", c: "Consecuencias de un incidente", d: "Coste de las copias de seguridad", correcta: "c" },
-        { id: 8, texto: "¿Cuál es la mejor estrategia para evitar los ataques basados en la ingeniería social?", a: "La encriptación de los datos más importantes", b: "La formación de los usuarios del sistema", c: "El uso de cortafuegos y sistemas IDS", d: "El cambio frecuente de contraseña de los usuarios", correcta: "b" },
-        { id: 9, texto: "Sobre políticas de contraseñas ¿qué medida ES aconsejable?", a: "Definir contraseñas de menos de 6 caracteres", b: "Definir contraseñas difíciles de memorizar", c: "Definir una única contraseña segura para varios usos", d: "Cambiar las contraseñas periódicamente", correcta: "d" },
-        { id: 10, texto: "Sobre políticas de contraseñas ¿qué medida es aconsejable?", a: "Definir contraseñas numéricas", b: "Cambiar las contraseñas periódicamente", c: "Definir contraseñas difíciles de memorizar", d: "Definir una única contraseña segura para varios usos", correcta: "b" },
-        { id: 11, texto: "¿Qué sistema biométrico se considera el más seguro?", a: "Reconocimiento de la cara", b: "Reconocimiento del iris", c: "Reconocimiento de la huella dactilar", d: "Reconocimiento del olor corporal", correcta: "b" },
-        { id: 12, texto: "¿Cuál de los siguientes métodos criptográficos se puede clasificar como de transposición?", a: "Escilata", b: "Vigenère", c: "Polybios", d: "Cesar", correcta: "a" },
-        { id: 13, texto: "¿Cuál es uno de los problemas de la criptográfica simétrica?", a: "El tamaño reducido de las claves", b: "La lentitud en el cifrado y descifrado", c: "La distribución de la claves", d: "La dificultad en memorizar las claves", correcta: "c" },
-        { id: 14, texto: "Para realizar la firma digital, ¿cuáles son los algoritmos de hash más utilizados?", a: "Checksum, y AdmSig", b: "RSA y DES", c: "HSEC y RunRun", d: "MD5 y SHA", correcta: "d" },
-        { id: 15, texto: "Si quiero enviar un mensaje a un destinatario que incluya mi firma digital del mensaje, ¿qué clave utilizamos para crearla?", a: "La clave pública del destinatario", b: "La clave privada del destinatario", c: "Una clave elegida al azar compleja", d: "Mi clave privada", correcta: "d" },
-        { id: 16, texto: "Un emisor me ha enviado un mensaje cifrado utilizando mi clave pública que previamente le indiqué, ¿con qué clave descifraré el mensaje que me ha enviado?", a: "Con mi clave pública", b: "Con mi clave privada", c: "Con la clave pública del emisor", d: "Con la clave privada del emisor", correcta: "b" },
-        { id: 17, texto: "¿Qué protocolo criptográfico se basa en el uso de claves públicas y privadas?", a: "AES", b: "RSA", c: "SHA-256", d: "MD5", correcta: "b" },
-        { id: 18, texto: "En una infraestructura PKI, ¿cuál es la función principal de una Autoridad de Certificación (CA)?", a: "Generar claves simétricas seguras", b: "Comprobar la validez de los certificados digitales", c: "Emitir y revocar certificados digitales", d: "Encriptar archivos de forma segura", correcta: "c" },
-        { id: 19, texto: "¿Cuál es el orden cronológico correcto de las fases de un análisis forense digital?", a: "Documentación del incidente, Análisis de la evidencia, Preservación de la incidencia, Identificación del incidente", b: "Identificación del incidente, Análisis de la evidencia, Preservación de la incidencia, Documentación del incidente", c: "Identificación del incidente, Preservación de la incidencia, Análisis de la evidencia, Documentación del incidente", d: "Preservación de la incidencia, Identificación del incidente, Análisis de la evidencia, Documentación del incidente", correcta: "c" },
-        { id: 20, texto: "¿Cuáles son los cuatro tipos de amenazas en seguridad informática?", a: "Interrupción, intercepción, duplicación y fabricación", b: "Diseño, fabricación, distribución y comercialización", c: "Interrupción, Intercepción, fabricación y modificación", d: "Modificación, Interrupción, fabricación y denegación", correcta: "c" },
-        { id: 21, texto: "Los rootkits se caracterizan por:", a: "Auto-enviarse por correo electrónico", b: "Implementar técnicas para permanecer ocultos", c: "Infectar a otros ejecutables", d: "Presentar publicidad no deseada", correcta: "b" },
-        { id: 22, texto: "¿Qué tipo de ataque aprovecha vulnerabilidades en inserción de código javascript en páginas web para ejecutar código malicioso en el navegador del usuario?", a: "SQL Injection", b: "Man-in-the-Middle", c: "Cross-Site Scripting (XSS)", d: "DoS", correcta: "c" },
-        { id: 23, texto: "¿Qué tipo de ataque informático se basa en engañar a los usuarios para que revelen información confidencial?", a: "Ataque de fuerza bruta", b: "Ataque de denegación de servicio (DoS)", c: "Phishing", d: "Ataque de inyección SQL", correcta: "c" },
-        { id: 24, texto: "¿Qué característica define a un ataque de tipo 'zero-day'?", a: "Requiere interacción del usuario", b: "Aprovecha una vulnerabilidad recién descubierta", c: "Utiliza fuerza bruta para romper contraseñas", d: "Se ejecuta sobre una fecha concreta", correcta: "b" },
-        { id: 25, texto: "¿Cuál de los siguientes respuestas es un ataque que consiste en capturar el tráfico de red para obtener contraseñas y datos sensibles?", a: "DoS", b: "Sniffing", c: "Spoofing", d: "Phishing", correcta: "b" },
-        { id: 26, texto: "¿Cuál de las siguientes ataques se produce a nivel de enlace de la capa OSI?", a: "Ataque sobre las líneas de cableado", b: "Escucha de tramas con un sniffer", c: "Suplantación de una dirección IP", d: "Publicación de puertos sobre los que se ofrecen servicios", correcta: "b" },
-        { id: 27, texto: "¿Para qué sirve la instalación de un honeypot en una red?", a: "Para la detección temprana de intrusos o hacker", b: "Para evitar la descarga de virus o troyanos", c: "Para ofrecer un servicio de alta disponibilidad", d: "Para evitar ataques DoS (Denegación de Servicio)", correcta: "a" },
-        { id: 28, texto: "¿Cómo podemos protegernos del ARP spoofing?", a: "Definiendo reglas adecuadas en el cortafuegos", b: "Asignado de forma estática las direcciones MAC", c: "Bloqueando el protocolo ICMP", d: "Cambiando la IP mediante la orden ipconfig -hardware addr", correcta: "b" },
-        { id: 29, texto: "¿Cómo podemos protegernos del ARP spoofing?", a: "Definiendo reglas adecuadas en el cortafuegos", b: "Asociando de forma estática las direcciones MAC a las IP de nuestra red", c: "Bloqueando el protocolo ICMP en los equipos de nuestra red", d: "Cambiando la IP mediante la orden ipconfig -hardware addr", correcta: "b" },
-        { id: 30, texto: "¿Para qué se puede utilizar la herramienta nmap?", a: "Para explorar los servicios o puertos abiertos", b: "Para detectar posibles bombas lógica en el sistema", c: "Para cerrar o abrir puertos de comunicaciones TCP o UDP", d: "Para ver la posición geográfica de una dirección IP", correcta: "a" },
-        { id: 31, texto: "¿Cuál de los siguientes mecanismos de seguridad de redes Wi-Fi está desaconsejado?", a: "Utilizar WPA en vez de WEP", b: "Reducir la intensidad y alcance de la señal", c: "Ocultación del nombre de la red Wi-Fi", d: "Sistema de detección de intrusos inalámbrico (WIDS)", correcta: "a" },
-        { id: 32, texto: "¿Cuál de los siguientes mecanismos de seguridad de redes Wi-Fi está desaconsejado?", a: "Filtrado por dirección MAC", b: "Reducir la intensidad y alcance de la señal", c: "Ocultación del nombre de la red Wi-Fi", d: "Sistema de detección de intrusos inalámbrico (WIDS)", correcta: "a" },
-        { id: 33, texto: "¿En las redes WIFI con que protocolo de seguridad podemos utilizar un servidor RADIUS?", a: "WEB", b: "WPA2-PSK", c: "WPA3-PSK", d: "WPA2-EAP", correcta: "d" },
-        { id: 34, texto: "¿Qué tipo de dispositivo convierte a un host apantallado en una subred apantallada?", a: "Un router de frontera", b: "Un router situado entre la red perimetral y la red externa", c: "Un router situado entre dos segmentos de la red interna", d: "Un router situado entre la red perimetral y la red interna", correcta: "d" },
-        { id: 35, texto: "Un hacker ha penetrado en una red tomando el control de uno de los bastiones de la misma. Desde allí iniciará su actividad de búsqueda y ataque de nuevos objetivos en la red interna. ¿Qué dispositivos habría que configurar en la red interna y qué actividades habría que iniciar para averiguar las intenciones del atacante?", a: "Instalar una UTM que gestione el riesgo", b: "Configurar el cortafuegos para impedir las conexiones desde el exterior", c: "Instalar un honey-pot", d: "Modificar las rutas del router de frontera para desviar el ataque", correcta: "c" },
-        { id: 36, texto: "Un hacker ha penetrado en una red tomando el control de uno de los bastiones de la misma. Desde allí inicia su actividad de búsqueda y ataque de nuevos objetivos en la red interna. ¿Qué dispositivos habría que configurar en la red interna y para detectar las actividades del atacante?", a: "Instalar una UTM que gestione el riesgo", b: "Configurar el cortafuegos para impedir las conexiones desde el exterior", c: "Instalar un IDS", d: "Modificar las rutas del router de frontera para desviar el ataque", correcta: "c" },
-        { id: 37, texto: "¿Cuál de las siguientes afirmaciones sobre segmento DMZ de aplicación ES CIERTA?", a: "Se instalan en esta zona los equipos menos seguros de la red local", b: "Se instalan en esta zona los equipos que ofrecen servicios a Internet", c: "Se instalan en esta zona los equipos con menores velocidades", d: "Se instalan en esta zona los equipos dinámicos de la red", correcta: "b" },
-        { id: 38, texto: "¿Cuál de las siguientes afirmaciones sobre cortafuegos de red ES ERRÓNEA?", a: "Permite analizar los mensajes para detectar virus o troyanos", b: "Define reglas en funciones de la cabecera del paquete IP", c: "Filtra tanto paquetes de entrada como de salida de la red", d: "Controla el acceso a determinados puertos y protocolos", correcta: "a" },
-        { id: 39, texto: "¿Cuáles de las siguientes características son específicas de un Web Application Firewall?", a: "Filtra por direcciones IP", b: "Filtra por puertos", c: "Filtra por direcciones MAC", d: "Protege de ataques de inyección de código", correcta: "d" },
-        { id: 40, texto: "¿Qué característica tecnológica es falsa para el caso del cortafuegos personal de Windows?", a: "Permite el control de puertos e IP de origen de los paquetes entrantes", b: "Permite el control de IP de origen en los paquetes salientes", c: "Puede seleccionar las aplicaciones instaladas que accederán a la red externa", d: "Permite restringir el acceso por tipo de protocolo en cualquiera de las direcciones", correcta: "b" },
-        { id: 41, texto: "¿Qué tipo de cortafuegos opera en el nivel de red de la arquitectura TCP/IP?", a: "Red privada virtual común", b: "Cortafuegos basado en proxy", c: "Cortafuegos con inspección de estado", d: "Cortafuegos de filtrado de paquetes", correcta: "d" },
-        { id: 42, texto: "En una instalación se desea que los usuarios internos puedan navegar libremente por Internet y se abren en el cortafuegos corporativo las salidas hacia el puerto 80 mediante TCP para conexiones HTTP, así como el puerto TCP-443 para conexiones HTTPS. ¿Cómo NO podría conseguirse esto?", a: "Filtrado dinámico de conexiones de navegación", b: "Filtrado con inspección de estado con reglas de navegación", c: "Filtrado estático de paquetes de salida únicamente", d: "Filtrado estático de paquetes de salida y de entrada relacionados", correcta: "c" },
-        { id: 43, texto: "Si queremos BLOQUEAR la entrada a todos los paquetes en nuestro equipo, ejecutaríamos:", a: "iptables -A INPUT -j DROP", b: "iptables -j INPUT -A DROP", c: "iptables -A INPUT -j ACCEPT", d: "iptables -A OUTPUT -j DROP", correcta: "a" },
-        { id: 44, texto: "Si queremos permitir la conexión por ssh desde la IP 80.32.23.78 a nuestro equipo ¿qué regla debemos introducir?", a: "iptables -A FORWARD -p udp -d 80.32.23.78 --sport 80 -j ACCEPT", b: "iptables -A INPUT -s 80.32.23.78 -p tcp --dport 22 -j ACCEPT", c: "iptables -A OUTPUT -s ssh -ip 80.32.23.78 -ja -ja ACCEPT", d: "iptables -A INPUT -d 80.32.23.78 -p tcp --dport 20:21 -j ACCEPT", correcta: "b" },
-        { id: 45, texto: "Si queremos permitir que desde el exterior se puedan conectar a un servidor web interno con IP 192.168.100.100 ¿Qué regla incluiremos en nuestro cortafuegos de red?", a: "iptables -A FORWARD -d 192.168.100.100 -p tcp --dport 80 -j ACCEPT", b: "iptables -A FORWARD -s 192.168.100.100 -p tcp --dport 80 -j ACCEPT", c: "iptables -A OUTPUT -s html -ip 192.168.100.100 -j ACCEPT", d: "iptables -A INPUT -o 192.168.100.100 -d 80:8080 -j ACCEPT", correcta: "a" },
-        { id: 46, texto: "¿Qué efecto tiene esta regla?: iptables -A INPUT -m state --state ESTABLISHED, RELATED -j ACCEPT", a: "Bloquea todas las conexiones nuevas", b: "Permite solo conexiones iniciadas desde el exterior", c: "Permite el tráfico de conexiones ya establecidas o relacionadas", d: "Cierra todos los puertos no usados", correcta: "c" },
-        { id: 47, texto: "¿Para que puede servir la siguiente reglas en iptables: iptables -t nat -A PREROUTING -i eth0 -s 192.168.1.0/24 -p tcp --dport 443 -j REDIRECT --to-port 3128", a: "Redirigir el tráfico HTTPS hacia un proxy transparente", b: "Enrutar los paquetes de la red 192.168.1.0/24 hacia Internet", c: "Reenviar a Internet los paquetes del puerto 443 al 3128", d: "Cambiar el mecanismo de NAT fijando ip destinos dentro de la red 192.168.1.0 a los puertos indicados", correcta: "a" },
-        { id: 48, texto: "¿Cuántas y cuáles son las conexiones que se realizan en un cortafuegos basado en proxy en el nivel de aplicación?", a: "Una conexión: proxy-servidor", b: "Dos conexiones: cliente-proxy y proxy-servidor", c: "Dos conexiones: cliente-servidor y cliente-proxy", d: "Dos conexiones: cliente-proxy y proxy-cliente", correcta: "b" },
-        { id: 49, texto: "¿Qué característica de las siguientes se corresponde con un proxy anónimo?", a: "Se oculta su IP como servidor proxy y oculta la IP del cliente", b: "Se identifica a sí mismo como proxy y falsea la IP del cliente", c: "Se identifica a sí mismo como proxy y no oculta la IP del cliente", d: "Se identifica a sí mismo como proxy, pero oculta la IP del cliente", correcta: "d" },
-        { id: 50, texto: "¿Cuáles de las siguientes afirmaciones sobre la arquitectura y ubicación de un servidor proxy es correcta?", a: "Un proxy web puede tener un único adaptador de red", b: "Un servidor proxy tiene al menos dos adaptadores de red", c: "Un servidor proxy siempre realiza dos conexiones: una interna y otra externa", d: "Un proxy debe situarse siempre en el perímetro de la red", correcta: "a" },
-        { id: 51, texto: "¿Para qué utiliza el protocolo ICP (Internet Caché Protocol) un proxy?", a: "Para controlar la hora de acceso de las páginas web", b: "Para comprimir la información a almacenar en la caché", c: "Para enviar caché-test a los usuarios no autorizados", d: "Para comunicarse con otros proxy padres o hermanos", correcta: "d" },
-        { id: 52, texto: "¿Qué tipo de proxy se utiliza para almacenar en caché contenido web y mejorar el rendimiento?", a: "Proxy transparente", b: "Proxy inverso", c: "Proxy de caché", d: "Proxy SOCKS", correcta: "c" },
-        { id: 53, texto: "¿Cuáles de las siguientes afirmaciones relativas a los proxies transparentes es FALSA?", a: "Actúan como puerta de enlace por defecto del servicio al que sirven", b: "En el cliente hay que configurar el puerto de escucha del proxy", c: "Presentan problemas con la autenticación de los usuarios", d: "La petición se envía al proxy mediante una ruta creada en el cliente", correcta: "b" },
-        { id: 54, texto: "¿Cuáles son los valores de la cabecera HTTP más relevantes para un proxy?", a: "Server y Date", b: "Content-type y Date", c: "Expires y Last-Modified", d: "html y body", correcta: "c" },
-        { id: 55, texto: "¿Con qué instrucciones impediríamos el acceso al portal chuletas.es mediante squid?", a: "acl portal01 dstdomain chuletas.es http_access deny portal01", b: "acl chuletas deny portal01 domain http_access drop chuletas", c: "acl chuletas.es deny all domains http_no_access to chuletas", d: "acl portal01 srcdomain chuletas.es http_access allow portal01", correcta: "a" },
-        { id: 56, texto: "¿Que implicarían las instrucciones?\nacl cosa1 time 08:00-14:00\nacl cosa2 urlpath_regex .zip$;\nhttp_access allow cosa1 !cosa2", a: "Impide el acceso de ocho a dos, salvo si descargamos zip", b: "Impide el acceso de ocho a dos, para descargar zip", c: "Permite el acceso de ocho a dos, pero no descargar zip", d: "Permite el acceso de ocho a dos, y la descarga de zip", correcta: "c" },
-        { id: 57, texto: "La instalación de una red dispone de un servidor web interno (intranet) en la dirección 192.168.1.5 y de equipos que tienen configurado un DNS interno en la dirección 192.168.1.1. Este servidor DNS interno dirige las peticiones que no es capaz de resolver hacia otro DNS en Internet, en concreto al DNS de Google: 8.8.8.8. Se configura un servidor proxy Squid en la dirección 192.168.1.2 que tiene, entre otras, las siguientes directivas en su fichero de configuración:\nhttp port 3128\nvisible_hostname proxy.miempresa.com\ndns nameservers 8.8.8.8 192.168.1.1\ncache_mgr proxy@miempresa.com\ncache_mem 32 MB\nDesde alguno de los clientes se hace una petición web desde un navegador que apunta su proxy a Squid por el puerto 3128 y navega perfectamente. Sin embargo, no puede navegar por las páginas del servidor web de la intranet. ¿Qué podemos hacer para solucionar el problema?", a: "añadir una nueva directiva dns_nameservers", b: "Añadir una excepción al navegador para el servidor de intranet", c: "Instalar un proxy para la red interna y otro para la red externa", d: "Cambiar el DNS del sistema cliente para que apunte a 8.8.8.8", correcta: "b" },
-        { id: 58, texto: "¿Cuál de estos protocolos proporciona seguridad en el nivel de red?", a: "S/MIME", b: "SSL", c: "IPsec", d: "SMTP", correcta: "c" },
-        { id: 59, texto: "¿Qué tecnología crea una conexión segura y cifrada a través de una red pública como Internet?", a: "NAT", b: "VPN", c: "IDS", d: "QoS", correcta: "b" },
-        { id: 60, texto: "¿Qué característica técnica se asocia al modo túnel IPsec?", a: "El cifrado se realiza de extremo a extremo", b: "El datagrama IP no es encapsulado completamente", c: "El cifrado se realiza entre los dos routers/firewalls entre sedes, pero no de extremo a extremo", d: "Solo encapsula los datos del datagrama IP conservando la cabecera IP original del datagrama", correcta: "c" },
-        { id: 61, texto: "¿Cuál es una ventaja clave de las VPN respecto a las líneas dedicadas?", a: "Mayor latencia", b: "Coste reducido", c: "Mayor rigidez", d: "Configuración más compleja", correcta: "b" },
-        { id: 62, texto: "¿Cuál de los siguientes protocolos NO se utiliza para implementar una VPN?", a: "IPsec", b: "SSL", c: "L2TP", d: "SMTP", correcta: "d" },
-        { id: 63, texto: "De las siguientes afirmaciones relativas a las tecnologías PPP y PPTP, ¿cuál ES FALSA?", a: "Se encapsula una PDU PPP dentro de un datagrama IP", b: "PPP puede encapsular segmentos TCP o UDP", c: "Se encapsula un datagrama IP dentro de una PDU PPP", d: "PPTP requiere una cabecera de protocolo GRE para confeccionar sus túneles", correcta: "c" },
-        { id: 64, texto: "En los túneles IP intervienen varias direcciones IP tanto en origen como en destino. Según esto, ¿cuáles de las siguientes afirmaciones ES FALSA?", a: "En un túnel entre sedes solo se cifra entre los dos servidores VPN", b: "En un túnel entre sedes intervienen exclusivamente las dos IP públicas de los servidores VPN", c: "En un túnel Road-warrior se cifra desde el cliente hasta el servidor VPN de destino, pero no hasta el cliente de destino final", d: "En un túnel Road-warrior interviene la IP del cliente y la IP del servidor VPN exclusivamente", correcta: "d" },
-        { id: 65, texto: "¿Qué afirmaciones siguientes relativas al encapsulamiento en túnel ES FALSA?", a: "Un túnel válido a través de Internet podría construirse encapsulando IP dentro de NetBIOS", b: "Un túnel válido a través de Internet podría construirse encapsulando NetBIOS dentro de IP", c: "Cualquier túnel evita un ataque Man-In-The-Middle", d: "Los túneles se utilizan en conexiones punto a punto cifradas", correcta: "c" },
-        { id: 66, texto: "Un router/firewall publica en su red externa una batería de servidores web localizados en la red interna. ¿Cuál de las siguientes informaciones puede ser VERDADERA?", a: "El router abre un único puerto (el 80) en la red externa, que conectará a cada servidor web", b: "El router debe abrir un puerto distinto por cada servidor web interno", c: "El router debe abrir un puerto distinto por cada cliente en la red externa que se conecte a cualquier servidor web", d: "El router abre un puerto por cada servidor web publicado y otro por cada cliente conectado", correcta: "b" },
-        { id: 67, texto: "¿Qué característica no es apropiada para un servidor RADIUS?", a: "RADIUS es un servidor extensible y, por tanto, no cerrado", b: "La autenticación RADIUS utiliza el puerto TCP-1813", c: "Gestiona la autenticación y autorización de usuarios y servicios", d: "Utiliza el puerto UDP-1812", correcta: "b" },
-        { id: 68, texto: "Un sistema tiene configurado iptables correctamente, sin embargo, los paquetes no son capaces de enrutarse desde un interfaz de red a otro. ¿Qué debe hacer el administrador del sistema?", a: "Crear una ruta entre los dos interfaces de red", b: "Instalar netfilter", c: "Cambiar las reglas a la tabla FORWARD", d: "Editar el fichero /etc/sysctl.conf y añadir el parámetro net.ipv4.ip_forward=1", correcta: "d" },
-        { id: 69, texto: "Un sistema GNU/Linux con dos interfaces de red tiene configurado iptables correctamente, sin embargo, ningún paquete con IP distintas a las de propio equipo es capaz de enrutarse desde un interfaz de red a otro. ¿Qué debe hacer el administrador del sistema?", a: "Utilizar un único interfaz red", b: "Instalar netfilter", c: "Cambiar las reglas a la tabla MANGLE", d: "Editar el fichero /etc/sysctl.conf y añadir el parámetro net.ipv4.ip_forward=1", correcta: "d" },
-        { id: 70, texto: "Un sistema de alta disponibilidad tolerante a fallos por replicación:", a: "Tiene varias instancias idénticas del servicio y las peticiones se hacen a todas ellas en paralelo", b: "Tiene varias instancias idénticas del servicio y las peticiones se hacen sólo a uno de ellos", c: "Tiene varias instancias idénticas del servicio y las peticiones se hacen indistintamente a uno de ellos", d: "Tiene varias instancias idénticas del servicio y las peticiones se hacen por orden cada vez a uno de ellos", correcta: "a" },
-        { id: 71, texto: "¿Qué modo RAID proporciona redundancia de datos mediante la distribución de la paridad en todos los discos y permite la recuperación de datos en caso de fallo de hasta dos discos?", a: "RAID 0", b: "RAID 1", c: "RAID 5", d: "RAID 6", correcta: "d" },
-        { id: 72, texto: "En sistemas Windows un volumen reflejado corresponde a qué nivel RAID.", a: "RAID 0", b: "RAID 6", c: "RAID 1", d: "RAID 5", correcta: "c" },
-        { id: 73, texto: "¿Cuáles de estas características NO supone una ventaja en los sistemas cluster?", a: "Alta disponibilidad", b: "Fácil backup", c: "Fácil Escalabilidad", d: "Alto rendimiento", correcta: "b" },
-        { id: 74, texto: "Un modelo de virtualización de escritorio ¿con qué característica tecnológica de las siguientes se corresponde?", a: "Abstrae un recurso individual, pero nunca un sistema completo", b: "Abstrae el perfil de un usuario", c: "Encapsula una utilidad", d: "Abstrae un sistema completo", correcta: "d" },
-        { id: 75, texto: "¿Qué técnica de virtualización utiliza una traducción binaria por software para simular plataformas completas para conseguir su objetivo?", a: "Virtualización nativa", b: "Virtualización a nivel de sistema operativo", c: "Para-virtualización", d: "Virtualización completa AxH", correcta: "d" },
-        { id: 76, texto: "¿Qué tecnología de virtualización permite ejecutar aplicaciones aisladas en el espacio de usuario de un sistema operativo anfitrión, compartiendo el mismo kernel?", a: "Virtualización completa", b: "Paravirtualización", c: "Virtualización mediante contenedores", d: "Virtualización de hardware asistida", correcta: "c" },
-        { id: 77, texto: "¿Cuál de los siguientes es un ejemplo común de software de hipervisor de Tipo 2?", a: "VMware ESXi", b: "Microsoft Hyper-V Server (en su modo Core)", c: "VirtualBox", d: "Citrix XenServer", correcta: "c" },
-        { id: 78, texto: "¿Cuál es la función principal de Kubernetes?", a: "Orquestar y administrar contenedores en entornos distribuido", b: "Controlar el acceso de usuarios mediante firewalls", c: "Gestionar redes físicas en centros de datos", d: "Monitorizar exclusivamente el uso de CPU y memoria en máquinas virtuales", correcta: "a" },
-        { id: 79, texto: "¿Qué función tiene un balanceador de carga en un sistema de alta disponibilidad?", a: "Evita el acceso de usuarios no autorizados", b: "Monitorea los procesos del sistema", c: "Distribuye el tráfico entre múltiples servidores", d: "Comprime datos para aumentar el rendimiento", correcta: "c" },
-        { id: 80, texto: "¿Qué escenario técnico de los que se describen a continuación es el menos propio para ser gestionado mediante balanceo de carga?", a: "Un firewall se replica sobre otro, pero cada uno es atendido por seguridad por un proveedor de Internet distinto", b: "Una granja de servidores proporciona comercio electrónico a una tienda virtual visitada por abundantes potenciales compradores", c: "Un firewall es replicado en otro para atender las peticiones de los usuarios como reparto de carga, siendo que cada firewall utiliza como salida un proveedor de Internet distinto", d: "Un servidor de correo electrónico no es capaz de soportar tantos buzones como se requiren y se crea un cluster para aliviarle", correcta: "a" },
-        { id: 81, texto: "La protección de las personas físicas en relación con el tratamiento de datos personales es un derecho fundamental protegido por el artículo 18.4 de la Constitución española, el cual dice textualmente:", a: "La ley limitará el uso de la información para garantizar el honor y la intimidad personal y familiar de los ciudadanos y el pleno ejercicio de sus derechos", b: "La ley limitará el uso de la informática para garantizar el honor y la privacidad personal y familiar de los ciudadanos y el pleno ejercicio de sus derechos", c: "La ley limitará el uso de la informática para garantizar el honor y la intimidad personal y familiar de los ciudadanos y el pleno ejercicio de sus derechos", d: "La ley limitará el uso de la información para garantizar el honor y la privacidad personal y familiar de los ciudadanos y el pleno ejercicio de sus derechos", correcta: "c" },
-        { id: 82, texto: "¿Cuál es la edad mínima para poder prestar el consentimiento para el tratamiento de sus datos personales en el ámbito de los servicios de la sociedad de la información?", a: "12 años", b: "14 años", c: "16 años", d: "18 años", correcta: "b" },
-        { id: 83, texto: "Según la Ley Orgánica de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD) cual de los siguientes datos se considera especialmente protegidos:", a: "Datos sanitarios", b: "Dirección y correo electrónico", c: "Fecha de nacimiento y DNI", d: "Datos económicos", correcta: "a" },
-        { id: 84, texto: "La Ley Orgánica de protección de datos (LOPD) afecta a ficheros en soporte:", a: "Solo Electrónico", b: "Cualquier soporte", c: "Papel", d: "De audio", correcta: "b" },
-        { id: 85, texto: "La Ley Orgánica de protección de datos (LOPD) afecta a ficheros en soporte:", a: "Solo Electrónico", b: "Cualquier soporte", c: "Cualquier formato digital", d: "De imagen", correcta: "b" },
-        { id: 86, texto: "¿Cuál es la norma ISO que trata sobre la seguridad informática?", a: "ISO 140001", b: "IEEE 803.2", c: "ISO 27001", d: "ISO 9000", correcta: "c" },
-        { id: 87, texto: "¿Cuál de los siguientes servicios no es un proveedor de servicios de computación en la nube?", a: "Microsoft Azure", b: "Amazon Web Service (AWS)", c: "Oracle VM Virtualbox", d: "Google Cloud Platform", correcta: "c" },
-        { id: 88, texto: "¿Cuál de los siguientes servicios no es un proveedor de servicios de computación en la nube?", a: "Microsoft Azure", b: "Amazon WS", c: "Oracle VM Virtualbox", d: "Google Cloud", correcta: "c" },
-        { id: 89, texto: "¿Cuál es la diferencia entre una intrusión interna y una externa?", a: "Las externas ocurren fuera del horario laboral", b: "Las internas provienen de usuarios autorizados", c: "Las externas son más peligrosas", d: "Las internas solo afectan a hardware", correcta: "b" },
-        { id: 90, texto: "Un administrador desea instalar un sistema de filtrado de contenidos con autenticación de usuarios utilizando software libre como Squid y DansGuardian. ¿Qué configuración debe diseñar para conseguir su objetivo?", a: "Cliente-Squid-DansGuardian-Servidor", b: "Cliente-DansGuardian-Squid-DansGuardian-Servidor", c: "Cliente-DansGuardian-Squid-Servidor", d: "Cliente-Squid-DansGuardian-Squid-Servidor", correcta: "c" },
-        { id: 91, texto: "¿Cuáles de estas medidas o salvaguardias NO forman parte de la seguridad activa?", a: "Cortafuegos", b: "Discos espejos", c: "Encriptación de datos", d: "Uso de contraseñas seguras", correcta: "b" },
-        { id: 92, texto: "¿Cuál de las siguientes vulnerabilidades queda reflejada en el nivel de enlace de la capa OSI?", a: "Ataque sobre las líneas de cableado", b: "Escucha de tramas con un sniffer", c: "Suplantación de una dirección IP", d: "Publicación de puertos sobre los que se ofrecen servicios", correcta: "b" },
-        { id: 93, texto: "Un administrador desea instalar un sistema de filtrado de contenidos con autenticación de usuarios utilizando software libre como Squid y DansGuardian. ¿Qué configuración debe diseñar para conseguir su objetivo?", a: "Cliente-Squid-DansGuardian-Servidor", b: "Cliente-DansGuardian-Squid-DansGuardian-Servidor", c: "Cliente-DansGuardian-Squid-Servidor", d: "Cliente-Squid-DansGuardian-Squid-Servidor", correcta: "c" },
-        { id: 94, texto: "¿Cuáles de las siguientes afirmaciones relativas a los proxies transparentes es FALSA?", a: "Actúan como puerta por defecto del servicio al que sirven", b: "En el cliente hay que configurar el puerto de escucha del proxy", c: "Presentan problemas con la autenticación de los usuarios", d: "La petición se envía al proxy mediante una ruta creada en el cliente", correcta: "b" },
-        { id: 95, texto: "¿Que implicarían las instrucciones?\nacl cosa1 time 08:00-14:00\nacl cosa2 urlpath_regex .zip$;\nhttp_access allow cosa1 !cosa2", a: "Impide el acceso de ocho a dos, salvo si descargamos zip", b: "Impide el acceso de ocho a dos, para descargar zip", c: "Permite el acceso de ocho a dos, pero no descargar zip", d: "Permite el acceso de ocho a dos, y la descarga de zip", correcta: "c" },
-        { id: 96, texto: "¿Cuál de los siguientes servicios no es un proveedor de servicios de computación en la nube?", a: "Microsoft Azure", b: "Amazon Web Service (AWS)", c: "Oracle VM Virtualbox", d: "Google Cloud Platform", correcta: "c" },
-        { id: 97, texto: "¿Qué plataforma podemos utilizar para gestionar y automatizar el manejo de contenedores docker?", a: "Vmware workstation", b: "VirtualBox", c: "Kubernetes", d: "Oracle docker file", correcta: "c" },
-        { id: 98, texto: "¿Qué plataforma podemos utilizar para gestionar y automatizar el manejo de contenedores docker?", a: "Vmware workstation", b: "VirtualBox", c: "Kubernetes", d: "Oracle docker file", correcta: "c" },
-        { id: 99, texto: "La Ley Orgánica de protección de datos (LOPD) afecta a ficheros en soporte:", a: "Solo Electrónico", b: "Cualquier soporte", c: "Papel", d: "De audio", correcta: "b" },
-        { id: 100, texto: "¿Cuál es la norma ISO que trata sobre la seguridad informática?:", a: "ISO 140001", b: "IEEE 803.2", c: "ISO 27002", d: "ISO 9000", correcta: "c" }
+    const preguntasIngles = [
+        { id: 1, texto: "What does it mean when we say a battery is 'flat'?", a: "The battery is broken", b: "The battery has no charge", c: "The battery is new", d: "The battery is charging", correcta: "b" },
+        { id: 2, texto: "Switch off your computer, and ______ it.", a: "de-plug", b: "unplug", c: "non-plug", d: "disconnect", correcta: "b" },
+        { id: 3, texto: "When you ______ the document, it is sent to the recycling bin.", a: "destroy", b: "erase", c: "delete", d: "remove", correcta: "c" },
+        { id: 4, texto: "Downloading files from the internet can ______ your computer with a virus.", a: "infect", b: "contaminate", c: "dirty", d: "attack", correcta: "a" },
+        { id: 5, texto: "INTERNET EXPLORER, MOZILLA FIREFOX... are very useful ______.", a: "navigators", b: "browsers", c: "web sites", d: "engines", correcta: "b" },
+        { id: 6, texto: "Temporary internet files are stored in ______.", a: "cash", b: "cache", c: "cashe", d: "caché", correcta: "b" },
+        { id: 7, texto: "It's essential to ______ anti-virus protection regularly.", a: "update", b: "up-to-date", c: "check", d: "renew", correcta: "a" },
+        { id: 8, texto: "I turned off the photocopier and ______ the plug.", a: "put out", b: "pulled out", c: "took away", d: "removed", correcta: "b" },
+        { id: 9, texto: "Software which blocks attempts by others to access your computer is called ______.", a: "firewall", b: "fire blanket", c: "fire engine", d: "firewall", correcta: "a" },
+        { id: 10, texto: "The symbol ______ means that a web page is secure.", a: "locker", b: "padlock", c: "lock", d: "key", correcta: "b" },
+        { id: 11, texto: "A ______ is a computer program that organises data into rows and columns.", a: "spreadsheet", b: "freeware", c: "firewall", d: "database", correcta: "a" },
+        { id: 12, texto: "Emails received by individuals are held in ______.", a: "inbox", b: "enter box", c: "unread mail", d: "mailbox", correcta: "a" },
+        { id: 13, texto: "I want to get a ______ ADSL modem.", a: "fast-speed", b: "quick-speed", c: "high-speed", d: "rapid-speed", correcta: "c" },
+        { id: 14, texto: "My computer is running slowly. Maybe I need to ______ the hard drive.", a: "optimise", b: "defragment", c: "customise", d: "format", correcta: "b" },
+        { id: 15, texto: "RAM is fast-access memory that allows the stored data to be accessed ______.", a: "in any order", b: "in order of storing", c: "the biggest first", d: "sequentially", correcta: "a" },
+        { id: 16, texto: "Any error or malfunction of a computer program is known as a ______.", a: "bug", b: "virus", c: "debug", d: "error", correcta: "a" },
+        { id: 17, texto: "The father of the WWW was ______.", a: "Steve Wozniak", b: "Tim Berners-Lee", c: "Steve Jobs", d: "Bill Gates", correcta: "b" },
+        { id: 18, texto: "A collection of webpages is called a ______.", a: "website", b: "webpage set", c: "webmark", d: "web cluster", correcta: "a" },
+        { id: 19, texto: "______ is ideal for pictures with many colours.", a: ".jpg", b: ".gif", c: ".wav", d: ".png", correcta: "a" },
+        { id: 20, texto: "You can set your computer to ______ your log-in details.", a: "store", b: "remember", c: "recall", d: "save", correcta: "b" },
+        { id: 21, texto: "When you connect this to your computer, it will work immediately. It's ______.", a: "plug and go", b: "plug and play", c: "plug and use", d: "plug and work", correcta: "b" },
+        { id: 22, texto: "Times, Arial, Courier are types of ______.", a: "lettering", b: "character", c: "font", d: "typeface", correcta: "c" },
+        { id: 23, texto: "Software which has been illegally copied is ______.", a: "unreal", b: "pirated", c: "fake", d: "stolen", correcta: "b" },
+        { id: 24, texto: "A ______ would be very useful when I need to work on the train.", a: "server", b: "laptop", c: "desktop", d: "tablet", correcta: "b" },
+        { id: 25, texto: "The ______ supply provides electricity to the computer system.", a: "port", b: "power", c: "heat", d: "energy", correcta: "b" },
+        { id: 26, texto: "A ______ is the major, underlying circuit board of a computer.", a: "case", b: "processor", c: "motherboard", d: "circuit", correcta: "c" },
+        { id: 27, texto: "Scan all files for viruses and ______ prior to installing.", a: "spyware", b: "firewalls", c: "removals", d: "malware", correcta: "a" },
+        { id: 28, texto: "If you don't remember your password, the system will ______ access.", a: "permit", b: "deny", c: "quarantine", d: "block", correcta: "b" },
+        { id: 29, texto: "You need a ______ to direct data traffic and connect to the Internet.", a: "cable", b: "switch", c: "router", d: "hub", correcta: "c" },
+        { id: 30, texto: "There are Wi-Fi ______ in all our shops.", a: "switches", b: "cables", c: "hotspots", d: "routers", correcta: "c" },
+        { id: 31, texto: "Built-in ______ now comes as a standard feature.", a: "broadband", b: "Wi-Fi", c: "Internet", d: "Bluetooth", correcta: "b" },
+        { id: 32, texto: "The keyboard should be ______ at the back of the computer.", a: "renewed", b: "plugged in", c: "detected", d: "connected", correcta: "b" },
+        { id: 33, texto: "Restarting the computer clears the web browser's ______.", a: "address", b: "signal", c: "cache", d: "memory", correcta: "c" },
+        { id: 34, texto: "What do people usually use to communicate with a computer?", a: "Mouse and keyboard", b: "Speakers", c: "Monitor", d: "Printer", correcta: "a" },
+        { id: 35, texto: "A printed note placed below the text on a printed page is called a ______.", a: "bottom note", b: "foot reference", c: "footer", d: "caption", correcta: "c" },
+        { id: 36, texto: "A low-level programming language is ______.", a: "Assembly Language", b: "Java", c: "Basic", d: "Python", correcta: "a" },
+        { id: 37, texto: "Intentional stopping point in a program for debugging is a ______.", a: "watchpoint", b: "breakpoint", c: "debug", d: "stop", correcta: "b" },
+        { id: 38, texto: "Which is NOT an IDE tool for JAVA?", a: "ECLIPSE", b: "NET BEANS", c: "CODE EDITOR", d: "IntelliJ", correcta: "c" },
+        { id: 39, texto: "What does PAN stand for in networking?", a: "Personal Area Network", b: "Public Access Network", c: "Private Area Network", d: "Primary Area Network", correcta: "a" },
+        { id: 40, texto: "What is the function of an assembler?", a: "To convert assembly code to machine code", b: "To compile high-level code", c: "To debug programs", d: "To execute programs", correcta: "a" }
     ];
 
     // ============================================
-    // BASE DE DATOS DE PREGUNTAS - SERVICIOS EN RED E INTERNET (87 preguntas)
+    // BASE DE DATOS DE PREGUNTAS - SEGURIDAD (selección de 70 mejores)
+    // ============================================
+  const preguntasSeguridad = [
+    { id: 1, texto: "¿Cuáles son tres principales objetivos en seguridad informática?", a: "Conectividad, Privacidad y Encriptación", b: "Conectividad, Integridad y Excentricidad", c: "Confidencialidad, Disponibilidad y Regularidad", d: "Confidencialidad, Integridad y Disponibilidad", correcta: "d" },
+    { id: 2, texto: "Un ataque que provoca un DoS (Denegación de servicio) afecta ¿a qué objetivo básico en seguridad?", a: "No repudio", b: "Integridad", c: "Confidencialidad", d: "Disponibilidad", correcta: "d" },
+    { id: 3, texto: "Un ataque que provoque la modificación de datos ¿a qué objetivo básico en seguridad afecta?", a: "No repudio", b: "Integridad", c: "Confidencialidad", d: "Disponibilidad", correcta: "b" },
+    { id: 4, texto: "¿Cuáles de las siguientes afirmaciones no es un objetivo planteado por la seguridad lógica de un sistema?", a: "Restringir el acceso a los programas y archivos.", b: "Garantizar que los datos enviados a un destinatario solo puedan ser interpretados por el auténtico destinatario y no por otros.", c: "La información emitida por el emisor debe ser idéntica a la recibida por el receptor.", d: "Impedir el acceso a la instalación mediante técnicas biométricas.", correcta: "d" },
+    { id: 5, texto: "¿Qué elemento NO forma parte de un plan de seguridad física?", a: "Control de accesos", b: "Protección contra incendios", c: "Configuración de Firewall de red", d: "Ubicación de servidores", correcta: "c" },
+    { id: 6, texto: "¿Cuál de las siguientes opciones es una amenaza física para un sistema informático?", a: "Un virus informático", b: "Un ataque de denegación de servicio (DoS)", c: "Un corte de energía", d: "Un ataque de phishing", correcta: "c" },
+    { id: 7, texto: "En el contexto de valoración de riesgos, ¿qué se entiende por 'impacto'?", a: "Número de vulnerabilidades existentes", b: "Probabilidad de ocurrencia", c: "Consecuencias de un incidente", d: "Coste de las copias de seguridad", correcta: "c" },
+    { id: 8, texto: "¿Cuál es la mejor estrategia para evitar los ataques basados en la ingeniería social?", a: "La encriptación de los datos más importantes", b: "La formación de los usuarios del sistema", c: "El uso de cortafuegos y sistemas IDS", d: "El cambio frecuente de contraseña de los usuarios", correcta: "b" },
+    { id: 9, texto: "Sobre políticas de contraseñas ¿qué medida ES aconsejable?", a: "Definir contraseñas de menos de 6 caracteres", b: "Definir contraseñas difíciles de memorizar", c: "Definir una única contraseña segura para varios usos", d: "Cambiar las contraseñas periódicamente", correcta: "d" },
+    { id: 10, texto: "Sobre políticas de contraseñas ¿qué medida es aconsejable?", a: "Definir contraseñas numéricas", b: "Cambiar las contraseñas periódicamente", c: "Definir contraseñas difíciles de memorizar", d: "Definir una única contraseña segura para varios usos", correcta: "b" },
+    { id: 11, texto: "¿Qué sistema biométrico se considera el más seguro?", a: "Reconocimiento de la cara", b: "Reconocimiento del iris", c: "Reconocimiento de la huella dactilar", d: "Reconocimiento del olor corporal", correcta: "b" },
+    { id: 12, texto: "¿Cuál de los siguientes métodos criptográficos se puede clasificar como de transposición?", a: "Escilata", b: "Vigenère", c: "Polybios", d: "Cesar", correcta: "a" },
+    { id: 13, texto: "¿Cuál es uno de los problemas de la criptográfica simétrica?", a: "El tamaño reducido de las claves", b: "La lentitud en el cifrado y descifrado", c: "La distribución de la claves", d: "La dificultad en memorizar las claves", correcta: "c" },
+    { id: 14, texto: "Para realizar la firma digital, ¿cuáles son los algoritmos de hash más utilizados?", a: "Checksum, y AdmSig", b: "RSA y DES", c: "HSEC y RunRun", d: "MD5 y SHA", correcta: "d" },
+    { id: 15, texto: "Si quiero enviar un mensaje a un destinatario que incluya mi firma digital del mensaje, ¿qué clave utilizamos para crearla?", a: "La clave pública del destinatario", b: "La clave privada del destinatario", c: "Una clave elegida al azar compleja", d: "Mi clave privada", correcta: "d" },
+    { id: 16, texto: "Un emisor me ha enviado un mensaje cifrado utilizando mi clave pública que previamente le indiqué, ¿con qué clave descifraré el mensaje que me ha enviado?", a: "Con mi clave pública", b: "Con mi clave privada", c: "Con la clave pública del emisor", d: "Con la clave privada del emisor", correcta: "b" },
+    { id: 17, texto: "¿Qué protocolo criptográfico se basa en el uso de claves públicas y privadas?", a: "AES", b: "RSA", c: "SHA-256", d: "MD5", correcta: "b" },
+    { id: 18, texto: "En una infraestructura PKI, ¿cuál es la función principal de una Autoridad de Certificación (CA)?", a: "Generar claves simétricas seguras", b: "Comprobar la validez de los certificados digitales", c: "Emitir y revocar certificados digitales", d: "Encriptar archivos de forma segura", correcta: "c" },
+    { id: 19, texto: "¿Cuál es el orden cronológico correcto de las fases de un análisis forense digital?", a: "Documentación del incidente, Análisis de la evidencia, Preservación de la incidencia, Identificación del incidente", b: "Identificación del incidente, Análisis de la evidencia, Preservación de la incidencia, Documentación del incidente", c: "Identificación del incidente, Preservación de la incidencia, Análisis de la evidencia, Documentación del incidente", d: "Preservación de la incidencia, Identificación del incidente, Análisis de la evidencia, Documentación del incidente", correcta: "c" },
+    { id: 20, texto: "¿Cuáles son los cuatro tipos de amenazas en seguridad informática?", a: "Interrupción, intercepción, duplicación y fabricación", b: "Diseño, fabricación, distribución y comercialización", c: "Interrupción, Intercepción, fabricación y modificación", d: "Modificación, Interrupción, fabricación y denegación", correcta: "c" },
+    { id: 21, texto: "Los rootkits se caracterizan por:", a: "Auto-enviarse por correo electrónico", b: "Implementar técnicas para permanecer ocultos", c: "Infectar a otros ejecutables", d: "Presentar publicidad no deseada", correcta: "b" },
+    { id: 22, texto: "¿Qué tipo de ataque aprovecha vulnerabilidades en inserción de código javascript en páginas web para ejecutar código malicioso en el navegador del usuario?", a: "SQL Injection", b: "Man-in-the-Middle", c: "Cross-Site Scripting (XSS)", d: "DoS", correcta: "c" },
+    { id: 23, texto: "¿Qué tipo de ataque informático se basa en engañar a los usuarios para que revelen información confidencial?", a: "Ataque de fuerza bruta", b: "Ataque de denegación de servicio (DoS)", c: "Phishing", d: "Ataque de inyección SQL", correcta: "c" },
+    { id: 24, texto: "¿Qué característica define a un ataque de tipo 'zero-day'?", a: "Requiere interacción del usuario", b: "Aprovecha una vulnerabilidad recién descubierta", c: "Utiliza fuerza bruta para romper contraseñas", d: "Se ejecuta sobre una fecha concreta", correcta: "b" },
+    { id: 25, texto: "¿Cuál de los siguientes respuestas es un ataque que consiste en capturar el tráfico de red para obtener contraseñas y datos sensibles?", a: "DoS", b: "Sniffing", c: "Spoofing", d: "Phishing", correcta: "b" },
+    { id: 26, texto: "¿Cuál de las siguientes ataques se produce a nivel de enlace de la capa OSI?", a: "Ataque sobre las líneas de cableado", b: "Escucha de tramas con un sniffer", c: "Suplantación de una dirección IP", d: "Publicación de puertos sobre los que se ofrecen servicios", correcta: "b" },
+    { id: 27, texto: "¿Para qué sirve la instalación de un honeypot en una red?", a: "Para la detección temprana de intrusos o hacker", b: "Para evitar la descarga de virus o troyanos", c: "Para ofrecer un servicio de alta disponibilidad", d: "Para evitar ataques DoS (Denegación de Servicio)", correcta: "a" },
+    { id: 28, texto: "¿Cómo podemos protegernos del ARP spoofing?", a: "Definiendo reglas adecuadas en el cortafuegos", b: "Asignado de forma estática las direcciones MAC", c: "Bloqueando el protocolo ICMP", d: "Cambiando la IP mediante la orden ipconfig -hardware addr", correcta: "b" },
+    { id: 29, texto: "¿Cómo podemos protegernos del ARP spoofing?", a: "Definiendo reglas adecuadas en el cortafuegos", b: "Asociando de forma estática las direcciones MAC a las IP de nuestra red", c: "Bloqueando el protocolo ICMP en los equipos de nuestra red", d: "Cambiando la IP mediante la orden ipconfig -hardware addr", correcta: "b" },
+    { id: 30, texto: "¿Para qué se puede utilizar la herramienta nmap?", a: "Para explorar los servicios o puertos abiertos", b: "Para detectar posibles bombas lógica en el sistema", c: "Para cerrar o abrir puertos de comunicaciones TCP o UDP", d: "Para ver la posición geográfica de una dirección IP", correcta: "a" },
+    { id: 31, texto: "¿Cuál de los siguientes mecanismos de seguridad de redes Wi-Fi está desaconsejado?", a: "Utilizar WPA en vez de WEP", b: "Reducir la intensidad y alcance de la señal", c: "Ocultación del nombre de la red Wi-Fi", d: "Sistema de detección de intrusos inalámbrico (WIDS)", correcta: "a" },
+    { id: 32, texto: "¿Cuál de los siguientes mecanismos de seguridad de redes Wi-Fi está desaconsejado?", a: "Filtrado por dirección MAC", b: "Reducir la intensidad y alcance de la señal", c: "Ocultación del nombre de la red Wi-Fi", d: "Sistema de detección de intrusos inalámbrico (WIDS)", correcta: "a" },
+    { id: 33, texto: "¿En las redes WIFI con que protocolo de seguridad podemos utilizar un servidor RADIUS?", a: "WEB", b: "WPA2-PSK", c: "WPA3-PSK", d: "WPA2-EAP", correcta: "d" },
+    { id: 34, texto: "¿Qué tipo de dispositivo convierte a un host apantallado en una subred apantallada?", a: "Un router de frontera", b: "Un router situado entre la red perimetral y la red externa", c: "Un router situado entre dos segmentos de la red interna", d: "Un router situado entre la red perimetral y la red interna", correcta: "d" },
+    { id: 35, texto: "Un hacker ha penetrado en una red tomando el control de uno de los bastiones de la misma. Desde allí iniciará su actividad de búsqueda y ataque de nuevos objetivos en la red interna. ¿Qué dispositivos habría que configurar en la red interna y qué actividades habría que iniciar para averiguar las intenciones del atacante?", a: "Instalar una UTM que gestione el riesgo", b: "Configurar el cortafuegos para impedir las conexiones desde el exterior", c: "Instalar un honey-pot", d: "Modificar las rutas del router de frontera para desviar el ataque", correcta: "c" },
+    { id: 36, texto: "Un hacker ha penetrado en una red tomando el control de uno de los bastiones de la misma. Desde allí inicia su actividad de búsqueda y ataque de nuevos objetivos en la red interna. ¿Qué dispositivos habría que configurar en la red interna y para detectar las actividades del atacante?", a: "Instalar una UTM que gestione el riesgo", b: "Configurar el cortafuegos para impedir las conexiones desde el exterior", c: "Instalar un IDS", d: "Modificar las rutas del router de frontera para desviar el ataque", correcta: "c" },
+    { id: 37, texto: "¿Cuál de las siguientes afirmaciones sobre segmento DMZ de aplicación ES CIERTA?", a: "Se instalan en esta zona los equipos menos seguros de la red local", b: "Se instalan en esta zona los equipos que ofrecen servicios a Internet", c: "Se instalan en esta zona los equipos con menores velocidades", d: "Se instalan en esta zona los equipos dinámicos de la red", correcta: "b" },
+    { id: 38, texto: "¿Cuál de las siguientes afirmaciones sobre cortafuegos de red ES ERRÓNEA?", a: "Permite analizar los mensajes para detectar virus o troyanos", b: "Define reglas en funciones de la cabecera del paquete IP", c: "Filtra tanto paquetes de entrada como de salida de la red", d: "Controla el acceso a determinados puertos y protocolos", correcta: "a" },
+    { id: 39, texto: "¿Cuáles de las siguientes características son específicas de un Web Application Firewall?", a: "Filtra por direcciones IP", b: "Filtra por puertos", c: "Filtra por direcciones MAC", d: "Protege de ataques de inyección de código", correcta: "d" },
+    { id: 40, texto: "¿Qué característica tecnológica es falsa para el caso del cortafuegos personal de Windows?", a: "Permite el control de puertos e IP de origen de los paquetes entrantes", b: "Permite el control de IP de origen en los paquetes salientes", c: "Puede seleccionar las aplicaciones instaladas que accederán a la red externa", d: "Permite restringir el acceso por tipo de protocolo en cualquiera de las direcciones", correcta: "b" },
+    { id: 41, texto: "¿Qué tipo de cortafuegos opera en el nivel de red de la arquitectura TCP/IP?", a: "Red privada virtual común", b: "Cortafuegos basado en proxy", c: "Cortafuegos con inspección de estado", d: "Cortafuegos de filtrado de paquetes", correcta: "d" },
+    { id: 42, texto: "En una instalación se desea que los usuarios internos puedan navegar libremente por Internet y se abren en el cortafuegos corporativo las salidas hacia el puerto 80 mediante TCP para conexiones HTTP, así como el puerto TCP-443 para conexiones HTTPS. ¿Cómo NO podría conseguirse esto?", a: "Filtrado dinámico de conexiones de navegación", b: "Filtrado con inspección de estado con reglas de navegación", c: "Filtrado estático de paquetes de salida únicamente", d: "Filtrado estático de paquetes de salida y de entrada relacionados", correcta: "c" },
+    { id: 43, texto: "Si queremos BLOQUEAR la entrada a todos los paquetes en nuestro equipo, ejecutaríamos:", a: "iptables -A INPUT -j DROP", b: "iptables -j INPUT -A DROP", c: "iptables -A INPUT -j ACCEPT", d: "iptables -A OUTPUT -j DROP", correcta: "a" },
+    { id: 44, texto: "Si queremos permitir la conexión por ssh desde la IP 80.32.23.78 a nuestro equipo ¿qué regla debemos introducir?", a: "iptables -A FORWARD -p udp -d 80.32.23.78 --sport 80 -j ACCEPT", b: "iptables -A INPUT -s 80.32.23.78 -p tcp --dport 22 -j ACCEPT", c: "iptables -A OUTPUT -s ssh -ip 80.32.23.78 -ja -ja ACCEPT", d: "iptables -A INPUT -d 80.32.23.78 -p tcp --dport 20:21 -j ACCEPT", correcta: "b" },
+    { id: 45, texto: "Si queremos permitir que desde el exterior se puedan conectar a un servidor web interno con IP 192.168.100.100 ¿Qué regla incluiremos en nuestro cortafuegos de red?", a: "iptables -A FORWARD -d 192.168.100.100 -p tcp --dport 80 -j ACCEPT", b: "iptables -A FORWARD -s 192.168.100.100 -p tcp --dport 80 -j ACCEPT", c: "iptables -A OUTPUT -s html -ip 192.168.100.100 -j ACCEPT", d: "iptables -A INPUT -o 192.168.100.100 -d 80:8080 -j ACCEPT", correcta: "a" },
+    { id: 46, texto: "¿Qué efecto tiene esta regla?: iptables -A INPUT -m state --state ESTABLISHED, RELATED -j ACCEPT", a: "Bloquea todas las conexiones nuevas", b: "Permite solo conexiones iniciadas desde el exterior", c: "Permite el tráfico de conexiones ya establecidas o relacionadas", d: "Cierra todos los puertos no usados", correcta: "c" },
+    { id: 47, texto: "¿Para que puede servir la siguiente reglas en iptables: iptables -t nat -A PREROUTING -i eth0 -s 192.168.1.0/24 -p tcp --dport 443 -j REDIRECT --to-port 3128", a: "Redirigir el tráfico HTTPS hacia un proxy transparente", b: "Enrutar los paquetes de la red 192.168.1.0/24 hacia Internet", c: "Reenviar a Internet los paquetes del puerto 443 al 3128", d: "Cambiar el mecanismo de NAT fijando ip destinos dentro de la red 192.168.1.0 a los puertos indicados", correcta: "a" },
+    { id: 48, texto: "¿Cuántas y cuáles son las conexiones que se realizan en un cortafuegos basado en proxy en el nivel de aplicación?", a: "Una conexión: proxy-servidor", b: "Dos conexiones: cliente-proxy y proxy-servidor", c: "Dos conexiones: cliente-servidor y cliente-proxy", d: "Dos conexiones: cliente-proxy y proxy-cliente", correcta: "b" },
+    { id: 49, texto: "¿Qué característica de las siguientes se corresponde con un proxy anónimo?", a: "Se oculta su IP como servidor proxy y oculta la IP del cliente", b: "Se identifica a sí mismo como proxy y falsea la IP del cliente", c: "Se identifica a sí mismo como proxy y no oculta la IP del cliente", d: "Se identifica a sí mismo como proxy, pero oculta la IP del cliente", correcta: "d" },
+    { id: 50, texto: "¿Cuáles de las siguientes afirmaciones sobre la arquitectura y ubicación de un servidor proxy es correcta?", a: "Un proxy web puede tener un único adaptador de red", b: "Un servidor proxy tiene al menos dos adaptadores de red", c: "Un servidor proxy siempre realiza dos conexiones: una interna y otra externa", d: "Un proxy debe situarse siempre en el perímetro de la red", correcta: "a" },
+    { id: 51, texto: "¿Para qué utiliza el protocolo ICP (Internet Caché Protocol) un proxy?", a: "Para controlar la hora de acceso de las páginas web", b: "Para comprimir la información a almacenar en la caché", c: "Para enviar caché-test a los usuarios no autorizados", d: "Para comunicarse con otros proxy padres o hermanos", correcta: "d" },
+    { id: 52, texto: "¿Qué tipo de proxy se utiliza para almacenar en caché contenido web y mejorar el rendimiento?", a: "Proxy transparente", b: "Proxy inverso", c: "Proxy de caché", d: "Proxy SOCKS", correcta: "c" },
+    { id: 53, texto: "¿Cuáles de las siguientes afirmaciones relativas a los proxies transparentes es FALSA?", a: "Actúan como puerta de enlace por defecto del servicio al que sirven", b: "En el cliente hay que configurar el puerto de escucha del proxy", c: "Presentan problemas con la autenticación de los usuarios", d: "La petición se envía al proxy mediante una ruta creada en el cliente", correcta: "b" },
+    { id: 54, texto: "¿Cuáles son los valores de la cabecera HTTP más relevantes para un proxy?", a: "Server y Date", b: "Content-type y Date", c: "Expires y Last-Modified", d: "html y body", correcta: "c" },
+    { id: 55, texto: "¿Con qué instrucciones impediríamos el acceso al portal chuletas.es mediante squid?", a: "acl portal01 dstdomain chuletas.es http_access deny portal01", b: "acl chuletas deny portal01 domain http_access drop chuletas", c: "acl chuletas.es deny all domains http_no_access to chuletas", d: "acl portal01 srcdomain chuletas.es http_access allow portal01", correcta: "a" },
+    { id: 56, texto: "¿Que implicarían las instrucciones?\nacl cosa1 time 08:00-14:00\nacl cosa2 urlpath_regex .zip$;\nhttp_access allow cosa1 !cosa2", a: "Impide el acceso de ocho a dos, salvo si descargamos zip", b: "Impide el acceso de ocho a dos, para descargar zip", c: "Permite el acceso de ocho a dos, pero no descargar zip", d: "Permite el acceso de ocho a dos, y la descarga de zip", correcta: "c" },
+    { id: 57, texto: "La instalación de una red dispone de un servidor web interno (intranet) en la dirección 192.168.1.5 y de equipos que tienen configurado un DNS interno en la dirección 192.168.1.1. Este servidor DNS interno dirige las peticiones que no es capaz de resolver hacia otro DNS en Internet, en concreto al DNS de Google: 8.8.8.8. Se configura un servidor proxy Squid en la dirección 192.168.1.2 que tiene, entre otras, las siguientes directivas en su fichero de configuración:\nhttp port 3128\nvisible_hostname proxy.miempresa.com\ndns nameservers 8.8.8.8 192.168.1.1\ncache_mgr proxy@miempresa.com\ncache_mem 32 MB\nDesde alguno de los clientes se hace una petición web desde un navegador que apunta su proxy a Squid por el puerto 3128 y navega perfectamente. Sin embargo, no puede navegar por las páginas del servidor web de la intranet. ¿Qué podemos hacer para solucionar el problema?", a: "añadir una nueva directiva dns_nameservers", b: "Añadir una excepción al navegador para el servidor de intranet", c: "Instalar un proxy para la red interna y otro para la red externa", d: "Cambiar el DNS del sistema cliente para que apunte a 8.8.8.8", correcta: "b" },
+    { id: 58, texto: "¿Cuál de estos protocolos proporciona seguridad en el nivel de red?", a: "S/MIME", b: "SSL", c: "IPsec", d: "SMTP", correcta: "c" },
+    { id: 59, texto: "¿Qué tecnología crea una conexión segura y cifrada a través de una red pública como Internet?", a: "NAT", b: "VPN", c: "IDS", d: "QoS", correcta: "b" },
+    { id: 60, texto: "¿Qué característica técnica se asocia al modo túnel IPsec?", a: "El cifrado se realiza de extremo a extremo", b: "El datagrama IP no es encapsulado completamente", c: "El cifrado se realiza entre los dos routers/firewalls entre sedes, pero no de extremo a extremo", d: "Solo encapsula los datos del datagrama IP conservando la cabecera IP original del datagrama", correcta: "c" },
+    { id: 61, texto: "¿Cuál es una ventaja clave de las VPN respecto a las líneas dedicadas?", a: "Mayor latencia", b: "Coste reducido", c: "Mayor rigidez", d: "Configuración más compleja", correcta: "b" },
+    { id: 62, texto: "¿Cuál de los siguientes protocolos NO se utiliza para implementar una VPN?", a: "IPsec", b: "SSL", c: "L2TP", d: "SMTP", correcta: "d" },
+    { id: 63, texto: "De las siguientes afirmaciones relativas a las tecnologías PPP y PPTP, ¿cuál ES FALSA?", a: "Se encapsula una PDU PPP dentro de un datagrama IP", b: "PPP puede encapsular segmentos TCP o UDP", c: "Se encapsula un datagrama IP dentro de una PDU PPP", d: "PPTP requiere una cabecera de protocolo GRE para confeccionar sus túneles", correcta: "c" },
+    { id: 64, texto: "En los túneles IP intervienen varias direcciones IP tanto en origen como en destino. Según esto, ¿cuáles de las siguientes afirmaciones ES FALSA?", a: "En un túnel entre sedes solo se cifra entre los dos servidores VPN", b: "En un túnel entre sedes intervienen exclusivamente las dos IP públicas de los servidores VPN", c: "En un túnel Road-warrior se cifra desde el cliente hasta el servidor VPN de destino, pero no hasta el cliente de destino final", d: "En un túnel Road-warrior interviene la IP del cliente y la IP del servidor VPN exclusivamente", correcta: "d" },
+    { id: 65, texto: "¿Qué afirmaciones siguientes relativas al encapsulamiento en túnel ES FALSA?", a: "Un túnel válido a través de Internet podría construirse encapsulando IP dentro de NetBIOS", b: "Un túnel válido a través de Internet podría construirse encapsulando NetBIOS dentro de IP", c: "Cualquier túnel evita un ataque Man-In-The-Middle", d: "Los túneles se utilizan en conexiones punto a punto cifradas", correcta: "c" },
+    { id: 66, texto: "Un router/firewall publica en su red externa una batería de servidores web localizados en la red interna. ¿Cuál de las siguientes informaciones puede ser VERDADERA?", a: "El router abre un único puerto (el 80) en la red externa, que conectará a cada servidor web", b: "El router debe abrir un puerto distinto por cada servidor web interno", c: "El router debe abrir un puerto distinto por cada cliente en la red externa que se conecte a cualquier servidor web", d: "El router abre un puerto por cada servidor web publicado y otro por cada cliente conectado", correcta: "b" },
+    { id: 67, texto: "¿Qué característica no es apropiada para un servidor RADIUS?", a: "RADIUS es un servidor extensible y, por tanto, no cerrado", b: "La autenticación RADIUS utiliza el puerto TCP-1813", c: "Gestiona la autenticación y autorización de usuarios y servicios", d: "Utiliza el puerto UDP-1812", correcta: "b" },
+    { id: 68, texto: "Un sistema tiene configurado iptables correctamente, sin embargo, los paquetes no son capaces de enrutarse desde un interfaz de red a otro. ¿Qué debe hacer el administrador del sistema?", a: "Crear una ruta entre los dos interfaces de red", b: "Instalar netfilter", c: "Cambiar las reglas a la tabla FORWARD", d: "Editar el fichero /etc/sysctl.conf y añadir el parámetro net.ipv4.ip_forward=1", correcta: "d" },
+    { id: 69, texto: "Un sistema GNU/Linux con dos interfaces de red tiene configurado iptables correctamente, sin embargo, ningún paquete con IP distintas a las de propio equipo es capaz de enrutarse desde un interfaz de red a otro. ¿Qué debe hacer el administrador del sistema?", a: "Utilizar un único interfaz red", b: "Instalar netfilter", c: "Cambiar las reglas a la tabla MANGLE", d: "Editar el fichero /etc/sysctl.conf y añadir el parámetro net.ipv4.ip_forward=1", correcta: "d" },
+    { id: 70, texto: "Un sistema de alta disponibilidad tolerante a fallos por replicación:", a: "Tiene varias instancias idénticas del servicio y las peticiones se hacen a todas ellas en paralelo", b: "Tiene varias instancias idénticas del servicio y las peticiones se hacen sólo a uno de ellos", c: "Tiene varias instancias idénticas del servicio y las peticiones se hacen indistintamente a uno de ellos", d: "Tiene varias instancias idénticas del servicio y las peticiones se hacen por orden cada vez a uno de ellos", correcta: "a" },
+    { id: 71, texto: "¿Qué modo RAID proporciona redundancia de datos mediante la distribución de la paridad en todos los discos y permite la recuperación de datos en caso de fallo de hasta dos discos?", a: "RAID 0", b: "RAID 1", c: "RAID 5", d: "RAID 6", correcta: "d" },
+    { id: 72, texto: "En sistemas Windows un volumen reflejado corresponde a qué nivel RAID.", a: "RAID 0", b: "RAID 6", c: "RAID 1", d: "RAID 5", correcta: "c" },
+    { id: 73, texto: "¿Cuáles de estas características NO supone una ventaja en los sistemas cluster?", a: "Alta disponibilidad", b: "Fácil backup", c: "Fácil Escalabilidad", d: "Alto rendimiento", correcta: "b" },
+    { id: 74, texto: "Un modelo de virtualización de escritorio ¿con qué característica tecnológica de las siguientes se corresponde?", a: "Abstrae un recurso individual, pero nunca un sistema completo", b: "Abstrae el perfil de un usuario", c: "Encapsula una utilidad", d: "Abstrae un sistema completo", correcta: "d" },
+    { id: 75, texto: "¿Qué técnica de virtualización utiliza una traducción binaria por software para simular plataformas completas para conseguir su objetivo?", a: "Virtualización nativa", b: "Virtualización a nivel de sistema operativo", c: "Para-virtualización", d: "Virtualización completa AxH", correcta: "d" },
+    { id: 76, texto: "¿Qué tecnología de virtualización permite ejecutar aplicaciones aisladas en el espacio de usuario de un sistema operativo anfitrión, compartiendo el mismo kernel?", a: "Virtualización completa", b: "Paravirtualización", c: "Virtualización mediante contenedores", d: "Virtualización de hardware asistida", correcta: "c" },
+    { id: 77, texto: "¿Cuál de los siguientes es un ejemplo común de software de hipervisor de Tipo 2?", a: "VMware ESXi", b: "Microsoft Hyper-V Server (en su modo Core)", c: "VirtualBox", d: "Citrix XenServer", correcta: "c" },
+    { id: 78, texto: "¿Cuál es la función principal de Kubernetes?", a: "Orquestar y administrar contenedores en entornos distribuido", b: "Controlar el acceso de usuarios mediante firewalls", c: "Gestionar redes físicas en centros de datos", d: "Monitorizar exclusivamente el uso de CPU y memoria en máquinas virtuales", correcta: "a" },
+    { id: 79, texto: "¿Qué función tiene un balanceador de carga en un sistema de alta disponibilidad?", a: "Evita el acceso de usuarios no autorizados", b: "Monitorea los procesos del sistema", c: "Distribuye el tráfico entre múltiples servidores", d: "Comprime datos para aumentar el rendimiento", correcta: "c" },
+    { id: 80, texto: "¿Qué escenario técnico de los que se describen a continuación es el menos propio para ser gestionado mediante balanceo de carga?", a: "Un firewall se replica sobre otro, pero cada uno es atendido por seguridad por un proveedor de Internet distinto", b: "Una granja de servidores proporciona comercio electrónico a una tienda virtual visitada por abundantes potenciales compradores", c: "Un firewall es replicado en otro para atender las peticiones de los usuarios como reparto de carga, siendo que cada firewall utiliza como salida un proveedor de Internet distinto", d: "Un servidor de correo electrónico no es capaz de soportar tantos buzones como se requiren y se crea un cluster para aliviarle", correcta: "a" },
+    { id: 81, texto: "La protección de las personas físicas en relación con el tratamiento de datos personales es un derecho fundamental protegido por el artículo 18.4 de la Constitución española, el cual dice textualmente:", a: "La ley limitará el uso de la información para garantizar el honor y la intimidad personal y familiar de los ciudadanos y el pleno ejercicio de sus derechos", b: "La ley limitará el uso de la informática para garantizar el honor y la privacidad personal y familiar de los ciudadanos y el pleno ejercicio de sus derechos", c: "La ley limitará el uso de la informática para garantizar el honor y la intimidad personal y familiar de los ciudadanos y el pleno ejercicio de sus derechos", d: "La ley limitará el uso de la información para garantizar el honor y la privacidad personal y familiar de los ciudadanos y el pleno ejercicio de sus derechos", correcta: "c" },
+    { id: 82, texto: "¿Cuál es la edad mínima para poder prestar el consentimiento para el tratamiento de sus datos personales en el ámbito de los servicios de la sociedad de la información?", a: "12 años", b: "14 años", c: "16 años", d: "18 años", correcta: "b" },
+    { id: 83, texto: "Según la Ley Orgánica de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD) cual de los siguientes datos se considera especialmente protegidos:", a: "Datos sanitarios", b: "Dirección y correo electrónico", c: "Fecha de nacimiento y DNI", d: "Datos económicos", correcta: "a" },
+    { id: 84, texto: "La Ley Orgánica de protección de datos (LOPD) afecta a ficheros en soporte:", a: "Solo Electrónico", b: "Cualquier soporte", c: "Papel", d: "De audio", correcta: "b" },
+    { id: 85, texto: "La Ley Orgánica de protección de datos (LOPD) afecta a ficheros en soporte:", a: "Solo Electrónico", b: "Cualquier soporte", c: "Cualquier formato digital", d: "De imagen", correcta: "b" },
+    { id: 86, texto: "¿Cuál es la norma ISO que trata sobre la seguridad informática?", a: "ISO 140001", b: "IEEE 803.2", c: "ISO 27001", d: "ISO 9000", correcta: "c" },
+    { id: 87, texto: "¿Cuál de los siguientes servicios no es un proveedor de servicios de computación en la nube?", a: "Microsoft Azure", b: "Amazon Web Service (AWS)", c: "Oracle VM Virtualbox", d: "Google Cloud Platform", correcta: "c" },
+    { id: 88, texto: "¿Cuál de los siguientes servicios no es un proveedor de servicios de computación en la nube?", a: "Microsoft Azure", b: "Amazon WS", c: "Oracle VM Virtualbox", d: "Google Cloud", correcta: "c" },
+    { id: 89, texto: "¿Cuál es la diferencia entre una intrusión interna y una externa?", a: "Las externas ocurren fuera del horario laboral", b: "Las internas provienen de usuarios autorizados", c: "Las externas son más peligrosas", d: "Las internas solo afectan a hardware", correcta: "b" },
+    { id: 90, texto: "Un administrador desea instalar un sistema de filtrado de contenidos con autenticación de usuarios utilizando software libre como Squid y DansGuardian. ¿Qué configuración debe diseñar para conseguir su objetivo?", a: "Cliente-Squid-DansGuardian-Servidor", b: "Cliente-DansGuardian-Squid-DansGuardian-Servidor", c: "Cliente-DansGuardian-Squid-Servidor", d: "Cliente-Squid-DansGuardian-Squid-Servidor", correcta: "c" },
+    { id: 91, texto: "¿Cuáles de estas medidas o salvaguardias NO forman parte de la seguridad activa?", a: "Cortafuegos", b: "Discos espejos", c: "Encriptación de datos", d: "Uso de contraseñas seguras", correcta: "b" },
+    { id: 92, texto: "¿Cuál de las siguientes vulnerabilidades queda reflejada en el nivel de enlace de la capa OSI?", a: "Ataque sobre las líneas de cableado", b: "Escucha de tramas con un sniffer", c: "Suplantación de una dirección IP", d: "Publicación de puertos sobre los que se ofrecen servicios", correcta: "b" },
+    { id: 93, texto: "Un administrador desea instalar un sistema de filtrado de contenidos con autenticación de usuarios utilizando software libre como Squid y DansGuardian. ¿Qué configuración debe diseñar para conseguir su objetivo?", a: "Cliente-Squid-DansGuardian-Servidor", b: "Cliente-DansGuardian-Squid-DansGuardian-Servidor", c: "Cliente-DansGuardian-Squid-Servidor", d: "Cliente-Squid-DansGuardian-Squid-Servidor", correcta: "c" },
+    { id: 94, texto: "¿Cuáles de las siguientes afirmaciones relativas a los proxies transparentes es FALSA?", a: "Actúan como puerta por defecto del servicio al que sirven", b: "En el cliente hay que configurar el puerto de escucha del proxy", c: "Presentan problemas con la autenticación de los usuarios", d: "La petición se envía al proxy mediante una ruta creada en el cliente", correcta: "b" },
+    { id: 95, texto: "¿Que implicarían las instrucciones?\nacl cosa1 time 08:00-14:00\nacl cosa2 urlpath_regex .zip$;\nhttp_access allow cosa1 !cosa2", a: "Impide el acceso de ocho a dos, salvo si descargamos zip", b: "Impide el acceso de ocho a dos, para descargar zip", c: "Permite el acceso de ocho a dos, pero no descargar zip", d: "Permite el acceso de ocho a dos, y la descarga de zip", correcta: "c" },
+    { id: 96, texto: "¿Cuál de los siguientes servicios no es un proveedor de servicios de computación en la nube?", a: "Microsoft Azure", b: "Amazon Web Service (AWS)", c: "Oracle VM Virtualbox", d: "Google Cloud Platform", correcta: "c" },
+    { id: 97, texto: "¿Qué plataforma podemos utilizar para gestionar y automatizar el manejo de contenedores docker?", a: "Vmware workstation", b: "VirtualBox", c: "Kubernetes", d: "Oracle docker file", correcta: "c" },
+    { id: 98, texto: "¿Qué plataforma podemos utilizar para gestionar y automatizar el manejo de contenedores docker?", a: "Vmware workstation", b: "VirtualBox", c: "Kubernetes", d: "Oracle docker file", correcta: "c" },
+    { id: 99, texto: "La Ley Orgánica de protección de datos (LOPD) afecta a ficheros en soporte:", a: "Solo Electrónico", b: "Cualquier soporte", c: "Papel", d: "De audio", correcta: "b" },
+    { id: 100, texto: "¿Cuál es la norma ISO que trata sobre la seguridad informática?:", a: "ISO 140001", b: "IEEE 803.2", c: "ISO 27002", d: "ISO 9000", correcta: "c" }
+];
+
+    // ============================================
+    // PREGUNTAS DE SERVICIOS EN RED (selección de 70 mejores)
     // ============================================
     const preguntasServicios = [
-        { id: 1, texto: "¿Cuál es el uso del protocolo RDP?", a: "Sirve para realizar conexiones a escritorios remotos", b: "Protocolo de actualización de repositorios en GNU/Linux", c: "Protocolo de envío de archivos cifrados de forma remota", d: "Todas son falsas", correcta: "a" },
-        { id: 2, texto: "¿Qué puerto UDP utiliza comúnmente el servicio DNS para las consultas?", a: "Puerto 21", b: "Puerto 25", c: "Puerto 53", d: "Puerto 80", correcta: "c" },
-        { id: 3, texto: "El protocolo DHCP", a: "Permite la configuración dinámica de direcciones MAC", b: "Sirve para compartir discos o impresoras", c: "Es un protocolo de nivel de red", d: "Utiliza el protocolo de transporte UDP", correcta: "d" },
-        { id: 4, texto: "¿Qué se entiende por 'propagación del DNS'?", a: "El tiempo que el navegador en obtener una respuesta del servidor DNS", b: "El proceso por el cual las actualizaciones de los registros DNS se distribuyen a través de los diferentes servidores DNS en Internet", c: "La medida de la fiabilidad de un servidor DNS", d: "El protocolo utilizado para transferir información de zonas entre servidores DNS", correcta: "b" },
-        { id: 5, texto: "¿Qué utilidad NO se puede utilizar en GNU/Linux para realizar una consulta al DNS?", a: "ifconfig", b: "nslookup", c: "dig", d: "host", correcta: "a" },
-        { id: 6, texto: "Si la dirección IP de un equipo corresponde a la IP 169.254.70.23 podemos deducir que:", a: "El equipo tiene la IP de forma estática o manual", b: "El equipo tiene la IP de forma dinámica pero sin DHCP / El equipo no tiene la IP válida", c: "Un servidor DHCP le ha asignado de forma dinámica la IP", d: "Seguramente no tendrá acceso a Internet", correcta: "b" },
-        { id: 7, texto: "En la configuración dinámica de IPv6 sin estado (SLAAC)", a: "La IP es asignada por el router", b: "La IP es asignada por el servidor DHCPv6", c: "El ID de red es asignada por el router", d: "La IP se asigna mediante ARP", correcta: "c" },
-        { id: 8, texto: "En las zonas de resolución inversa en un DNS ¿cuál es tipo de registro más habitual?", a: "CNAME", b: "PTR", c: "A", d: "MX", correcta: "b" },
-        { id: 9, texto: "La resolución inversa realizada por un servidor DNS", a: "Consiste en dada una IP obtener el nombre de la máquina", b: "Consiste en dada un nombre de una máquina obtener su IP", c: "Consiste en dada un usuario obtener sus permisos", d: "Consiste en dado un paquete IP saber a qué subred pertenece", correcta: "a" },
-        { id: 10, texto: "¿Cuál de los siguientes servicios de conexión remota se considera más seguro?", a: "rlogin", b: "telnet", c: "SSH", d: "rsh", correcta: "c" },
-        { id: 11, texto: "¿Cuál de los siguientes servicios de conexión remota se considera más seguro?", a: "rlogin", b: "telnet", c: "ssh", d: "vslogin", correcta: "c" },
-        { id: 12, texto: "¿Cuál de los siguientes servicios de conexión remota se considera más seguro?", a: "ssh", b: "telnet", c: "rlogin", d: "vslogin", correcta: "a" },
-        { id: 13, texto: "¿Cómo podemos conocer quién es el propietario de una IP pública?", a: "Consultando al DHCP", b: "Consultando la BD de whois", c: "Consultando el registro MX asociado al dominio", d: "Capturando el tráfico mediante wireshark", correcta: "b" },
-        { id: 14, texto: "¿Cómo podemos conocer quién es el propietario de una IP pública?", a: "Consultando al DHCP", b: "Consultando al servicio whois", c: "Consultando el registro MX asociado al dominio", d: "Capturando el tráfico mediante wireshark", correcta: "b" },
-        { id: 15, texto: "¿Cuál de los siguientes servicios de conexión remota no suele necesitar cambios en el cortafuegos y/o routers?", a: "Conexión vía SSH", b: "Teamviewer", c: "Escritorio remoto de Windows", d: "WC free", correcta: "b" },
-        { id: 16, texto: "¿El servicio VNC qué puerto utiliza comúnmente?", a: "128", b: "80", c: "22", d: "5900", correcta: "d" },
-        { id: 17, texto: "¿Cómo podemos conectarnos por SSH sin utilizar contraseña?", a: "Utilizando autentificación mediante claves públicas", b: "Utilizando autentificación mediante password compartidas", c: "No es posible en este protocolo", d: "Utilizando telnet sobre ssh en modo abierto", correcta: "a" },
-        { id: 18, texto: "¿En qué registro del DNS se guarda el tiempo de actualización entre servidores primarios y secundarios de una zona?", a: "PTR", b: "SRV", c: "SOA", d: "NS", correcta: "c" },
-        { id: 19, texto: "En GNU/Linux las direcciones de los servidores DNS se almacenan en", a: "En la base de datos de /etc/dns.txt", b: "No se guardan, se configuran para cada conexión", c: "El registro del usuario /home/users/net.log", d: "En el fichero de texto /etc/resolv.conf", correcta: "d" },
-        { id: 20, texto: "En GNU/Linux las direcciones de los servidores DNS se almacenan en", a: "En la base de datos de /etc/hosts", b: "No se guardan, se configuran para cada conexión", c: "El registro del usuario /home/users/net.log", d: "En el fichero de texto /etc/resolv.conf", correcta: "d" },
-        { id: 21, texto: "En el servicio DHCP un intervalo de exclusión indica:", a: "La lista de IP que ya hemos asignado de un ámbito", b: "La lista de IP que no podemos asignar de un ámbito", c: "El nombre del usuario excluido de usar el servicio WC", d: "El nombre de los equipos que no tienen acceso a Internet", correcta: "b" },
-        { id: 22, texto: "¿Qué es un 'Agente de retransmisión DHCP' (DHCP Relay)?", a: "Un servidor DHCP que transmite las solicitudes de clientes DHCP entre diferentes subredes", b: "Un cliente que reenvía las respuestas DHCP a los servidores de la red local", c: "Un dispositivo que distribuye las concesiones de IP entre varios servidores DHCP", d: "Un componente que guarda los logs del servidor DHCP para auditoría", correcta: "a" },
-        { id: 23, texto: "¿Para qué sirve el servicio VNC?", a: "Para el desarrollo de páginas web seguras virtuales por red", b: "Para chequear la configuración de un servidor DNS", c: "Para chequear la información del servicio DHCP", d: "Para realizar conexiones remotas gráficas entre equipos", correcta: "d" },
-        { id: 24, texto: "El servicio DNS", a: "No es utilizado por los navegadores tipo Firefox", b: "Resuelve las consultas sobre los usuarios conectados al sistema", c: "Permite asignar varios nombres a una misma IP", d: "Permite la asignación dinámica de IP en los equipos de una LAN", correcta: "c" },
-        { id: 25, texto: "El servicio DNS ¿qué registro está asociado a las IP de IPv6 de un dominio?", a: "A6", b: "AAAA", c: "Av6", d: "PTR", correcta: "b" },
-        { id: 26, texto: "Un servidor DNS", a: "Puede ser esclavo y maestro para la misma zona", b: "Puede no ser ni maestro ni esclavo, sólo servidor caché", c: "Puede ser esclavo para varias zonas pero maestro sólo puede ser de una zona", d: "Puede ser maestro para varias zonas pero esclavo sólo puede ser de una zona", correcta: "b" },
-        { id: 27, texto: "¿Cuál de los siguientes protocolos de VoIP soporta trunking (múltiples sesiones dentro de un mismo flujo de datos)?", a: "SIP", b: "H 323", c: "IAX2", d: "TCP", correcta: "c" },
-        { id: 28, texto: "¿Para qué se utiliza el protocolo NNTP?", a: "Para servicios de mensajería instantánea", b: "Para el envío de noticias (news)", c: "Para el envío de canales RSS", d: "Para páginas web en XML no cifradas", correcta: "b" },
-        { id: 29, texto: "¿Qué es el 'Time to Live' (TTL) en el contexto de DNS?", a: "La cantidad de tiempo que un servidor DNS guarda en caché una consulta antes de volver a solicitarla", b: "El tiempo que tarda un servidor DNS en resolver una consulta", c: "El tiempo que un registro DNS se considera válido para realizar la resolución", d: "La cantidad de tiempo que un dominio está registrado en Internet", correcta: "a" },
-        { id: 30, texto: "Sobre VoIP, ¿cuál es el valor máximo de retardo para ofrecer una transmisión de voz con suficiente calidad?", a: "10 milisegundos", b: "300 milisegundos", c: "200 nanosegundos", d: "500 segundos", correcta: "b" },
-        { id: 31, texto: "Sobre VoIP, ¿cuál es el valor máximo de retardo para ofrecer una transmisión de voz con suficiente calidad?", a: "10 milisegundos", b: "150 milisegundos", c: "200 nanosegundos", d: "500 segundos", correcta: "b" },
-        { id: 32, texto: "El servicio de transferencia de ficheros sencillo TFTP", a: "Utiliza el protocolo de transporte UDP", b: "Utiliza el protocolo de transporte IP", c: "Utiliza el protocolo de transporte TCP", d: "Utiliza el protocolo de transporte FTP", correcta: "a" },
-        { id: 33, texto: "¿Cuál de los siguientes CODECS utilizados en VoIP precisa de un mayor ancho de banda?", a: "GSM", b: "G729", c: "H323", d: "G.711", correcta: "d" },
-        { id: 34, texto: "¿Cuál de los siguientes CODECS utilizados en VoIP precisa de un mayor ancho de banda?", a: "GSM", b: "G.729", c: "H323", d: "G.711", correcta: "d" },
-        { id: 35, texto: "¿Qué protocolo de transporte es más utilizado en la telefonía IP?", a: "Utiliza el protocolo UDP", b: "Utiliza el protocolo TCP", c: "Utiliza el protocolo IPV", d: "Utiliza el protocolo ICMP", correcta: "a" },
-        { id: 36, texto: "¿En un programa escrito en JavaScript quién interpreta las órdenes?", a: "El servidor http Apache", b: "El módulo scripting de TCP", c: "La máquina virtual java", d: "El navegador del equipo del usuario", correcta: "d" },
-        { id: 37, texto: "¿En una aplicación web escrita en PHP quién interpreta las órdenes?", a: "El servidor http Apache", b: "El módulo scripting de TCP", c: "La máquina virtual java", d: "El navegador del equipo del usuario", correcta: "a" },
-        { id: 38, texto: "¿Cuál es el formato completo de una URL?", a: "Protocolo://servidor//usuario/contraseña/nombre del recurso", b: "Protocolo://contraseña:usuario@servidor/camino/nombre del recurso", c: "Protocolo://usuario:contraseña@servidor/camino/nombre del recurso", d: "Protocolo://servicio@camino/nombre del recurso.html", correcta: "c" },
-        { id: 39, texto: "¿Qué parte de una URL (Uniform Resource Locator) identifica el recurso específico que se solicita en un servidor web?", a: "El protocolo (ej: http)", b: "El nombre de dominio (ej: www.ejemplo.com)", c: "La ruta (path) (ej: /pagina.html)", d: "El puerto (ej: :80)", correcta: "c" },
-        { id: 40, texto: "¿Para qué sirve el archivo .htaccess en un servidor web Apache?", a: "Para controlar el acceso a un directorio web", b: "Para ofrecer tolerancia a fallos", c: "Para acceder por MySQL a un gestor de contenidos", d: "Para controlar el tamaño del fichero de (incompleto)", correcta: "a" },
-        { id: 41, texto: "¿Para qué sirve el archivo .htaccess en un servidor web Apache?", a: "Para controlar el acceso a un directorio web", b: "Para ofrecer tolerancia a fallos", c: "Para acceder por MySQL a un gestor de contenidos", d: "Para controlar el tamaño del fichero de accesos web", correcta: "a" },
-        { id: 42, texto: "¿Para qué se utilizan los servidores virtuales en un servidor web?", a: "Para establecer distintos directorios web a cada usuario local", b: "Para poder alojar páginas web de distintos dominios en una misma máquina", c: "Para generar consultas virtuales a bases de datos remotas", d: "Para simular conexiones a servidores proxy inversos", correcta: "b" },
-        { id: 43, texto: "¿Qué es un CMS?", a: "Un sistema de mensajería conversacional", b: "Un sistema de control de llamadas en VoIP", c: "Un sistema gestor de contenidos web", d: "Un sistema de mantenimiento de computadoras", correcta: "c" },
-        { id: 44, texto: "¿Cuál de estas aplicaciones no es un CMS?", a: "WordPress", b: "Drupal", c: "Typescript", d: "Joomla", correcta: "c" },
-        { id: 45, texto: "Respecto a puertos y servicios, ¿qué afirmación es correcta?", a: "El servicio POP3 utiliza el puerto 110", b: "El HTTPS utiliza el mismo puerto que el HTTP", c: "El protocolo IMAP utiliza el puerto 210", d: "El protocolo NNTP utiliza el puerto 125", correcta: "a" },
-        { id: 46, texto: "Respecto a puertos y servicios, ¿qué afirmación es correcta?", a: "El servicio POP3 utiliza el puerto 210", b: "El HTTPS utiliza el mismo puerto que el HTTP", c: "El protocolo IMAP utiliza el puerto 210", d: "El protocolo SMTP utiliza el puerto 25", correcta: "d" },
-        { id: 47, texto: "¿Qué es una lista de correo?", a: "Una dirección de correo especial asociada a un conjunto de direcciones", b: "La agenda de direcciones de una cuenta de correo de un usuario", c: "Un hacker femenino que descifra mensajes de SMTP", d: "Un conjunto de mensajes pendientes de confirmación asociado a un buzón", correcta: "a" },
-        { id: 48, texto: "¿Cómo se configura un servidor web para que utilice HTTPS?", a: "Instalando un certificado SSL/TLS y configurando el servidor para usarlo", b: "Configurando el servidor para redirigir automáticamente las conexiones HTTP a HTTPS", c: "Modificando el puerto 80 a 443 en la configuración del servidor", d: "Instalando un firewall para bloquear conexiones HTTP", correcta: "a" },
-        { id: 49, texto: "¿Mediante qué petición HTTP podemos enviar un fichero mediante un formulario?", a: "Utilizando el método GET", b: "Utilizando el método FTP", c: "Utilizando el método POST", d: "Utilizando el método HEAD", correcta: "c" },
-        { id: 50, texto: "¿Cuál de las siguientes afirmaciones sobre el protocolo IMAP es verdadera?", a: "Ofrece menos funcionalidades que el protocolo POP3", b: "NO soporta encriptación mediante SSL", c: "Permite que varios usuarios trabajen simultáneamente sobre un mismo buzón", d: "Permite varias conexiones a servidores de correo virtuales", correcta: "c" },
-        { id: 51, texto: "¿Para qué puede ser útil utilizar un adaptador ATA?", a: "Para conectar softphone a redes de telefonía convencional", b: "Para crear túneles VPN con servidor de VoIP en ATM", c: "Para conectar teléfonos convencionales a redes de VoIP", d: "Para crear VLAN con autentificación en las conexiones de VoIP", correcta: "c" },
-        { id: 52, texto: "¿Qué solución de hosting nos suele ofrecer más flexibilidad?", a: "Contratar un hosting gratuito", b: "Contratar un servidor virtual", c: "Contratar un servidor dedicado", d: "Contratar un servicio de cloud computing", correcta: "d" },
-        { id: 53, texto: "¿Qué es un canal RSS?", a: "Un sistema de conexión segura remota mediante un servicio VPN", b: "Una versión más segura del protocolo SSL", c: "Un documento en XML con las noticias generadas de un portal", d: "Un registro seguro de correo electrónico restringido", correcta: "c" },
-        { id: 54, texto: "¿Qué código de error HTTP indica un fallo interno en el servidor?", a: "404", b: "500", c: "200", d: "301", correcta: "b" },
-        { id: 55, texto: "¿Cuáles son los tres protocolos de señalización más importantes en VoIP?", a: "SIP, H 323, IAX2", b: "VIP 25, H 323, NAT", c: "RTP, RTCP, SAP", d: "NIC, CAS, SIO", correcta: "a" },
-        { id: 56, texto: "¿Qué marcas HTML son más importantes para que un sitio web sea indexado en la base de datos de los buscadores?", a: "Marcas <code> </code>", b: "Meta keywords y description", c: "Marcas <?php> <?>", d: "Meta author y generator", correcta: "b" },
-        { id: 57, texto: "¿Qué tres aspectos hay que tener en cuenta en un CODEC para VoIP?", a: "El ancho de banda, la calidad y los requisitos de computación", b: "La duración del mensaje, la latencia interna y el tipo de barrera NAT", c: "El ancho de banda, nivel de señal y el tipo de barrera NAT", d: "La duración del mensaje, la versión de Asterisk y la longitud de onda", correcta: "a" },
-        { id: 58, texto: "Mi querido profesor me ha enviado un correo cifrado utilizando mi clave pública que previamente le indiqué, ¿con qué clave descifraré el mensaje que me ha enviado?", a: "Con mi clave pública", b: "Con mi clave privada", c: "Con la clave pública del profesor", d: "Con la clave privada del profesor", correcta: "b" },
-        { id: 59, texto: "Mi querido profesor me ha enviado un correo cifrado utilizando su clave privada, ¿con qué clave descifraré el mensaje que me ha enviado?", a: "Con mi clave pública", b: "Con mi clave privada", c: "Con la clave pública del profesor", d: "Con la clave privada del profesor", correcta: "c" },
-        { id: 60, texto: "¿Qué es el servicio IVR que ofrecen algunas centralitas de VoIP?", a: "Un servicio de grabación de voz para atención telefónica", b: "Un servicio de respuesta interactiva mediante locuciones de voz", c: "Un servicio de buzón de contestador de mensajes", d: "Un servicio de Interrupción virtual de llamadas remotas", correcta: "b" },
-        { id: 61, texto: "¿Cuáles son los principales riesgos asociados al correo electrónico?", a: "virus, spam, hoax", b: "spam, testing, DoS", c: "virus, spam, phishing", d: "hoax, virus, phishing", correcta: "c" },
-        { id: 62, texto: "¿Para qué sirven los registros SPF en un dominio DNS?", a: "Para registrar las consultas", b: "Para balanceo de carga de servidores", c: "Protegerse frente a spoofing y phishing", d: "Para fijar el tiempo medio de respuesta", correcta: "c" },
-        { id: 63, texto: "¿Cuál de las siguientes aplicaciones podemos instalar como servidor FTP en un sistema GNU/Linux?", a: "Filemanager", b: "Vsfstd", c: "Freeftps", d: "Openftps", correcta: "b" },
-        { id: 64, texto: "¿Con qué orden podemos bajar todos los ficheros de tipo pdf desde un servidor FTP?", a: "upload *.pdf", b: "mget *.pdf", c: "mput *.pdf", d: "open *.pdf", correcta: "b" },
-        { id: 65, texto: "¿Con qué orden podemos subir varios ficheros de tipo pdf hacia un servidor FTP?", a: "upload *.pdf", b: "mget *.pdf", c: "mput *.pdf", d: "open *.pdf", correcta: "c" },
-        { id: 66, texto: "¿Qué puerto se utiliza cuando transferimos ficheros mediante SFTP?", a: "21", b: "22", c: "443", d: "8080", correcta: "b" },
-        { id: 67, texto: "¿Qué protocolo proporciona una forma segura de transferencia de archivos a través de una conexión SSH cifrada?", a: "HTTPS", b: "TFTP", c: "SFTP", d: "FTPS", correcta: "c" },
-        { id: 68, texto: "¿Cuál de las siguientes aplicaciones NO corresponde a un servidor web?", a: "IIS", b: "Nginx", c: "Lighttpd", d: "Wget", correcta: "d" },
-        { id: 69, texto: "¿Qué formato de imágenes soporta el canal alfa (transparencia)?", a: "jpg", b: "png", c: "mp3", d: "bmp", correcta: "b" },
-        { id: 70, texto: "¿Qué formato de imágenes soporta el canal alfa (transparencia)?", a: "jpg", b: "png", c: "mp3", d: "bmp", correcta: "b" },
-        { id: 71, texto: "¿Qué formato de imágenes soporta el canal alfa (transparencia)?", a: "png", b: "jpg", c: "gif", d: "bmp", correcta: "a" },
-        { id: 72, texto: "¿Cuál de los siguientes formatos no corresponde a un formato de video?", a: "avi", b: "mkv", c: "mp3", d: "wmv", correcta: "c" },
-        { id: 73, texto: "¿Cuál de los siguientes formatos no corresponde a un formato de video?", a: "swp", b: "mkv", c: "avi", d: "wmv", correcta: "a" },
-        { id: 74, texto: "¿Cuál es el software de Microsoft que actúa como servidor de correo?", a: "Internet Information Server (IIS)", b: "Exchange Server", c: "Microsoft Mail Server (MMS)", d: "Office Mail Server", correcta: "b" },
-        { id: 75, texto: "¿Cuál es la función principal de una centralita VoIP (PBX IP)?", a: "Proporcionar acceso a Internet a los usuarios de una red local", b: "Gestionar y enrutar las llamadas telefónicas sobre infraestructura IP", c: "Convertir señales digitales de voz a señales analógicas", d: "Asegurar la red contra intrusiones externas", correcta: "b" },
-        { id: 76, texto: "Indicar cuál es una aplicación de servidor de correo que se suele instalar en equipos Linux:", a: "Postfix", b: "Exchange Server", c: "Bind9", d: "Outlook", correcta: "a" },
-        { id: 77, texto: "Un servidor seguro para SMTPS escucha en el puerto:", a: "TCP 25", b: "UDP 25", c: "TCP 587", d: "TCP 8080", correcta: "c" },
-        { id: 78, texto: "¿Cuál es el propósito principal de las cookies en la navegación web?", a: "Almacenar información sobre la sesión del usuario en el servidor", b: "Rastrear la ubicación física del usuario", c: "Almacenar información sobre el usuario en el navegador para recordar preferencias o actividad", d: "Proteger la comunicación mediante cifrado", correcta: "c" },
-        { id: 79, texto: "¿Cuáles son los dos modos principales de transferencia de archivos que soporta el protocolo FTP?", a: "ASCII y binario", b: "Cifrado y no cifrado", c: "Comprimido y sin comprimir", d: "Local y remoto", correcta: "a" },
-        { id: 80, texto: "¿Qué se puede configurar en un servidor FTP para limitar la cantidad de datos que un usuario puede almacenar?", a: "Fijando los permisos de directorios", b: "Mediante cuotas de disco", c: "Fijando límites de conexión", d: "Definiendo servidores virtuales por usuario", correcta: "b" },
-        { id: 81, texto: "¿Qué componente del servicio de correo electrónico es responsable de entregar el correo al buzón del usuario?", a: "MTA (Mail Transport Agent)", b: "MDA (Mail Delivery Agent)", c: "MUA (Mail User Agent)", d: "SMTP (Simple Mail Transfer Protocol)", correcta: "b" },
-        { id: 82, texto: "¿Qué es un servidor de correo 'relay' y para qué se utiliza?", a: "Un servidor que almacena y organiza los correos electrónicos para su envío posterior", b: "Un servidor que retransmite los correos electrónicos entre diferentes dominios o servidores", c: "Un servidor que filtra y elimina el spam de los correos entrantes", d: "Un servidor dedicado exclusivamente a almacenar los mensajes de correo en la red", correcta: "b" },
-        { id: 83, texto: "¿Cuál de los siguientes mecanismos se utiliza para identificar y bloquear correos electrónicos de spam basándose en la dirección IP del servidor remitente?", a: "SPF (Sender Policy Framework)", b: "DKIM (DomainKeys Identified Mail)", c: "DMARC (Domain-based Message Authentication, Reporting and Conformance)", d: "RBL (Real-time Blackhole List)", correcta: "d" },
-        { id: 84, texto: "¿Qué herramienta NO es utilizada para realizar videoconferencias en línea?", a: "Jitsi", b: "Microsoft Teams", c: "Zoom", d: "Google Teams", correcta: "d" },
-        { id: 85, texto: "¿Qué es el 'streaming'?", a: "Un tipo de archivo de imagen comprimido", b: "La descarga completa de contenido multimedia antes de su reproducción", c: "La transmisión de contenido en tiempo real a través de internet", d: "Una técnica de compresión de vídeo", correcta: "c" },
-        { id: 86, texto: "¿Qué son los 'módulos' en Apache y cuál es su función principal?", a: "Archivos que contienen los directorios web", b: "Extensiones que añaden funcionalidades al servidor", c: "Herramientas para monitorizar el rendimiento", d: "Registros de actividad del servidor", correcta: "b" },
-        { id: 87, texto: "¿Qué parámetro permite que los usuarios suban archivos al servidor vsftpd?", a: "file_upload=YES", b: "write_enable=YES", c: "allow_put=YES", d: "upload_files=YES", correcta: "b" }
-    ];
+    { id: 1, texto: "¿Cuál es el uso del protocolo RDP?", a: "Sirve para realizar conexiones a escritorios remotos", b: "Protocolo de actualización de repositorios en GNU/Linux", c: "Protocolo de envío de archivos cifrados de forma remota", d: "Todas son falsas", correcta: "a" },
+    { id: 2, texto: "¿Qué puerto UDP utiliza comúnmente el servicio DNS para las consultas?", a: "Puerto 21", b: "Puerto 25", c: "Puerto 53", d: "Puerto 80", correcta: "c" },
+    { id: 3, texto: "El protocolo DHCP", a: "Permite la configuración dinámica de direcciones MAC", b: "Sirve para compartir discos o impresoras", c: "Es un protocolo de nivel de red", d: "Utiliza el protocolo de transporte UDP", correcta: "d" },
+    { id: 4, texto: "¿Qué se entiende por 'propagación del DNS'?", a: "El tiempo que el navegador en obtener una respuesta del servidor DNS", b: "El proceso por el cual las actualizaciones de los registros DNS se distribuyen a través de los diferentes servidores DNS en Internet", c: "La medida de la fiabilidad de un servidor DNS", d: "El protocolo utilizado para transferir información de zonas entre servidores DNS", correcta: "b" },
+    { id: 5, texto: "¿Qué utilidad NO se puede utilizar en GNU/Linux para realizar una consulta al DNS?", a: "ifconfig", b: "nslookup", c: "dig", d: "host", correcta: "a" },
+    { id: 6, texto: "Si la dirección IP de un equipo corresponde a la IP 169.254.70.23 podemos deducir que:", a: "El equipo tiene la IP de forma estática o manual", b: "El equipo tiene la IP de forma dinámica pero sin DHCP / El equipo no tiene la IP válida", c: "Un servidor DHCP le ha asignado de forma dinámica la IP", d: "Seguramente no tendrá acceso a Internet", correcta: "b" },
+    { id: 7, texto: "En la configuración dinámica de IPv6 sin estado (SLAAC)", a: "La IP es asignada por el router", b: "La IP es asignada por el servidor DHCPv6", c: "El ID de red es asignada por el router", d: "La IP se asigna mediante ARP", correcta: "c" },
+    { id: 8, texto: "En las zonas de resolución inversa en un DNS ¿cuál es tipo de registro más habitual?", a: "CNAME", b: "PTR", c: "A", d: "MX", correcta: "b" },
+    { id: 9, texto: "La resolución inversa realizada por un servidor DNS", a: "Consiste en dada una IP obtener el nombre de la máquina", b: "Consiste en dada un nombre de una máquina obtener su IP", c: "Consiste en dada un usuario obtener sus permisos", d: "Consiste en dado un paquete IP saber a qué subred pertenece", correcta: "a" },
+    { id: 10, texto: "¿Cuál de los siguientes servicios de conexión remota se considera más seguro?", a: "rlogin", b: "telnet", c: "SSH", d: "rsh", correcta: "c" },
+    { id: 11, texto: "¿Cuál de los siguientes servicios de conexión remota se considera más seguro?", a: "rlogin", b: "telnet", c: "ssh", d: "vslogin", correcta: "c" },
+    { id: 12, texto: "¿Cuál de los siguientes servicios de conexión remota se considera más seguro?", a: "ssh", b: "telnet", c: "rlogin", d: "vslogin", correcta: "a" },
+    { id: 13, texto: "¿Cómo podemos conocer quién es el propietario de una IP pública?", a: "Consultando al DHCP", b: "Consultando la BD de whois", c: "Consultando el registro MX asociado al dominio", d: "Capturando el tráfico mediante wireshark", correcta: "b" },
+    { id: 14, texto: "¿Cómo podemos conocer quién es el propietario de una IP pública?", a: "Consultando al DHCP", b: "Consultando al servicio whois", c: "Consultando el registro MX asociado al dominio", d: "Capturando el tráfico mediante wireshark", correcta: "b" },
+    { id: 15, texto: "¿Cuál de los siguientes servicios de conexión remota no suele necesitar cambios en el cortafuegos y/o routers?", a: "Conexión vía SSH", b: "Teamviewer", c: "Escritorio remoto de Windows", d: "WC free", correcta: "b" },
+    { id: 16, texto: "¿El servicio VNC qué puerto utiliza comúnmente?", a: "128", b: "80", c: "22", d: "5900", correcta: "d" },
+    { id: 17, texto: "¿Cómo podemos conectarnos por SSH sin utilizar contraseña?", a: "Utilizando autentificación mediante claves públicas", b: "Utilizando autentificación mediante password compartidas", c: "No es posible en este protocolo", d: "Utilizando telnet sobre ssh en modo abierto", correcta: "a" },
+    { id: 18, texto: "¿En qué registro del DNS se guarda el tiempo de actualización entre servidores primarios y secundarios de una zona?", a: "PTR", b: "SRV", c: "SOA", d: "NS", correcta: "c" },
+    { id: 19, texto: "En GNU/Linux las direcciones de los servidores DNS se almacenan en", a: "En la base de datos de /etc/dns.txt", b: "No se guardan, se configuran para cada conexión", c: "El registro del usuario /home/users/net.log", d: "En el fichero de texto /etc/resolv.conf", correcta: "d" },
+    { id: 20, texto: "En GNU/Linux las direcciones de los servidores DNS se almacenan en", a: "En la base de datos de /etc/hosts", b: "No se guardan, se configuran para cada conexión", c: "El registro del usuario /home/users/net.log", d: "En el fichero de texto /etc/resolv.conf", correcta: "d" },
+    { id: 21, texto: "En el servicio DHCP un intervalo de exclusión indica:", a: "La lista de IP que ya hemos asignado de un ámbito", b: "La lista de IP que no podemos asignar de un ámbito", c: "El nombre del usuario excluido de usar el servicio WC", d: "El nombre de los equipos que no tienen acceso a Internet", correcta: "b" },
+    { id: 22, texto: "¿Qué es un 'Agente de retransmisión DHCP' (DHCP Relay)?", a: "Un servidor DHCP que transmite las solicitudes de clientes DHCP entre diferentes subredes", b: "Un cliente que reenvía las respuestas DHCP a los servidores de la red local", c: "Un dispositivo que distribuye las concesiones de IP entre varios servidores DHCP", d: "Un componente que guarda los logs del servidor DHCP para auditoría", correcta: "a" },
+    { id: 23, texto: "¿Para qué sirve el servicio VNC?", a: "Para el desarrollo de páginas web seguras virtuales por red", b: "Para chequear la configuración de un servidor DNS", c: "Para chequear la información del servicio DHCP", d: "Para realizar conexiones remotas gráficas entre equipos", correcta: "d" },
+    { id: 24, texto: "El servicio DNS", a: "No es utilizado por los navegadores tipo Firefox", b: "Resuelve las consultas sobre los usuarios conectados al sistema", c: "Permite asignar varios nombres a una misma IP", d: "Permite la asignación dinámica de IP en los equipos de una LAN", correcta: "c" },
+    { id: 25, texto: "El servicio DNS ¿qué registro está asociado a las IP de IPv6 de un dominio?", a: "A6", b: "AAAA", c: "Av6", d: "PTR", correcta: "b" },
+    { id: 26, texto: "Un servidor DNS", a: "Puede ser esclavo y maestro para la misma zona", b: "Puede no ser ni maestro ni esclavo, sólo servidor caché", c: "Puede ser esclavo para varias zonas pero maestro sólo puede ser de una zona", d: "Puede ser maestro para varias zonas pero esclavo sólo puede ser de una zona", correcta: "b" },
+    { id: 27, texto: "¿Cuál de los siguientes protocolos de VoIP soporta trunking (múltiples sesiones dentro de un mismo flujo de datos)?", a: "SIP", b: "H 323", c: "IAX2", d: "TCP", correcta: "c" },
+    { id: 28, texto: "¿Para qué se utiliza el protocolo NNTP?", a: "Para servicios de mensajería instantánea", b: "Para el envío de noticias (news)", c: "Para el envío de canales RSS", d: "Para páginas web en XML no cifradas", correcta: "b" },
+    { id: 29, texto: "¿Qué es el 'Time to Live' (TTL) en el contexto de DNS?", a: "La cantidad de tiempo que un servidor DNS guarda en caché una consulta antes de volver a solicitarla", b: "El tiempo que tarda un servidor DNS en resolver una consulta", c: "El tiempo que un registro DNS se considera válido para realizar la resolución", d: "La cantidad de tiempo que un dominio está registrado en Internet", correcta: "a" },
+    { id: 30, texto: "Sobre VoIP, ¿cuál es el valor máximo de retardo para ofrecer una transmisión de voz con suficiente calidad?", a: "10 milisegundos", b: "300 milisegundos", c: "200 nanosegundos", d: "500 segundos", correcta: "b" },
+    { id: 31, texto: "Sobre VoIP, ¿cuál es el valor máximo de retardo para ofrecer una transmisión de voz con suficiente calidad?", a: "10 milisegundos", b: "150 milisegundos", c: "200 nanosegundos", d: "500 segundos", correcta: "b" },
+    { id: 32, texto: "El servicio de transferencia de ficheros sencillo TFTP", a: "Utiliza el protocolo de transporte UDP", b: "Utiliza el protocolo de transporte IP", c: "Utiliza el protocolo de transporte TCP", d: "Utiliza el protocolo de transporte FTP", correcta: "a" },
+    { id: 33, texto: "¿Cuál de los siguientes CODECS utilizados en VoIP precisa de un mayor ancho de banda?", a: "GSM", b: "G729", c: "H323", d: "G.711", correcta: "d" },
+    { id: 34, texto: "¿Cuál de los siguientes CODECS utilizados en VoIP precisa de un mayor ancho de banda?", a: "GSM", b: "G.729", c: "H323", d: "G.711", correcta: "d" },
+    { id: 35, texto: "¿Qué protocolo de transporte es más utilizado en la telefonía IP?", a: "Utiliza el protocolo UDP", b: "Utiliza el protocolo TCP", c: "Utiliza el protocolo IPV", d: "Utiliza el protocolo ICMP", correcta: "a" },
+    { id: 36, texto: "¿En un programa escrito en JavaScript quién interpreta las órdenes?", a: "El servidor http Apache", b: "El módulo scripting de TCP", c: "La máquina virtual java", d: "El navegador del equipo del usuario", correcta: "d" },
+    { id: 37, texto: "¿En una aplicación web escrita en PHP quién interpreta las órdenes?", a: "El servidor http Apache", b: "El módulo scripting de TCP", c: "La máquina virtual java", d: "El navegador del equipo del usuario", correcta: "a" },
+    { id: 38, texto: "¿Cuál es el formato completo de una URL?", a: "Protocolo://servidor//usuario/contraseña/nombre del recurso", b: "Protocolo://contraseña:usuario@servidor/camino/nombre del recurso", c: "Protocolo://usuario:contraseña@servidor/camino/nombre del recurso", d: "Protocolo://servicio@camino/nombre del recurso.html", correcta: "c" },
+    { id: 39, texto: "¿Qué parte de una URL (Uniform Resource Locator) identifica el recurso específico que se solicita en un servidor web?", a: "El protocolo (ej: http)", b: "El nombre de dominio (ej: www.ejemplo.com)", c: "La ruta (path) (ej: /pagina.html)", d: "El puerto (ej: :80)", correcta: "c" },
+    { id: 40, texto: "¿Para qué sirve el archivo .htaccess en un servidor web Apache?", a: "Para controlar el acceso a un directorio web", b: "Para ofrecer tolerancia a fallos", c: "Para acceder por MySQL a un gestor de contenidos", d: "Para controlar el tamaño del fichero de (incompleto)", correcta: "a" },
+    { id: 41, texto: "¿Para qué sirve el archivo .htaccess en un servidor web Apache?", a: "Para controlar el acceso a un directorio web", b: "Para ofrecer tolerancia a fallos", c: "Para acceder por MySQL a un gestor de contenidos", d: "Para controlar el tamaño del fichero de accesos web", correcta: "a" },
+    { id: 42, texto: "¿Para qué se utilizan los servidores virtuales en un servidor web?", a: "Para establecer distintos directorios web a cada usuario local", b: "Para poder alojar páginas web de distintos dominios en una misma máquina", c: "Para generar consultas virtuales a bases de datos remotas", d: "Para simular conexiones a servidores proxy inversos", correcta: "b" },
+    { id: 43, texto: "¿Qué es un CMS?", a: "Un sistema de mensajería conversacional", b: "Un sistema de control de llamadas en VoIP", c: "Un sistema gestor de contenidos web", d: "Un sistema de mantenimiento de computadoras", correcta: "c" },
+    { id: 44, texto: "¿Cuál de estas aplicaciones no es un CMS?", a: "WordPress", b: "Drupal", c: "Typescript", d: "Joomla", correcta: "c" },
+    { id: 45, texto: "Respecto a puertos y servicios, ¿qué afirmación es correcta?", a: "El servicio POP3 utiliza el puerto 110", b: "El HTTPS utiliza el mismo puerto que el HTTP", c: "El protocolo IMAP utiliza el puerto 210", d: "El protocolo NNTP utiliza el puerto 125", correcta: "a" },
+    { id: 46, texto: "Respecto a puertos y servicios, ¿qué afirmación es correcta?", a: "El servicio POP3 utiliza el puerto 210", b: "El HTTPS utiliza el mismo puerto que el HTTP", c: "El protocolo IMAP utiliza el puerto 210", d: "El protocolo SMTP utiliza el puerto 25", correcta: "d" },
+    { id: 47, texto: "¿Qué es una lista de correo?", a: "Una dirección de correo especial asociada a un conjunto de direcciones", b: "La agenda de direcciones de una cuenta de correo de un usuario", c: "Un hacker femenino que descifra mensajes de SMTP", d: "Un conjunto de mensajes pendientes de confirmación asociado a un buzón", correcta: "a" },
+    { id: 48, texto: "¿Cómo se configura un servidor web para que utilice HTTPS?", a: "Instalando un certificado SSL/TLS y configurando el servidor para usarlo", b: "Configurando el servidor para redirigir automáticamente las conexiones HTTP a HTTPS", c: "Modificando el puerto 80 a 443 en la configuración del servidor", d: "Instalando un firewall para bloquear conexiones HTTP", correcta: "a" },
+    { id: 49, texto: "¿Mediante qué petición HTTP podemos enviar un fichero mediante un formulario?", a: "Utilizando el método GET", b: "Utilizando el método FTP", c: "Utilizando el método POST", d: "Utilizando el método HEAD", correcta: "c" },
+    { id: 50, texto: "¿Cuál de las siguientes afirmaciones sobre el protocolo IMAP es verdadera?", a: "Ofrece menos funcionalidades que el protocolo POP3", b: "NO soporta encriptación mediante SSL", c: "Permite que varios usuarios trabajen simultáneamente sobre un mismo buzón", d: "Permite varias conexiones a servidores de correo virtuales", correcta: "c" },
+    { id: 51, texto: "¿Para qué puede ser útil utilizar un adaptador ATA?", a: "Para conectar softphone a redes de telefonía convencional", b: "Para crear túneles VPN con servidor de VoIP en ATM", c: "Para conectar teléfonos convencionales a redes de VoIP", d: "Para crear VLAN con autentificación en las conexiones de VoIP", correcta: "c" },
+    { id: 52, texto: "¿Qué solución de hosting nos suele ofrecer más flexibilidad?", a: "Contratar un hosting gratuito", b: "Contratar un servidor virtual", c: "Contratar un servidor dedicado", d: "Contratar un servicio de cloud computing", correcta: "d" },
+    { id: 53, texto: "¿Qué es un canal RSS?", a: "Un sistema de conexión segura remota mediante un servicio VPN", b: "Una versión más segura del protocolo SSL", c: "Un documento en XML con las noticias generadas de un portal", d: "Un registro seguro de correo electrónico restringido", correcta: "c" },
+    { id: 54, texto: "¿Qué código de error HTTP indica un fallo interno en el servidor?", a: "404", b: "500", c: "200", d: "301", correcta: "b" },
+    { id: 55, texto: "¿Cuáles son los tres protocolos de señalización más importantes en VoIP?", a: "SIP, H 323, IAX2", b: "VIP 25, H 323, NAT", c: "RTP, RTCP, SAP", d: "NIC, CAS, SIO", correcta: "a" },
+    { id: 56, texto: "¿Qué marcas HTML son más importantes para que un sitio web sea indexado en la base de datos de los buscadores?", a: "Marcas <code> </code>", b: "Meta keywords y description", c: "Marcas <?php> <?>", d: "Meta author y generator", correcta: "b" },
+    { id: 57, texto: "¿Qué tres aspectos hay que tener en cuenta en un CODEC para VoIP?", a: "El ancho de banda, la calidad y los requisitos de computación", b: "La duración del mensaje, la latencia interna y el tipo de barrera NAT", c: "El ancho de banda, nivel de señal y el tipo de barrera NAT", d: "La duración del mensaje, la versión de Asterisk y la longitud de onda", correcta: "a" },
+    { id: 58, texto: "Mi querido profesor me ha enviado un correo cifrado utilizando mi clave pública que previamente le indiqué, ¿con qué clave descifraré el mensaje que me ha enviado?", a: "Con mi clave pública", b: "Con mi clave privada", c: "Con la clave pública del profesor", d: "Con la clave privada del profesor", correcta: "b" },
+    { id: 59, texto: "Mi querido profesor me ha enviado un correo cifrado utilizando su clave privada, ¿con qué clave descifraré el mensaje que me ha enviado?", a: "Con mi clave pública", b: "Con mi clave privada", c: "Con la clave pública del profesor", d: "Con la clave privada del profesor", correcta: "c" },
+    { id: 60, texto: "¿Qué es el servicio IVR que ofrecen algunas centralitas de VoIP?", a: "Un servicio de grabación de voz para atención telefónica", b: "Un servicio de respuesta interactiva mediante locuciones de voz", c: "Un servicio de buzón de contestador de mensajes", d: "Un servicio de Interrupción virtual de llamadas remotas", correcta: "b" },
+    { id: 61, texto: "¿Cuáles son los principales riesgos asociados al correo electrónico?", a: "virus, spam, hoax", b: "spam, testing, DoS", c: "virus, spam, phishing", d: "hoax, virus, phishing", correcta: "c" },
+    { id: 62, texto: "¿Para qué sirven los registros SPF en un dominio DNS?", a: "Para registrar las consultas", b: "Para balanceo de carga de servidores", c: "Protegerse frente a spoofing y phishing", d: "Para fijar el tiempo medio de respuesta", correcta: "c" },
+    { id: 63, texto: "¿Cuál de las siguientes aplicaciones podemos instalar como servidor FTP en un sistema GNU/Linux?", a: "Filemanager", b: "Vsfstd", c: "Freeftps", d: "Openftps", correcta: "b" },
+    { id: 64, texto: "¿Con qué orden podemos bajar todos los ficheros de tipo pdf desde un servidor FTP?", a: "upload *.pdf", b: "mget *.pdf", c: "mput *.pdf", d: "open *.pdf", correcta: "b" },
+    { id: 65, texto: "¿Con qué orden podemos subir varios ficheros de tipo pdf hacia un servidor FTP?", a: "upload *.pdf", b: "mget *.pdf", c: "mput *.pdf", d: "open *.pdf", correcta: "c" },
+    { id: 66, texto: "¿Qué puerto se utiliza cuando transferimos ficheros mediante SFTP?", a: "21", b: "22", c: "443", d: "8080", correcta: "b" },
+    { id: 67, texto: "¿Qué protocolo proporciona una forma segura de transferencia de archivos a través de una conexión SSH cifrada?", a: "HTTPS", b: "TFTP", c: "SFTP", d: "FTPS", correcta: "c" },
+    { id: 68, texto: "¿Cuál de las siguientes aplicaciones NO corresponde a un servidor web?", a: "IIS", b: "Nginx", c: "Lighttpd", d: "Wget", correcta: "d" },
+    { id: 69, texto: "¿Qué formato de imágenes soporta el canal alfa (transparencia)?", a: "jpg", b: "png", c: "mp3", d: "bmp", correcta: "b" },
+    { id: 70, texto: "¿Qué formato de imágenes soporta el canal alfa (transparencia)?", a: "jpg", b: "png", c: "mp3", d: "bmp", correcta: "b" },
+    { id: 71, texto: "¿Qué formato de imágenes soporta el canal alfa (transparencia)?", a: "png", b: "jpg", c: "gif", d: "bmp", correcta: "a" },
+    { id: 72, texto: "¿Cuál de los siguientes formatos no corresponde a un formato de video?", a: "avi", b: "mkv", c: "mp3", d: "wmv", correcta: "c" },
+    { id: 73, texto: "¿Cuál de los siguientes formatos no corresponde a un formato de video?", a: "swp", b: "mkv", c: "avi", d: "wmv", correcta: "a" },
+    { id: 74, texto: "¿Cuál es el software de Microsoft que actúa como servidor de correo?", a: "Internet Information Server (IIS)", b: "Exchange Server", c: "Microsoft Mail Server (MMS)", d: "Office Mail Server", correcta: "b" },
+    { id: 75, texto: "¿Cuál es la función principal de una centralita VoIP (PBX IP)?", a: "Proporcionar acceso a Internet a los usuarios de una red local", b: "Gestionar y enrutar las llamadas telefónicas sobre infraestructura IP", c: "Convertir señales digitales de voz a señales analógicas", d: "Asegurar la red contra intrusiones externas", correcta: "b" },
+    { id: 76, texto: "Indicar cuál es una aplicación de servidor de correo que se suele instalar en equipos Linux:", a: "Postfix", b: "Exchange Server", c: "Bind9", d: "Outlook", correcta: "a" },
+    { id: 77, texto: "Un servidor seguro para SMTPS escucha en el puerto:", a: "TCP 25", b: "UDP 25", c: "TCP 587", d: "TCP 8080", correcta: "c" },
+    { id: 78, texto: "¿Cuál es el propósito principal de las cookies en la navegación web?", a: "Almacenar información sobre la sesión del usuario en el servidor", b: "Rastrear la ubicación física del usuario", c: "Almacenar información sobre el usuario en el navegador para recordar preferencias o actividad", d: "Proteger la comunicación mediante cifrado", correcta: "c" },
+    { id: 79, texto: "¿Cuáles son los dos modos principales de transferencia de archivos que soporta el protocolo FTP?", a: "ASCII y binario", b: "Cifrado y no cifrado", c: "Comprimido y sin comprimir", d: "Local y remoto", correcta: "a" },
+    { id: 80, texto: "¿Qué se puede configurar en un servidor FTP para limitar la cantidad de datos que un usuario puede almacenar?", a: "Fijando los permisos de directorios", b: "Mediante cuotas de disco", c: "Fijando límites de conexión", d: "Definiendo servidores virtuales por usuario", correcta: "b" },
+    { id: 81, texto: "¿Qué componente del servicio de correo electrónico es responsable de entregar el correo al buzón del usuario?", a: "MTA (Mail Transport Agent)", b: "MDA (Mail Delivery Agent)", c: "MUA (Mail User Agent)", d: "SMTP (Simple Mail Transfer Protocol)", correcta: "b" },
+    { id: 82, texto: "¿Qué es un servidor de correo 'relay' y para qué se utiliza?", a: "Un servidor que almacena y organiza los correos electrónicos para su envío posterior", b: "Un servidor que retransmite los correos electrónicos entre diferentes dominios o servidores", c: "Un servidor que filtra y elimina el spam de los correos entrantes", d: "Un servidor dedicado exclusivamente a almacenar los mensajes de correo en la red", correcta: "b" },
+    { id: 83, texto: "¿Cuál de los siguientes mecanismos se utiliza para identificar y bloquear correos electrónicos de spam basándose en la dirección IP del servidor remitente?", a: "SPF (Sender Policy Framework)", b: "DKIM (DomainKeys Identified Mail)", c: "DMARC (Domain-based Message Authentication, Reporting and Conformance)", d: "RBL (Real-time Blackhole List)", correcta: "d" },
+    { id: 84, texto: "¿Qué herramienta NO es utilizada para realizar videoconferencias en línea?", a: "Jitsi", b: "Microsoft Teams", c: "Zoom", d: "Google Teams", correcta: "d" },
+    { id: 85, texto: "¿Qué es el 'streaming'?", a: "Un tipo de archivo de imagen comprimido", b: "La descarga completa de contenido multimedia antes de su reproducción", c: "La transmisión de contenido en tiempo real a través de internet", d: "Una técnica de compresión de vídeo", correcta: "c" },
+    { id: 86, texto: "¿Qué son los 'módulos' en Apache y cuál es su función principal?", a: "Archivos que contienen los directorios web", b: "Extensiones que añaden funcionalidades al servidor", c: "Herramientas para monitorizar el rendimiento", d: "Registros de actividad del servidor", correcta: "b" },
+    { id: 87, texto: "¿Qué parámetro permite que los usuarios suban archivos al servidor vsftpd?", a: "file_upload=YES", b: "write_enable=YES", c: "allow_put=YES", d: "upload_files=YES", correcta: "b" }
+];
 
     // Variables globales
     let currentExam = 'seguridad';
@@ -610,11 +715,95 @@
     let examStarted = false;
     let examCorrected = false;
 
+    // Historial de exámenes (se guarda en localStorage)
+    let examHistory = [];
+
+    function loadHistory() {
+        const saved = localStorage.getItem('examHistory_asir');
+        if (saved) {
+            examHistory = JSON.parse(saved);
+        } else {
+            examHistory = [];
+        }
+        renderHistory();
+    }
+
+    function saveHistory() {
+        localStorage.setItem('examHistory_asir', JSON.stringify(examHistory));
+        renderHistory();
+    }
+
+    function addExamToHistory(examName, score, correctCount, incorrectCount, timeSpent, date) {
+        examHistory.unshift({
+            id: Date.now(),
+            exam: examName,
+            date: date,
+            time: timeSpent,
+            score: score,
+            correct: correctCount,
+            incorrect: incorrectCount
+        });
+        // Mantener solo los últimos 50 exámenes
+        if (examHistory.length > 50) examHistory.pop();
+        saveHistory();
+    }
+
+    function renderHistory() {
+        const historyContent = document.getElementById('historyContent');
+        if (!historyContent) return;
+        
+        if (examHistory.length === 0) {
+            historyContent.innerHTML = '<p style="text-align: center; color: #8a8a8a;">Aún no hay exámenes realizados</p>';
+            return;
+        }
+        
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Examen</th>
+                        <th>Tiempo</th>
+                        <th>Nota</th>
+                        <th>Aciertos</th>
+                        <th>Fallos</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        examHistory.forEach(entry => {
+            html += `
+                <tr>
+                    <td>${entry.date}</td>
+                    <td>${entry.exam}</td>
+                    <td>${entry.time}</td>
+                    <td style="color: ${entry.score >= 5 ? '#4caf50' : '#f44336'}">${entry.score}/10</td>
+                    <td>${entry.correct}</td>
+                    <td>${entry.incorrect}</td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                </tbody>
+            </table>
+        `;
+        
+        historyContent.innerHTML = html;
+    }
+
+    function clearHistory() {
+        if (confirm('¿Estás seguro de que quieres borrar todo el historial de exámenes?')) {
+            examHistory = [];
+            saveHistory();
+        }
+    }
+
     // DOM Elements
     const mainContent = document.getElementById('mainContent');
     const timerDisplay = document.getElementById('timerDisplay');
 
-    // Función para formatear tiempo (HH:MM:SS)
     function formatTime(seconds) {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -622,7 +811,6 @@
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    // Función para actualizar el temporizador
     function updateTimer() {
         if (!startTime) {
             timerDisplay.textContent = '00:00:00';
@@ -652,8 +840,7 @@
         timerDisplay.textContent = '00:00:00';
     }
 
-    // Función para seleccionar preguntas aleatorias (60 del total)
-    function getRandomQuestions(pool, count = 60) {
+    function getRandomQuestions(pool, count = 70) {
         const shuffled = [...pool];
         for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -662,7 +849,6 @@
         return shuffled.slice(0, Math.min(count, shuffled.length));
     }
 
-    // Función para contar respuestas respondidas
     function countAnswered() {
         let answered = 0;
         currentQuestions.forEach((_, idx) => {
@@ -672,7 +858,6 @@
         return answered;
     }
 
-    // Función para actualizar barra de progreso
     function updateProgress() {
         const answered = countAnswered();
         const total = currentQuestions.length;
@@ -683,7 +868,6 @@
         if (answeredSpan) answeredSpan.textContent = answered;
     }
 
-    // Función para renderizar el test
     function renderTest() {
         if (!currentQuestions.length) {
             mainContent.innerHTML = `
@@ -712,10 +896,6 @@
                 </div>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: 0%"></div>
-                </div>
-                <div class="big-buttons">
-                    <button class="btn btn-success" id="correctBtn">✅ Corregir</button>
-                    <button class="btn btn-secondary" id="newTestBtn">🔄 Hacer de nuevo</button>
                 </div>
             </div>
             <div class="questions-area" id="questionsArea">
@@ -748,11 +928,15 @@
             `;
         });
 
-        html += `</div>`;
+        html += `
+            <div class="big-buttons">
+                <button class="btn btn-success" id="correctBtn">✅ Corregir examen</button>
+                <button class="btn btn-secondary" id="newTestBtn">🔄 Hacer de nuevo</button>
+            </div>
+        `;
 
         mainContent.innerHTML = html;
 
-        // Añadir event listeners para actualizar progreso
         for (let i = 0; i < currentQuestions.length; i++) {
             const radios = document.querySelectorAll(`input[name="q${i}"]`);
             radios.forEach(radio => {
@@ -764,7 +948,6 @@
         document.getElementById('newTestBtn').addEventListener('click', () => startExam());
     }
 
-    // Función para corregir el examen
     function correctExam() {
         if (!examStarted) return;
 
@@ -799,6 +982,7 @@
                 }
             } else {
                 unansweredCount++;
+                totalPoints -= 0.33;
                 card.classList.add('incorrect');
                 feedbackDiv.innerHTML = `<strong>❌ Sin responder.</strong> La respuesta correcta es: ${q.correcta}) ${q[q.correcta]}`;
                 feedbackDiv.classList.add('show', 'incorrect-feedback');
@@ -811,13 +995,24 @@
         stopTimer();
         const elapsedSeconds = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
         const timeSpent = formatTime(elapsedSeconds);
+        
+        // Obtener nombre del examen actual
+        let examName = '';
+        if (currentExam === 'seguridad') examName = 'Seguridad y Alta Disponibilidad';
+        else if (currentExam === 'servicios') examName = 'Servicios en Red e Internet';
+        else examName = 'Inglés Técnico';
+        
+        // Guardar en historial
+        const now = new Date();
+        const dateStr = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+        addExamToHistory(examName, parseFloat(finalScoreRounded), correctCount, incorrectCount + unansweredCount, timeSpent, dateStr);
 
-        // Mostrar resultados
+        // Mostrar resultados con botón de corregir al final (pero ya está corregido)
         const resultsHtml = `
             <div class="control-panel" style="margin-top: 20px; background: #2a3a5a;">
                 <div class="stats">
                     <div class="stat-card"><span>✅ Aciertos</span><br><span>${correctCount}</span></div>
-                    <div class="stat-card"><span>❌ Fallos</span><br><span>${incorrectCount + unansweredCount}</span></div>
+                    <div class="stat-card"><span>❌ Fallos/Sin responder</span><br><span>${incorrectCount + unansweredCount}</span></div>
                     <div class="stat-card"><span>📊 Nota</span><br><span>${finalScoreRounded} / 10</span></div>
                     <div class="stat-card"><span>⏱️ Tiempo</span><br><span>${timeSpent}</span></div>
                 </div>
@@ -829,16 +1024,20 @@
         `;
 
         const questionsArea = document.getElementById('questionsArea');
-        questionsArea.insertAdjacentHTML('afterend', resultsHtml);
+        if (questionsArea) {
+            questionsArea.insertAdjacentHTML('afterend', resultsHtml);
+        }
 
-        document.getElementById('reviewBtn').addEventListener('click', () => reviewMistakes());
-        document.getElementById('newTestAfterCorrectBtn').addEventListener('click', () => startExam());
+        const reviewBtn = document.getElementById('reviewBtn');
+        const newTestBtn = document.getElementById('newTestAfterCorrectBtn');
+        if (reviewBtn) reviewBtn.addEventListener('click', () => reviewMistakes());
+        if (newTestBtn) newTestBtn.addEventListener('click', () => startExam());
         
-        document.getElementById('correctBtn').disabled = true;
+        const correctBtn = document.getElementById('correctBtn');
+        if (correctBtn) correctBtn.disabled = true;
         examCorrected = true;
     }
 
-    // Función para repasar fallos
     function reviewMistakes() {
         const mistakes = [];
         currentQuestions.forEach((q, idx) => {
@@ -890,13 +1089,16 @@
         });
     }
 
-    // Función para iniciar examen
     function startExam() {
         resetTimer();
         examStarted = true;
         examCorrected = false;
         
-        const pool = currentExam === 'seguridad' ? preguntasSeguridad : preguntasServicios;
+        let pool;
+        if (currentExam === 'seguridad') pool = preguntasSeguridad;
+        else if (currentExam === 'servicios') pool = preguntasServicios;
+        else pool = preguntasIngles;
+        
         if (pool.length === 0) {
             mainContent.innerHTML = `
                 <div class="empty-state">
@@ -908,27 +1110,35 @@
             return;
         }
         
-        currentQuestions = getRandomQuestions(pool, 60);
+        currentQuestions = getRandomQuestions(pool, 70);
         renderTest();
         startTimer();
         updateProgress();
     }
 
-    // Cambiar entre exámenes
     function switchExam(exam) {
         currentExam = exam;
         examStarted = false;
         examCorrected = false;
         resetTimer();
         
-        const pool = exam === 'seguridad' ? preguntasSeguridad : preguntasServicios;
+        let pool, examTitle;
+        if (exam === 'seguridad') {
+            pool = preguntasSeguridad;
+            examTitle = 'Seguridad y Alta Disponibilidad';
+        } else if (exam === 'servicios') {
+            pool = preguntasServicios;
+            examTitle = 'Servicios en Red e Internet';
+        } else {
+            pool = preguntasIngles;
+            examTitle = 'Inglés Técnico';
+        }
         
         if (pool.length === 0) {
             mainContent.innerHTML = `
                 <div class="empty-state">
                     <h3>📋 Próximamente disponible</h3>
-                    <p>El examen de ${exam === 'seguridad' ? 'Seguridad' : 'Servicios en Red'} estará disponible pronto</p>
-                    <button class="btn" id="placeholderBtn">Volver</button>
+                    <p>El examen de ${examTitle} estará disponible pronto</p>
                 </div>
             `;
             return;
@@ -936,13 +1146,14 @@
         
         mainContent.innerHTML = `
             <div class="empty-state">
-                <h3>📋 ${exam === 'seguridad' ? 'Seguridad y Alta Disponibilidad' : 'Servicios en Red e Internet'}</h3>
+                <h3>📋 ${examTitle}</h3>
                 <p>Preguntas disponibles: ${pool.length}</p>
                 <button class="btn btn-success" id="startExamBtn">🚀 Comenzar test</button>
             </div>
         `;
         
-        document.getElementById('startExamBtn').addEventListener('click', () => startExam());
+        const startBtn = document.getElementById('startExamBtn');
+        if (startBtn) startBtn.addEventListener('click', () => startExam());
     }
 
     // Navegación
@@ -954,7 +1165,12 @@
         });
     });
 
-    // Inicializar con Seguridad
+    // Botón borrar historial
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    if (clearHistoryBtn) clearHistoryBtn.addEventListener('click', clearHistory);
+
+    // Inicializar
+    loadHistory();
     switchExam('seguridad');
 </script>
 </body>
