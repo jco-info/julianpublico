@@ -3,66 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rocky Linux - Clúster HPC con LDAP, NFS, Slurm y Modules</title>
+    <title>Rocky Linux - Clúster HPC con LDAP, NFS, Slurm y Modules (Modo Oscuro)</title>
     <style>
-        /* Estilos generales - Inspirados en el sitio del profesor */
+        /* Estilos generales - Modo Oscuro */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            color: #2c3e50;
+            color: #e0e0e0;
+            background-color: #121212;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f7fa;
         }
         h1, h2, h3, h4 {
-            color: #1a5276;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
+            color: #bb86fc;
+            border-bottom: 2px solid #3700b3;
+            padding-bottom: 8px;
             margin-top: 30px;
         }
         h1 {
             text-align: center;
-            border-bottom: 3px solid #2c3e50;
-            background-color: #2c3e50;
-            color: white;
+            border-bottom: 3px solid #bb86fc;
+            background-color: #1e1e1e;
+            color: #ffffff;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
         }
         .contenido {
-            background-color: #ecf0f1;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #333;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         .contenido ul {
             list-style-type: none;
             padding-left: 0;
         }
         .contenido li {
-            margin: 8px 0;
+            margin: 10px 0;
         }
         .contenido a {
             text-decoration: none;
-            color: #2980b9;
+            color: #bb86fc;
             font-weight: bold;
         }
         .contenido a:hover {
             text-decoration: underline;
+            color: #e0aaff;
         }
         pre {
-            background-color: #2c3e50;
-            color: #ecf0f1;
+            background-color: #2d2d2d;
+            color: #f8f8f2;
             padding: 15px;
             border-radius: 8px;
             overflow-x: auto;
             font-family: 'Courier New', monospace;
             font-size: 14px;
             margin: 15px 0;
+            border: 1px solid #444;
         }
         code {
-            background-color: #e8e8e8;
-            color: #c7254e;
+            background-color: #2d2d2d;
+            color: #ffb86c;
             padding: 2px 5px;
             border-radius: 4px;
             font-family: 'Courier New', monospace;
@@ -74,43 +79,53 @@
             padding: 0;
         }
         .advertencia {
-            background-color: #fcf8e3;
-            border-left: 5px solid #f0ad4e;
+            background-color: #2c1e0e;
+            border-left: 5px solid #ffa500;
             padding: 15px;
             margin: 20px 0;
-            border-radius: 5px;
+            border-radius: 8px;
+            color: #ffd580;
         }
         .exito {
-            background-color: #dff0d8;
-            border-left: 5px solid #5cb85c;
+            background-color: #0a2a1a;
+            border-left: 5px solid #4caf50;
             padding: 15px;
             margin: 20px 0;
-            border-radius: 5px;
+            border-radius: 8px;
+            color: #a5d6a7;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
+            background-color: #1e1e1e;
         }
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #444;
             padding: 10px;
             text-align: left;
         }
         th {
-            background-color: #3498db;
+            background-color: #3700b3;
             color: white;
         }
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #252525;
         }
         .footer {
             text-align: center;
             margin-top: 50px;
             padding: 20px;
-            background-color: #2c3e50;
-            color: white;
-            border-radius: 10px;
+            background-color: #1e1e1e;
+            color: #aaa;
+            border-radius: 12px;
+            border-top: 1px solid #333;
+        }
+        a {
+            color: #bb86fc;
+        }
+        a:hover {
+            color: #e0aaff;
         }
         @media (max-width: 768px) {
             body {
@@ -125,15 +140,15 @@
 <body>
 
 <h1>Arquitectura y Despliegue de un Clúster de Altas Prestaciones sobre Rocky Linux</h1>
-<p style="text-align: center; font-size: 1.2em;">Integración de LDAP, NFS, Slurm y Environment Modules</p>
+<p style="text-align: center; font-size: 1.2em; color: #ccc;">Integración de LDAP, NFS, Slurm y Environment Modules</p>
 <p style="text-align: center;"><strong>Implantación de Sistemas Operativos</strong><br>
 Profesor: D. González Trabada, Daniel<br>
-Alumno: Julián de la Cuerda del Olmo<br>
+Alumno: Julián_CO<br>
 11 de abril de 2026<br>
 1º Administración de Sistemas Informáticos y Redes</p>
 
 <div class="contenido">
-    <h2>Contenido</h2>
+    <h2>📖 Contenido</h2>
     <ul>
         <li><a href="#introduccion">Introducción de la actividad</a></li>
         <li><a href="#escenario">Escenario propuesto</a></li>
