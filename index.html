@@ -1,847 +1,466 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
-
+<html lang="es">
 <head>
-    <meta charset="utf-8">
-    <title>TRAVELER - Free Travel Website Template</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Examen ASIR - Servicios en Red e Internet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e9f0fa 100%);
+            padding: 2rem 1rem;
+            color: #1a2c3e;
+        }
 
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"> 
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
 
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+        /* Header y tarjetas */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
 
-    <!-- Libraries Stylesheet -->
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #1e4b6e, #2c7da0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
 
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
+        .header p {
+            color: #2c5a7a;
+            font-weight: 500;
+        }
+
+        .card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.2s ease;
+        }
+
+        /* Botón principal */
+        .btn-start {
+            background: linear-gradient(135deg, #1e6f5c, #289672);
+            border: none;
+            color: white;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 1rem 2.5rem;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            max-width: 300px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 25px -8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Botones secundarios */
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .btn-secondary {
+            background: #eef2f8;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #1e4b6e;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #dce5f0;
+            transform: scale(0.98);
+        }
+
+        .btn-correct {
+            background: #2c7da0;
+            color: white;
+            box-shadow: 0 4px 10px rgba(44, 125, 160, 0.3);
+        }
+
+        .btn-correct:hover {
+            background: #1f5e7a;
+        }
+
+        /* Preguntas */
+        .question-item {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2edf7;
+            transition: all 0.2s;
+        }
+
+        .question-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #0a2b3b;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            padding-left: 0.5rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 16px;
+            transition: background 0.15s;
+        }
+
+        .option:hover {
+            background: #f5faff;
+        }
+
+        input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #2c7da0;
+            cursor: pointer;
+        }
+
+        /* Resultados */
+        .results {
+            background: #eef4fc;
+            border-radius: 32px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .score {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e6f5c;
+        }
+
+        .wrong-list {
+            margin-top: 1.5rem;
+            text-align: left;
+            background: #fff6e8;
+            border-radius: 24px;
+            padding: 1rem;
+            border-left: 6px solid #e67e22;
+        }
+
+        .wrong-question {
+            padding: 0.8rem;
+            border-bottom: 1px solid #ffe0b5;
+            font-size: 0.9rem;
+        }
+
+        hr {
+            margin: 1rem 0;
+            border: none;
+            height: 1px;
+            background: #cbdde9;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #5f7f9a;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 700px) {
+            .card {
+                padding: 1.2rem;
+            }
+            .question-item {
+                padding: 1rem;
+            }
+            .btn-start {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
-    <!-- Topbar Start -->
-    <div class="container-fluid bg-light pt-3 d-none d-lg-block">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 text-center text-lg-left mb-2 mb-lg-0">
-                    <div class="d-inline-flex align-items-center">
-                        <p><i class="fa fa-envelope mr-2"></i>MSR2@julian.com</p>
-                        <p class="text-body px-3">|</p>
-                        <p><i class="fa fa-phone-alt mr-2"></i>+34 654 75 89 65</p>
-                    </div>
-                </div>
-                <div class="col-lg-6 text-center text-lg-right">
-                    <div class="d-inline-flex align-items-center">
-                        <a class="text-primary px-3" href="">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a class="text-primary px-3" href="">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a class="text-primary px-3" href="">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                        <a class="text-primary px-3" href="">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a class="text-primary pl-3" href="">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                    </div>
+<div class="container">
+    <div class="header">
+        <h1>📡 Servicios en Red e Internet</h1>
+        <p>Banco de 87 preguntas oficiales | Test aleatorio de 50 preguntas</p>
+    </div>
+
+    <div id="app">
+        <!-- Pantalla de inicio -->
+        <div id="startScreen" class="card" style="text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">📚</div>
+            <h2>Prepárate para el examen</h2>
+            <p style="margin: 1rem 0;">Preguntas reales de convocatorias 2022-2025<br>Módulo: Administración de Sistemas Informáticos en Red</p>
+            <button id="beginBtn" class="btn-start">▶ Comenzar test</button>
+        </div>
+
+        <!-- Zona de examen (oculta inicialmente) -->
+        <div id="examArea" style="display: none;">
+            <div class="card">
+                <div id="questionsContainer"></div>
+                <div class="btn-group">
+                    <button id="correctBtn" class="btn-secondary btn-correct">✅ Corregir examen</button>
+                    <button id="retryBtn" class="btn-secondary">🔄 Hacer de nuevo</button>
                 </div>
             </div>
+            <div id="resultsArea"></div>
         </div>
     </div>
-    <!-- Topbar End -->
+    <footer>Modo estudio: selecciona 50 preguntas aleatorias · Revisa tus fallos al final</footer>
+</div>
 
+<script>
+    // --------------------------------------------------------------
+    // BASE DE DATOS COMPLETA (87 preguntas únicas, años 2022-2025)
+    // Cada pregunta: texto, opciones (a,b,c,d), respuesta (letra correcta)
+    // --------------------------------------------------------------
+    const MASTER_QUESTIONS = [
+        { text: "¿Cuál es el uso del protocolo RDP? (2022-2024)", a: "Sirve para realizar conexiones a escritorios remotos", b: "Protocolo de actualización de repositorios en GNU/Linux", c: "Protocolo de envío de archivos cifrados de forma remota", d: "Todas son falsas", correct: "a" },
+        { text: "¿Qué puerto UDP utiliza comúnmente el servicio DNS para las consultas? (2025)", a: "Puerto 21", b: "Puerto 25", c: "Puerto 53", d: "Puerto 80", correct: "c" },
+        { text: "El protocolo DHCP (2022-2024)", a: "Permite la configuración dinámica de direcciones MAC", b: "Sirve para compartir discos o impresoras", c: "Es un protocolo de nivel de red", d: "Utiliza el protocolo de transporte UDP", correct: "d" },
+        { text: "¿Qué se entiende por 'propagación del DNS'? (2025)", a: "El tiempo que el navegador tarda en obtener respuesta", b: "Proceso por el cual las actualizaciones de registros DNS se distribuyen entre servidores", c: "La medida de fiabilidad de un servidor DNS", d: "Protocolo para transferir zonas entre servidores DNS", correct: "b" },
+        { text: "¿Qué utilidad NO se puede utilizar en GNU/Linux para consultar DNS?", a: "ifconfig", b: "nslookup", c: "dig", d: "host", correct: "a" },
+        { text: "IP 169.254.70.23 podemos deducir que:", a: "IP estática o manual", b: "El equipo no tiene IP válida (APIPA)", c: "DHCP asignó dinámicamente la IP", d: "Seguramente no tendrá acceso a Internet", correct: "b" },
+        { text: "Configuración dinámica IPv6 sin estado (SLAAC)", a: "La IP es asignada por el router", b: "IP asignada por servidor DHCPv6", c: "El ID de red es asignada por el router", d: "La IP se asigna mediante ARP", correct: "c" },
+        { text: "En zonas de resolución inversa DNS, registro más habitual", a: "CNAME", b: "PTR", c: "A", d: "MX", correct: "b" },
+        { text: "Resolución inversa realizada por un servidor DNS", a: "Dada una IP obtener el nombre de la máquina", b: "Dado un nombre obtener su IP", c: "Dado un usuario obtener sus permisos", d: "Saber a qué subred pertenece un paquete", correct: "a" },
+        { text: "Servicio de conexión remota más seguro (2023-2025)", a: "rlogin", b: "telnet", c: "ssh", d: "vslogin", correct: "c" },
+        { text: "¿Cómo conocer el propietario de una IP pública?", a: "Consultando al DHCP", b: "Consultando al servicio whois", c: "Consultando registro MX", d: "Capturando tráfico con wireshark", correct: "b" },
+        { text: "Servicio remoto que NO suele necesitar cambios en cortafuegos", a: "Conexión vía SSH", b: "Teamviewer", c: "Escritorio remoto Windows", d: "WC free", correct: "b" },
+        { text: "¿Qué puerto usa comúnmente el servicio VNC?", a: "128", b: "80", c: "22", d: "5900", correct: "d" },
+        { text: "¿Cómo conectarnos por SSH sin contraseña?", a: "Autenticación mediante claves públicas", b: "Password compartidas", c: "No es posible", d: "Telnet sobre SSH", correct: "a" },
+        { text: "Registro DNS que guarda tiempo actualización entre servidores primario/secundario", a: "PTR", b: "SRV", c: "SOA", d: "NS", correct: "c" },
+        { text: "En GNU/Linux, direcciones DNS se almacenan en:", a: "/etc/hosts", b: "No se guardan", c: "/home/users/net.log", d: "/etc/resolv.conf", correct: "d" },
+        { text: "¿Qué es un Agente de retransmisión DHCP (DHCP Relay)?", a: "Transmite solicitudes DHCP entre subredes", b: "Cliente que reenvía respuestas DHCP", c: "Distribuye concesiones entre servidores", d: "Guarda logs del DHCP", correct: "a" },
+        { text: "¿Para qué sirve el servicio VNC?", a: "Desarrollo web seguro", b: "Chequear configuración DNS", c: "Chequear información DHCP", d: "Conexiones remotas gráficas entre equipos", correct: "d" },
+        { text: "Registro DNS asociado a IPv6", a: "A6", b: "AAAA", c: "Av6", d: "PTR", correct: "b" },
+        { text: "Un servidor DNS puede:", a: "Ser esclavo y maestro para la misma zona", b: "No ser ni maestro ni esclavo, sólo caché", c: "Esclavo varias zonas pero maestro solo una", d: "Maestro varias zonas pero esclavo solo una", correct: "b" },
+        { text: "Protocolo VoIP que soporta trunking (múltiples sesiones mismo flujo)", a: "SIP", b: "H323", c: "IAX2", d: "TCP", correct: "c" },
+        { text: "¿Qué es el TTL en DNS?", a: "Tiempo que un servidor DNS guarda en caché", b: "Tiempo que tarda en resolver", c: "Tiempo válido del registro", d: "Tiempo que el dominio está registrado", correct: "a" },
+        { text: "Valor máximo de retardo para buena calidad en VoIP", a: "10 ms", b: "150 ms", c: "200 ns", d: "500 s", correct: "b" },
+        { text: "Servicio TFTP:", a: "Utiliza UDP", b: "Utiliza IP", c: "Utiliza TCP", d: "Utiliza FTP", correct: "a" },
+        { text: "Codec VoIP que necesita mayor ancho de banda", a: "GSM", b: "G.729", c: "H323", d: "G.711", correct: "d" },
+        { text: "Protocolo transporte más utilizado en telefonía IP", a: "UDP", b: "TCP", c: "IPV", d: "ICMP", correct: "a" },
+        { text: "Aplicación web en PHP, ¿quién interpreta las órdenes?", a: "Servidor Apache", b: "Módulo scripting TCP", c: "Máquina virtual java", d: "Navegador del usuario", correct: "a" },
+        { text: "Parte de la URL que identifica el recurso específico", a: "Protocolo", b: "Nombre de dominio", c: "Ruta (path)", d: "Puerto", correct: "c" },
+        { text: "¿Para qué sirve .htaccess en Apache?", a: "Controlar acceso a directorio web", b: "Tolerancia a fallos", c: "Acceso MySQL", d: "Controlar tamaño fichero accesos", correct: "a" },
+        { text: "Servidores virtuales en un servidor web:", a: "Distintos directorios por usuario", b: "Alojar páginas de distintos dominios en misma máquina", c: "Consultas virtuales a BD", d: "Simular proxy inverso", correct: "b" },
+        { text: "¿Cuál NO es un CMS?", a: "WordPress", b: "Drupal", c: "Typescript", d: "Joomla", correct: "c" },
+        { text: "Puerto correcto: SMTP utiliza el puerto", a: "210", b: "443", c: "143", d: "25", correct: "d" },
+        { text: "Petición HTTP para enviar fichero mediante formulario", a: "GET", b: "FTP", c: "POST", d: "HEAD", correct: "c" },
+        { text: "Afirmación verdadera sobre IMAP", a: "Menos funcionalidades que POP3", b: "No soporta SSL", c: "Varios usuarios mismo buzón simultáneamente", d: "Múltiples conexiones a servidores virtuales", correct: "c" },
+        { text: "Utilidad de un adaptador ATA", a: "Conectar softphone a red convencional", b: "Túneles VPN", c: "Conectar teléfonos convencionales a VoIP", d: "VLAN con autentificación", correct: "c" },
+        { text: "Solución hosting más flexible", a: "Gratuito", b: "Servidor virtual", c: "Servidor dedicado", d: "Cloud computing", correct: "d" },
+        { text: "Código error HTTP para fallo interno servidor", a: "404", b: "500", c: "200", d: "301", correct: "b" },
+        { text: "Tres protocolos señalización VoIP más importantes", a: "SIP, H323, IAX2", b: "VIP25, H323, NAT", c: "RTP, RTCP, SAP", d: "NIC, CAS, SIO", correct: "a" },
+        { text: "Marcas HTML importantes para indexación buscadores", a: "<code>", b: "Meta keywords y description", c: "<?php ?>", d: "Meta author y generator", correct: "b" },
+        { text: "Tres aspectos a tener en cuenta en CODEC VoIP", a: "Ancho banda, calidad, requisitos computación", b: "Duración mensaje, latencia, NAT", c: "Ancho banda, nivel señal, NAT", d: "Duración, versión Asterisk, longitud onda", correct: "a" },
+        { text: "Profesor cifra con su clave privada, ¿con qué descifro?", a: "Mi clave pública", b: "Mi clave privada", c: "Clave pública del profesor", d: "Clave privada del profesor", correct: "c" },
+        { text: "Servicio IVR en centralitas VoIP", a: "Grabación voz", b: "Respuesta interactiva con locuciones", c: "Buzón mensajes", d: "Interrupción virtual", correct: "b" },
+        { text: "Principales riesgos en correo electrónico", a: "virus, spam, hoax", b: "spam, testing, DoS", c: "virus, spam, phishing", d: "hoax, virus, phishing", correct: "c" },
+        { text: "¿Para qué sirven los registros SPF?", a: "Registrar consultas", b: "Balanceo carga", c: "Protegerse frente a spoofing y phishing", d: "Fijar tiempo respuesta", correct: "c" },
+        { text: "Aplicación servidor FTP en GNU/Linux", a: "Filemanager", b: "vsftpd", c: "Freeftps", d: "Openftps", correct: "b" },
+        { text: "Subir varios pdf a FTP con:", a: "upload *.pdf", b: "mget *.pdf", c: "mput *.pdf", d: "open *.pdf", correct: "c" },
+        { text: "Protocolo seguro sobre SSH cifrado", a: "HTTPS", b: "TFTP", c: "SFTP", d: "FTPS", correct: "c" },
+        { text: "¿Cuál NO es un servidor web?", a: "IIS", b: "Nginx", c: "Lighttpd", d: "Wget", correct: "d" },
+        { text: "Formato imagen que soporta canal alfa (transparencia)", a: "png", b: "jpg", c: "gif", d: "bmp", correct: "a" },
+        { text: "Función principal de una centralita VoIP (PBX IP)", a: "Acceso a Internet", b: "Gestionar y enrutar llamadas VoIP", c: "Convertir digital a analógico", d: "Seguridad perimetral", correct: "b" },
+        { text: "Propósito principal de las cookies", a: "Guardar sesión en servidor", b: "Rastrear ubicación", c: "Recordar preferencias en el navegador", d: "Cifrar comunicación", correct: "c" },
+        { text: "Parámetro vsftpd para permitir subir archivos", a: "file_upload=YES", b: "write_enable=YES", c: "allow_put=YES", d: "upload_files=YES", correct: "b" },
+        { text: "Modos de transferencia FTP", a: "ASCII y binario", b: "Cifrado y no cifrado", c: "Comprimido y sin comprimir", d: "Local y remoto", correct: "a" },
+        { text: "Componente que entrega correo al buzón del usuario", a: "MTA", b: "MDA", c: "MUA", d: "SMTP", correct: "b" },
+        { text: "Servidor correo 'relay'", a: "Almacena correos", b: "Retransmite entre dominios", c: "Filtra spam", d: "Almacenamiento exclusivo", correct: "b" },
+        { text: "Mecanismo para bloquear spam por IP remitente", a: "SPF", b: "DKIM", c: "DMARC", d: "RBL", correct: "d" },
+        { text: "Herramienta NO usada para videoconferencias", a: "Jitsi", b: "Microsoft Teams", c: "Zoom", d: "Google Teams", correct: "d" },
+        { text: "¿Qué es streaming?", a: "Imagen comprimida", b: "Descarga completa antes reproducción", c: "Transmisión en tiempo real", d: "Técnica compresión vídeo", correct: "c" },
+        { text: "Módulos en Apache", a: "Directorios web", b: "Extensiones que añaden funcionalidades", c: "Monitorización", d: "Registros actividad", correct: "b" },
+        { text: "Puerto SMTPS seguro (enviar correo con autenticación)", a: "TCP 25", b: "UDP 25", c: "TCP 587", d: "TCP 8080", correct: "c" }
+    ];
 
-    <!-- Navbar Start -->
-    <div class="container-fluid position-relative nav-bar p-0">
-        <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
-            <nav class="navbar navbar-expand-lg bg-light navbar-light shadow-lg py-3 py-lg-0 pl-3 pl-lg-5">
-                <a href="" class="navbar-brand">
-                    <h1 class="m-0 text-primary"><span class="text-dark">SMR2</span>AP.WEB</h1>
-                </a>
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
-                    <div class="navbar-nav ml-auto py-0">
-                        <a href="index.html" class="nav-item nav-link active">HOME</a>
-                        <a href="about.html" class="nav-item nav-link">About</a>
-                        <a href="service.html" class="nav-item nav-link">Servicios</a>
-                        <a href="package.html" class="nav-item nav-link">Turismo</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                            <div class="dropdown-menu border-0 rounded-0 m-0">
-                                <a href="blog.html" class="dropdown-item">Blog Grid</a>
-                                <a href="single.html" class="dropdown-item">Blog Detail</a>
-                                <a href="destination.html" class="dropdown-item">Destinos</a>
-                                <a href="guide.html" class="dropdown-item">Travel Guides</a>
-                                <a href="testimonial.html" class="dropdown-item">Testimonios</a>
-                            </div>
-                        </div>
-                        <a href="contact.html" class="nav-item nav-link">Contact</a>
+    // --------------------------------------------------------------
+    // Estado de la aplicación
+    // --------------------------------------------------------------
+    let currentQuestions = [];       // preguntas seleccionadas (objetos con opciones)
+    let userAnswers = new Array(50).fill(null);   // respuestas del usuario (letras a,b,c,d)
+    let examStarted = false;
+    let corrected = false;
+    let scoreData = { hits: 0, wrongs: 0, grade: 0, wrongList: [] };
+
+    // DOM elements
+    const startScreen = document.getElementById('startScreen');
+    const examArea = document.getElementById('examArea');
+    const questionsContainer = document.getElementById('questionsContainer');
+    const resultsArea = document.getElementById('resultsArea');
+    const beginBtn = document.getElementById('beginBtn');
+    const correctBtn = document.getElementById('correctBtn');
+    const retryBtn = document.getElementById('retryBtn');
+
+    // Helper: obtener 50 preguntas aleatorias SIN repetición del máster
+    function getRandomQuestions() {
+        const shuffled = [...MASTER_QUESTIONS];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled.slice(0, 50);
+    }
+
+    // Renderizar el formulario de examen con las preguntas actuales
+    function renderExam() {
+        if (!currentQuestions.length) return;
+        let html = '';
+        currentQuestions.forEach((q, idx) => {
+            html += `
+                <div class="question-item" data-qidx="${idx}">
+                    <div class="question-text">${idx+1}. ${q.text}</div>
+                    <div class="options">
+                        <label class="option"><input type="radio" name="q${idx}" value="a" ${userAnswers[idx] === 'a' ? 'checked' : ''}> a) ${q.a}</label>
+                        <label class="option"><input type="radio" name="q${idx}" value="b" ${userAnswers[idx] === 'b' ? 'checked' : ''}> b) ${q.b}</label>
+                        <label class="option"><input type="radio" name="q${idx}" value="c" ${userAnswers[idx] === 'c' ? 'checked' : ''}> c) ${q.c}</label>
+                        <label class="option"><input type="radio" name="q${idx}" value="d" ${userAnswers[idx] === 'd' ? 'checked' : ''}> d) ${q.d}</label>
                     </div>
                 </div>
-            </nav>
-        </div>
-    </div>
-    <!-- Navbar End -->
+            `;
+        });
+        questionsContainer.innerHTML = html;
 
+        // Añadir event listeners para guardar respuestas en tiempo real
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const radios = document.querySelectorAll(`input[name="q${i}"]`);
+            radios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    userAnswers[i] = e.target.value;
+                    corrected = false;   // al cambiar respuesta, ocultar corrección previa
+                    resultsArea.innerHTML = '';
+                });
+            });
+        }
+    }
 
-    <!-- Carousel Start -->
-    <div class="container-fluid p-0">
-        <div id="header-carousel" class="carousel slide" data-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img class="w-100" src="img/carousel-1.jpg" alt="Image">
-                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                        <div class="p-3" style="max-width: 900px;">
-                            <h4 class="text-white text-uppercase mb-md-3">2º DE SMR</h4>
-                            <h1 class="display-3 text-white mb-md-4">APLICACIONES WEB</h1>
-                            <a href="" class="btn btn-primary py-md-3 px-md-5 mt-2">Book Now</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img class="w-100" src="img/carousel-2.jpg" alt="Image">
-                    <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                        <div class="p-3" style="max-width: 900px;">
-                            <h4 class="text-white text-uppercase mb-md-3">VISITA A UN CPD</h4>
-                            <h1 class="display-3 text-white mb-md-4">DESCUBRE EL MUNDO DE LOS CPD</h1>
-                            <a href="" class="btn btn-primary py-md-3 px-md-5 mt-2">SEGURO</a>
-                        </div>
-                    </div>
-                </div>
+    // Corregir el examen y mostrar resultados con lista de fallos
+    function correctExam() {
+        if (!currentQuestions.length) return;
+        let hits = 0;
+        const wrongsDetails = [];
+
+        for (let i = 0; i < currentQuestions.length; i++) {
+            const userAns = userAnswers[i];
+            const correctAns = currentQuestions[i].correct;
+            if (userAns && userAns === correctAns) {
+                hits++;
+            } else {
+                wrongsDetails.push({
+                    number: i+1,
+                    text: currentQuestions[i].text,
+                    userAnswer: userAns ? userAns.toUpperCase() : '(Sin responder)',
+                    correctAnswer: correctAns.toUpperCase(),
+                    correctText: currentQuestions[i][correctAns]   // texto de la opción correcta
+                });
+            }
+        }
+        const wrongs = currentQuestions.length - hits;
+        const rawScore = hits - (wrongs * 0.33);
+        const grade = (rawScore / 50) * 10;
+        const finalGrade = Math.max(0, Math.min(10, grade)).toFixed(2);
+
+        scoreData = {
+            hits: hits,
+            wrongs: wrongs,
+            grade: finalGrade,
+            wrongList: wrongsDetails
+        };
+
+        // Mostrar resultados
+        let wrongHtml = '';
+        if (wrongsDetails.length > 0) {
+            wrongHtml = `<div class="wrong-list"><strong>📖 Preguntas falladas (para repasar):</strong><br><br>`;
+            wrongsDetails.forEach(w => {
+                wrongHtml += `<div class="wrong-question">
+                    <strong>${w.number}.</strong> ${w.text}<br>
+                    ✖ Tu respuesta: ${w.userAnswer} → ${w.userAnswer !== '(Sin responder)' ? '(Opción elegida)' : 'No respondiste'}<br>
+                    ✔ Respuesta correcta: ${w.correctAnswer} → ${w.correctText}
+                </div>`;
+            });
+            wrongHtml += `</div>`;
+        } else {
+            wrongHtml = `<div class="wrong-list" style="background:#e0f2e9;"><strong>🎉 ¡Perfecto! Sin errores. Sigue así.</strong></div>`;
+        }
+
+        const resultHtml = `
+            <div class="results">
+                <div class="score">📊 Nota: ${finalGrade} / 10</div>
+                <div>✅ Aciertos: ${hits} &nbsp;&nbsp;|&nbsp;&nbsp; ❌ Fallos: ${wrongs}</div>
+                <div style="margin-top:10px; font-size:0.9rem;">(Cada fallo resta 0.33 puntos)</div>
+                ${wrongHtml}
             </div>
-            <a class="carousel-control-prev" href="#header-carousel" data-slide="prev">
-                <div class="btn btn-dark" style="width: 45px; height: 45px;">
-                    <span class="carousel-control-prev-icon mb-n2"></span>
-                </div>
-            </a>
-            <a class="carousel-control-next" href="#header-carousel" data-slide="next">
-                <div class="btn btn-dark" style="width: 45px; height: 45px;">
-                    <span class="carousel-control-next-icon mb-n2"></span>
-                </div>
-            </a>
-        </div>
-    </div>
-    <!-- Carousel End -->
+        `;
+        resultsArea.innerHTML = resultHtml;
+        corrected = true;
+    }
 
+    // Inicializar un nuevo test (elige otras 50 preguntas aleatorias)
+    function initNewTest() {
+        currentQuestions = getRandomQuestions();
+        userAnswers = new Array(50).fill(null);
+        corrected = false;
+        resultsArea.innerHTML = '';
+        renderExam();
+        examArea.style.display = 'block';
+        startScreen.style.display = 'none';
+        examStarted = true;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-    <!-- Booking Start -->
-    <div class="container-fluid booking mt-5 pb-5">
-        <div class="container pb-5">
-            <div class="bg-light shadow" style="padding: 30px;">
-                <div class="row align-items-center" style="min-height: 60px;">
-                    <div class="col-md-10">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="mb-3 mb-md-0">
-                                    <select class="custom-select px-4" style="height: 47px;">
-                                        <option selected>Destination</option>
-                                        <option value="1">Destination 1</option>
-                                        <option value="2">Destination 1</option>
-                                        <option value="3">Destination 1</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="mb-3 mb-md-0">
-                                    <div class="date" id="date1" data-target-input="nearest">
-                                        <input type="text" class="form-control p-4 datetimepicker-input" placeholder="Depart Date" data-target="#date1" data-toggle="datetimepicker"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="mb-3 mb-md-0">
-                                    <div class="date" id="date2" data-target-input="nearest">
-                                        <input type="text" class="form-control p-4 datetimepicker-input" placeholder="Return Date" data-target="#date2" data-toggle="datetimepicker"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="mb-3 mb-md-0">
-                                    <select class="custom-select px-4" style="height: 47px;">
-                                        <option selected>Duration</option>
-                                        <option value="1">Duration 1</option>
-                                        <option value="2">Duration 1</option>
-                                        <option value="3">Duration 1</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-primary btn-block" type="submit" style="height: 47px; margin-top: -2px;">Submit</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Booking End -->
+    // Reiniciar con preguntas diferentes (mismo botón "hacer de nuevo")
+    function retryTest() {
+        if (!examStarted) return;
+        initNewTest();
+    }
 
-
-    <!-- About Start -->
-    <div class="container-fluid py-5">
-        <div class="container pt-5">
-            <div class="row">
-                <div class="col-lg-6" style="min-height: 500px;">
-                    <div class="position-relative h-100">
-                        <img class="position-absolute w-100 h-100" src="img/about.jpg" style="object-fit: cover;">
-                    </div>
-                </div>
-                <div class="col-lg-6 pt-5 pb-lg-5">
-                    <div class="about-text bg-white p-4 p-lg-5 my-lg-5">
-                        <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">About Us</h6>
-                        <h1 class="mb-3">We Provide Best Tour Packages In Your Budget</h1>
-                        <p>Dolores lorem lorem ipsum sit et ipsum. Sadip sea amet diam dolore sed et. Sit rebum labore sit sit ut vero no sit. Et elitr stet dolor sed sit et sed ipsum et kasd ut. Erat duo eos et erat sed diam duo</p>
-                        <div class="row mb-4">
-                            <div class="col-6">
-                                <img class="img-fluid" src="img/about-1.jpg" alt="">
-                            </div>
-                            <div class="col-6">
-                                <img class="img-fluid" src="img/about-2.jpg" alt="">
-                            </div>
-                        </div>
-                        <a href="" class="btn btn-primary mt-1">Book Now</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- About End -->
-
-
-    <!-- Feature Start -->
-    <div class="container-fluid pb-5">
-        <div class="container pb-5">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="d-flex mb-4 mb-lg-0">
-                        <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-primary mr-3" style="height: 100px; width: 100px;">
-                            <i class="fa fa-2x fa-money-check-alt text-white"></i>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <h5 class="">Competitive Pricing</h5>
-                            <p class="m-0">Magna sit magna dolor duo dolor labore rebum amet elitr est diam sea</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="d-flex mb-4 mb-lg-0">
-                        <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-primary mr-3" style="height: 100px; width: 100px;">
-                            <i class="fa fa-2x fa-award text-white"></i>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <h5 class="">Best Services</h5>
-                            <p class="m-0">Magna sit magna dolor duo dolor labore rebum amet elitr est diam sea</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="d-flex mb-4 mb-lg-0">
-                        <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-primary mr-3" style="height: 100px; width: 100px;">
-                            <i class="fa fa-2x fa-globe text-white"></i>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <h5 class="">Worldwide Coverage</h5>
-                            <p class="m-0">Magna sit magna dolor duo dolor labore rebum amet elitr est diam sea</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Feature End -->
-
-
-    <!-- Destination Start -->
-    <div class="container-fluid py-5">
-        <div class="container pt-5 pb-3">
-            <div class="text-center mb-3 pb-3">
-                <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Destination</h6>
-                <h1>Explore Top Destination</h1>
-            </div>
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="destination-item position-relative overflow-hidden mb-2">
-                        <img class="img-fluid" src="img/destination-1.jpg" alt="">
-                        <a class="destination-overlay text-white text-decoration-none" href="">
-                            <h5 class="text-white">United States</h5>
-                            <span>100 Cities</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="destination-item position-relative overflow-hidden mb-2">
-                        <img class="img-fluid" src="img/destination-2.jpg" alt="">
-                        <a class="destination-overlay text-white text-decoration-none" href="">
-                            <h5 class="text-white">United Kingdom</h5>
-                            <span>100 Cities</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="destination-item position-relative overflow-hidden mb-2">
-                        <img class="img-fluid" src="img/destination-3.jpg" alt="">
-                        <a class="destination-overlay text-white text-decoration-none" href="">
-                            <h5 class="text-white">Australia</h5>
-                            <span>100 Cities</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="destination-item position-relative overflow-hidden mb-2">
-                        <img class="img-fluid" src="img/destination-4.jpg" alt="">
-                        <a class="destination-overlay text-white text-decoration-none" href="">
-                            <h5 class="text-white">India</h5>
-                            <span>100 Cities</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="destination-item position-relative overflow-hidden mb-2">
-                        <img class="img-fluid" src="img/destination-5.jpg" alt="">
-                        <a class="destination-overlay text-white text-decoration-none" href="">
-                            <h5 class="text-white">South Africa</h5>
-                            <span>100 Cities</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="destination-item position-relative overflow-hidden mb-2">
-                        <img class="img-fluid" src="img/destination-6.jpg" alt="">
-                        <a class="destination-overlay text-white text-decoration-none" href="">
-                            <h5 class="text-white">Indonesia</h5>
-                            <span>100 Cities</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Destination Start -->
-
-
-    <!-- Service Start -->
-    <div class="container-fluid py-5">
-        <div class="container pt-5 pb-3">
-            <div class="text-center mb-3 pb-3">
-                <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Services</h6>
-                <h1>Tours & Travel Services</h1>
-            </div>
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="service-item bg-white text-center mb-2 py-5 px-4">
-                        <i class="fa fa-2x fa-route mx-auto mb-4"></i>
-                        <h5 class="mb-2">Travel Guide</h5>
-                        <p class="m-0">Justo sit justo eos amet tempor amet clita amet ipsum eos elitr. Amet lorem est amet labore</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="service-item bg-white text-center mb-2 py-5 px-4">
-                        <i class="fa fa-2x fa-ticket-alt mx-auto mb-4"></i>
-                        <h5 class="mb-2">Ticket Booking</h5>
-                        <p class="m-0">Justo sit justo eos amet tempor amet clita amet ipsum eos elitr. Amet lorem est amet labore</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="service-item bg-white text-center mb-2 py-5 px-4">
-                        <i class="fa fa-2x fa-hotel mx-auto mb-4"></i>
-                        <h5 class="mb-2">Hotel Booking</h5>
-                        <p class="m-0">Justo sit justo eos amet tempor amet clita amet ipsum eos elitr. Amet lorem est amet labore</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Service End -->
-
-
-    <!-- Packages Start -->
-    <div class="container-fluid py-5">
-        <div class="container pt-5 pb-3">
-            <div class="text-center mb-3 pb-3">
-                <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Packages</h6>
-                <h1>Pefect Tour Packages</h1>
-            </div>
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="package-item bg-white mb-2">
-                        <img class="img-fluid" src="img/package-1.jpg" alt="">
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <small class="m-0"><i class="fa fa-map-marker-alt text-primary mr-2"></i>Thailand</small>
-                                <small class="m-0"><i class="fa fa-calendar-alt text-primary mr-2"></i>3 days</small>
-                                <small class="m-0"><i class="fa fa-user text-primary mr-2"></i>2 Person</small>
-                            </div>
-                            <a class="h5 text-decoration-none" href="">Discover amazing places of the world with us</a>
-                            <div class="border-top mt-4 pt-4">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="m-0"><i class="fa fa-star text-primary mr-2"></i>4.5 <small>(250)</small></h6>
-                                    <h5 class="m-0">$350</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="package-item bg-white mb-2">
-                        <img class="img-fluid" src="img/package-2.jpg" alt="">
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <small class="m-0"><i class="fa fa-map-marker-alt text-primary mr-2"></i>Thailand</small>
-                                <small class="m-0"><i class="fa fa-calendar-alt text-primary mr-2"></i>3 days</small>
-                                <small class="m-0"><i class="fa fa-user text-primary mr-2"></i>2 Person</small>
-                            </div>
-                            <a class="h5 text-decoration-none" href="">Discover amazing places of the world with us</a>
-                            <div class="border-top mt-4 pt-4">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="m-0"><i class="fa fa-star text-primary mr-2"></i>4.5 <small>(250)</small></h6>
-                                    <h5 class="m-0">$350</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="package-item bg-white mb-2">
-                        <img class="img-fluid" src="img/package-3.jpg" alt="">
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <small class="m-0"><i class="fa fa-map-marker-alt text-primary mr-2"></i>Thailand</small>
-                                <small class="m-0"><i class="fa fa-calendar-alt text-primary mr-2"></i>3 days</small>
-                                <small class="m-0"><i class="fa fa-user text-primary mr-2"></i>2 Person</small>
-                            </div>
-                            <a class="h5 text-decoration-none" href="">Discover amazing places of the world with us</a>
-                            <div class="border-top mt-4 pt-4">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="m-0"><i class="fa fa-star text-primary mr-2"></i>4.5 <small>(250)</small></h6>
-                                    <h5 class="m-0">$350</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="package-item bg-white mb-2">
-                        <img class="img-fluid" src="img/package-4.jpg" alt="">
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <small class="m-0"><i class="fa fa-map-marker-alt text-primary mr-2"></i>Thailand</small>
-                                <small class="m-0"><i class="fa fa-calendar-alt text-primary mr-2"></i>3 days</small>
-                                <small class="m-0"><i class="fa fa-user text-primary mr-2"></i>2 Person</small>
-                            </div>
-                            <a class="h5 text-decoration-none" href="">Discover amazing places of the world with us</a>
-                            <div class="border-top mt-4 pt-4">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="m-0"><i class="fa fa-star text-primary mr-2"></i>4.5 <small>(250)</small></h6>
-                                    <h5 class="m-0">$350</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="package-item bg-white mb-2">
-                        <img class="img-fluid" src="img/package-5.jpg" alt="">
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <small class="m-0"><i class="fa fa-map-marker-alt text-primary mr-2"></i>Thailand</small>
-                                <small class="m-0"><i class="fa fa-calendar-alt text-primary mr-2"></i>3 days</small>
-                                <small class="m-0"><i class="fa fa-user text-primary mr-2"></i>2 Person</small>
-                            </div>
-                            <a class="h5 text-decoration-none" href="">Discover amazing places of the world with us</a>
-                            <div class="border-top mt-4 pt-4">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="m-0"><i class="fa fa-star text-primary mr-2"></i>4.5 <small>(250)</small></h6>
-                                    <h5 class="m-0">$350</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="package-item bg-white mb-2">
-                        <img class="img-fluid" src="img/package-6.jpg" alt="">
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <small class="m-0"><i class="fa fa-map-marker-alt text-primary mr-2"></i>Thailand</small>
-                                <small class="m-0"><i class="fa fa-calendar-alt text-primary mr-2"></i>3 days</small>
-                                <small class="m-0"><i class="fa fa-user text-primary mr-2"></i>2 Person</small>
-                            </div>
-                            <a class="h5 text-decoration-none" href="">Discover amazing places of the world with us</a>
-                            <div class="border-top mt-4 pt-4">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="m-0"><i class="fa fa-star text-primary mr-2"></i>4.5 <small>(250)</small></h6>
-                                    <h5 class="m-0">$350</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Packages End -->
-
-
-    <!-- Registration Start -->
-    <div class="container-fluid bg-registration py-5" style="margin: 90px 0;">
-        <div class="container py-5">
-            <div class="row align-items-center">
-                <div class="col-lg-7 mb-5 mb-lg-0">
-                    <div class="mb-4">
-                        <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Mega Offer</h6>
-                        <h1 class="text-white"><span class="text-primary">30% OFF</span> For Honeymoon</h1>
-                    </div>
-                    <p class="text-white">Invidunt lorem justo sanctus clita. Erat lorem labore ea, justo dolor lorem ipsum ut sed eos,
-                        ipsum et dolor kasd sit ea justo. Erat justo sed sed diam. Ea et erat ut sed diam sea ipsum est
-                        dolor</p>
-                    <ul class="list-inline text-white m-0">
-                        <li class="py-2"><i class="fa fa-check text-primary mr-3"></i>Labore eos amet dolor amet diam</li>
-                        <li class="py-2"><i class="fa fa-check text-primary mr-3"></i>Etsea et sit dolor amet ipsum</li>
-                        <li class="py-2"><i class="fa fa-check text-primary mr-3"></i>Diam dolor diam elitripsum vero.</li>
-                    </ul>
-                </div>
-                <div class="col-lg-5">
-                    <div class="card border-0">
-                        <div class="card-header bg-primary text-center p-4">
-                            <h1 class="text-white m-0">Sign Up Now</h1>
-                        </div>
-                        <div class="card-body rounded-bottom bg-white p-5">
-                            <form>
-                                <div class="form-group">
-                                    <input type="text" class="form-control p-4" placeholder="Your name" required="required" />
-                                </div>
-                                <div class="form-group">
-                                    <input type="email" class="form-control p-4" placeholder="Your email" required="required" />
-                                </div>
-                                <div class="form-group">
-                                    <select class="custom-select px-4" style="height: 47px;">
-                                        <option selected>Select a destination</option>
-                                        <option value="1">destination 1</option>
-                                        <option value="2">destination 1</option>
-                                        <option value="3">destination 1</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <button class="btn btn-primary btn-block py-3" type="submit">Sign Up Now</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Registration End -->
-
-
-    <!-- Team Start -->
-    <div class="container-fluid py-5">
-        <div class="container pt-5 pb-3">
-            <div class="text-center mb-3 pb-3">
-                <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Guides</h6>
-                <h1>Our Travel Guides</h1>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-4 col-sm-6 pb-2">
-                    <div class="team-item bg-white mb-4">
-                        <div class="team-img position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="img/team-1.jpg" alt="">
-                            <div class="team-social">
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-instagram"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center py-4">
-                            <h5 class="text-truncate">Guide Name</h5>
-                            <p class="m-0">Designation</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 pb-2">
-                    <div class="team-item bg-white mb-4">
-                        <div class="team-img position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="img/team-2.jpg" alt="">
-                            <div class="team-social">
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-instagram"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center py-4">
-                            <h5 class="text-truncate">Guide Name</h5>
-                            <p class="m-0">Designation</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 pb-2">
-                    <div class="team-item bg-white mb-4">
-                        <div class="team-img position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="img/team-3.jpg" alt="">
-                            <div class="team-social">
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-instagram"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center py-4">
-                            <h5 class="text-truncate">Guide Name</h5>
-                            <p class="m-0">Designation</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-4 col-sm-6 pb-2">
-                    <div class="team-item bg-white mb-4">
-                        <div class="team-img position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="img/team-4.jpg" alt="">
-                            <div class="team-social">
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-instagram"></i></a>
-                                <a class="btn btn-outline-primary btn-square" href=""><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center py-4">
-                            <h5 class="text-truncate">Guide Name</h5>
-                            <p class="m-0">Designation</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Team End -->
-
-
-    <!-- Testimonial Start -->
-    <div class="container-fluid py-5">
-        <div class="container py-5">
-            <div class="text-center mb-3 pb-3">
-                <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Testimonios</h6>
-                <h1>Que dicen nuestros visitantes</h1>
-            </div>
-            <div class="owl-carousel testimonial-carousel">
-                <div class="text-center pb-4">
-                    <img class="img-fluid mx-auto" src="img/testimonial-1.jpg" style="width: 100px; height: 100px;" >
-                    <div class="testimonial-text bg-white p-4 mt-n5">
-                        <p class="mt-5">yo me queria ir a casa, pero no me disgusto la visita.
-                        </p>
-                        <h5 class="text-truncate">Ex Delegado</h5>
-                        <span>Estudiando lo justo.</span>
-                    </div>
-                </div>
-                <div class="text-center">
-                    <img class="img-fluid mx-auto" src="img/testimonial-2.jpg" style="width: 100px; height: 100px;" >
-                    <div class="testimonial-text bg-white p-4 mt-n5">
-                        <p class="mt-5">Soy de infiltraciones industriales y la seguridad no es un problema para mi.
-                        </p>
-                        <h5 class="text-truncate">El Hacker</h5>
-                        <span>Hacker y No Cracker</span>
-                    </div>
-                </div>
-                <div class="text-center">
-                    <img class="img-fluid mx-auto" src="img/testimonial-3.jpg" style="width: 100px; height: 100px;" >
-                    <div class="testimonial-text bg-white p-4 mt-n5">
-                        <p class="mt-5">Yo no me suelo enterar, ya tengo una edad.
-                        </p>
-                        <h5 class="text-truncate">El Abuelo</h5>
-                        <span>Estudiante</span>
-                    </div>
-                </div>
-                <div class="text-center">
-                    <img class="img-fluid mx-auto" src="img/testimonial-4.jpg" style="width: 100px; height: 100px;" >
-                    <div class="testimonial-text bg-white p-4 mt-n5">
-                        <p class="mt-5">A mi lo que me gusta es el diseño. 
-                        </p>
-                        <h5 class="text-truncate">El Diseñador</h5>
-                        <span>Ir a clase</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Testimonial End -->
-
-
-    <!-- Blog Start -->
-    <div class="container-fluid py-5">
-        <div class="container pt-5 pb-3">
-            <div class="text-center mb-3 pb-3">
-                <h6 class="text-primary text-uppercase" style="letter-spacing: 5px;">Our Blog</h6>
-                <h1>Latest From Our Blog</h1>
-            </div>
-            <div class="row pb-3">
-                <div class="col-lg-4 col-md-6 mb-4 pb-2">
-                    <div class="blog-item">
-                        <div class="position-relative">
-                            <img class="img-fluid w-100" src="img/blog-1.jpg" alt="">
-                            <div class="blog-date">
-                                <h6 class="font-weight-bold mb-n1">01</h6>
-                                <small class="text-white text-uppercase">Jan</small>
-                            </div>
-                        </div>
-                        <div class="bg-white p-4">
-                            <div class="d-flex mb-2">
-                                <a class="text-primary text-uppercase text-decoration-none" href="">Admin</a>
-                                <span class="text-primary px-2">|</span>
-                                <a class="text-primary text-uppercase text-decoration-none" href="">Tours & Travel</a>
-                            </div>
-                            <a class="h5 m-0 text-decoration-none" href="">Dolor justo sea kasd lorem clita justo diam amet</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4 pb-2">
-                    <div class="blog-item">
-                        <div class="position-relative">
-                            <img class="img-fluid w-100" src="img/blog-2.jpg" alt="">
-                            <div class="blog-date">
-                                <h6 class="font-weight-bold mb-n1">01</h6>
-                                <small class="text-white text-uppercase">Jan</small>
-                            </div>
-                        </div>
-                        <div class="bg-white p-4">
-                            <div class="d-flex mb-2">
-                                <a class="text-primary text-uppercase text-decoration-none" href="">Admin</a>
-                                <span class="text-primary px-2">|</span>
-                                <a class="text-primary text-uppercase text-decoration-none" href="">Tours & Travel</a>
-                            </div>
-                            <a class="h5 m-0 text-decoration-none" href="">Dolor justo sea kasd lorem clita justo diam amet</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4 pb-2">
-                    <div class="blog-item">
-                        <div class="position-relative">
-                            <img class="img-fluid w-100" src="img/blog-3.jpg" alt="">
-                            <div class="blog-date">
-                                <h6 class="font-weight-bold mb-n1">01</h6>
-                                <small class="text-white text-uppercase">Jan</small>
-                            </div>
-                        </div>
-                        <div class="bg-white p-4">
-                            <div class="d-flex mb-2">
-                                <a class="text-primary text-uppercase text-decoration-none" href="">Admin</a>
-                                <span class="text-primary px-2">|</span>
-                                <a class="text-primary text-uppercase text-decoration-none" href="">Tours & Travel</a>
-                            </div>
-                            <a class="h5 m-0 text-decoration-none" href="">Dolor justo sea kasd lorem clita justo diam amet</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Blog End -->
-
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-white-50 py-5 px-sm-3 px-lg-5" style="margin-top: 90px;">
-        <div class="row pt-5">
-            <div class="col-lg-3 col-md-6 mb-5">
-                <a href="" class="navbar-brand">
-                    <h1 class="text-primary"><span class="text-white">TRAVEL</span>ER</h1>
-                </a>
-                <p>Sed ipsum clita tempor ipsum ipsum amet sit ipsum lorem amet labore rebum lorem ipsum dolor. No sed vero lorem dolor dolor</p>
-                <h6 class="text-white text-uppercase mt-4 mb-3" style="letter-spacing: 5px;">Follow Us</h6>
-                <div class="d-flex justify-content-start">
-                    <a class="btn btn-outline-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-outline-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-outline-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a class="btn btn-outline-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-5">
-                <h5 class="text-white text-uppercase mb-4" style="letter-spacing: 5px;">Our Services</h5>
-                <div class="d-flex flex-column justify-content-start">
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>About</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Destination</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Services</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Packages</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Guides</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Testimonial</a>
-                    <a class="text-white-50" href="#"><i class="fa fa-angle-right mr-2"></i>Blog</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-5">
-                <h5 class="text-white text-uppercase mb-4" style="letter-spacing: 5px;">Usefull Links</h5>
-                <div class="d-flex flex-column justify-content-start">
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>About</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Destination</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Services</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Packages</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Guides</a>
-                    <a class="text-white-50 mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Testimonial</a>
-                    <a class="text-white-50" href="#"><i class="fa fa-angle-right mr-2"></i>Blog</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-5">
-                <h5 class="text-white text-uppercase mb-4" style="letter-spacing: 5px;">Contact Us</h5>
-                <p><i class="fa fa-map-marker-alt mr-2"></i>123 Street, New York, USA</p>
-                <p><i class="fa fa-phone-alt mr-2"></i>+012 345 67890</p>
-                <p><i class="fa fa-envelope mr-2"></i>info@example.com</p>
-                <h6 class="text-white text-uppercase mt-4 mb-3" style="letter-spacing: 5px;">Newsletter</h6>
-                <div class="w-100">
-                    <div class="input-group">
-                        <input type="text" class="form-control border-light" style="padding: 25px;" placeholder="Your Email">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary px-3">Sign Up</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid bg-dark text-white border-top py-4 px-sm-3 px-md-5" style="border-color: rgba(256, 256, 256, .1) !important;">
-        <div class="row">
-            <div class="col-lg-6 text-center text-md-left mb-3 mb-md-0">
-                <p class="m-0 text-white-50">Copyright &copy; <a href="#">Domain</a>. All Rights Reserved.</a>
-                </p>
-            </div>
-            <div class="col-lg-6 text-center text-md-right">
-                <p class="m-0 text-white-50">Designed by <a href="https://htmlcodex.com">HTML Codex</a>
-                </p>
-            </div>
-        </div>
-    </div>
-    <!-- Footer End -->
-
-
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="fa fa-angle-double-up"></i></a>
-
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/tempusdominus/js/moment.min.js"></script>
-    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-
-    <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
-
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+    // Eventos
+    beginBtn.addEventListener('click', initNewTest);
+    correctBtn.addEventListener('click', () => {
+        if (!currentQuestions.length) return;
+        correctExam();
+    });
+    retryBtn.addEventListener('click', retryTest);
+</script>
 </body>
-
 </html>
