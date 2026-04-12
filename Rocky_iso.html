@@ -5,134 +5,204 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rocky Linux - Clúster HPC con LDAP, NFS, Slurm y Modules (Modo Oscuro)</title>
     <style>
-        /* Estilos generales - Modo Oscuro */
+        /* =============================================
+           ESTILOS MODO OSCURO - VERSIÓN MANUAL COMPLETO
+           ============================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #e0e0e0;
             background-color: #121212;
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
             padding: 20px;
         }
+
         h1, h2, h3, h4 {
             color: #bb86fc;
             border-bottom: 2px solid #3700b3;
             padding-bottom: 8px;
-            margin-top: 30px;
+            margin-top: 35px;
+            margin-bottom: 20px;
         }
+
         h1 {
             text-align: center;
             border-bottom: 3px solid #bb86fc;
             background-color: #1e1e1e;
             color: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            margin-bottom: 30px;
         }
+
+        h2 {
+            font-size: 1.8rem;
+            border-left: 5px solid #bb86fc;
+            padding-left: 15px;
+            background: linear-gradient(90deg, #1e1e1e 0%, #121212 100%);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 25px;
+            border-bottom: 1px solid #444;
+        }
+
         .contenido {
             background-color: #1e1e1e;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 35px;
             border: 1px solid #333;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
+
+        .contenido h2 {
+            margin-top: 0;
+            border-left: none;
+            background: none;
+        }
+
         .contenido ul {
             list-style-type: none;
             padding-left: 0;
+            columns: 2;
+            column-gap: 40px;
         }
+
         .contenido li {
-            margin: 10px 0;
+            margin: 8px 0;
+            break-inside: avoid;
         }
+
         .contenido a {
             text-decoration: none;
             color: #bb86fc;
-            font-weight: bold;
+            font-weight: 500;
         }
+
         .contenido a:hover {
             text-decoration: underline;
             color: #e0aaff;
         }
+
         pre {
             background-color: #2d2d2d;
             color: #f8f8f2;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 18px;
+            border-radius: 12px;
             overflow-x: auto;
-            font-family: 'Courier New', monospace;
+            font-family: 'Courier New', 'Fira Code', monospace;
             font-size: 14px;
-            margin: 15px 0;
+            margin: 20px 0;
             border: 1px solid #444;
+            line-height: 1.5;
         }
+
         code {
             background-color: #2d2d2d;
             color: #ffb86c;
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: 'Courier New', 'Fira Code', monospace;
+            font-size: 0.9em;
         }
+
         pre code {
             background-color: transparent;
             color: inherit;
             padding: 0;
         }
+
+        .advertencia, .exito {
+            padding: 18px;
+            margin: 25px 0;
+            border-radius: 12px;
+            border-left: 6px solid;
+            background-color: #1e1e1e;
+        }
+
         .advertencia {
+            border-left-color: #ffa500;
             background-color: #2c1e0e;
-            border-left: 5px solid #ffa500;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 8px;
             color: #ffd580;
         }
+
         .exito {
+            border-left-color: #4caf50;
             background-color: #0a2a1a;
-            border-left: 5px solid #4caf50;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 8px;
             color: #a5d6a7;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 25px 0;
             background-color: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
+
         th, td {
             border: 1px solid #444;
-            padding: 10px;
+            padding: 12px;
             text-align: left;
+            vertical-align: top;
         }
+
         th {
             background-color: #3700b3;
             color: white;
+            font-weight: 600;
         }
+
         tr:nth-child(even) {
             background-color: #252525;
         }
+
         .footer {
             text-align: center;
-            margin-top: 50px;
-            padding: 20px;
+            margin-top: 60px;
+            padding: 25px;
             background-color: #1e1e1e;
             color: #aaa;
-            border-radius: 12px;
+            border-radius: 16px;
             border-top: 1px solid #333;
+            font-size: 0.9rem;
         }
+
         a {
             color: #bb86fc;
+            transition: color 0.2s;
         }
+
         a:hover {
             color: #e0aaff;
         }
+
+        /* responsive */
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 12px;
             }
             pre {
-                font-size: 12px;
+                font-size: 11px;
+                padding: 12px;
+            }
+            .contenido ul {
+                columns: 1;
+            }
+            th, td {
+                padding: 8px;
             }
         }
     </style>
@@ -147,30 +217,154 @@ Alumno: Julián_CO<br>
 11 de abril de 2026<br>
 1º Administración de Sistemas Informáticos y Redes</p>
 
+<!-- ================= ÍNDICE GENERAL COMPLETO ================= -->
 <div class="contenido">
-    <h2>📖 Contenido</h2>
+    <h2>📖 ÍNDICE</h2>
     <ul>
-        <li><a href="#introduccion">Introducción de la actividad</a></li>
-        <li><a href="#escenario">Escenario propuesto</a></li>
-        <li><a href="#fase1">1. FASE 1: PREPARACIÓN DEL ENTORNO</a></li>
-        <li><a href="#fase2">2. FASE 2: SERVIDOR LDAP EN COMPUTE-0-0</a></li>
-        <li><a href="#fase3">3. FASE 3: CONFIGURACIÓN TLS EN LDAP</a></li>
-        <li><a href="#fase4">4. FASE 4: CONFIGURACIÓN DE LOS NODOS CLIENTE</a></li>
-        <li><a href="#fase5">5. FASE 5: NFS Y AUTOFS</a></li>
-        <li><a href="#fase6">6. FASE 6: SLURM — GESTOR DE TAREAS</a></li>
-        <li><a href="#fase7">7. FASE 7: ENVIRONMENT MODULES</a></li>
-        <li><a href="#ssh">8. CONFIGURAR SSH SIN CONTRASEÑA</a></li>
+        <li><a href="#introduccion">INTRODUCCIÓN DE LA ACTIVIDAD</a></li>
+        <li><a href="#escenario">ESCENARIO PROPUESTO</a></li>
+        <li><a href="#fase1">1. FASE 1: PREPARACIÓN DEL ENTORNO</a>
+            <ul style="columns: 1; margin-top: 5px;">
+                <li>1.1. Instalación de Rocky Linux Minimal</li>
+                <li>1.2. Instalar nano (si no viene instalado)</li>
+                <li>1.3. Configuración de red en compute-0-0 (Red NAT + Red Interna)</li>
+                <li>1.4. Configurar el hostname</li>
+                <li>1.5. Configurar /etc/hosts</li>
+                <li>1.6. Configurar la contraseña de root</li>
+                <li>1.7. Configurar SSH para permitir conexiones como root</li>
+                <li>1.8. Actualizar el sistema e instalar herramientas básicas</li>
+                <li>1.9. Deshabilitar el firewall</li>
+                <li>1.10. Configurar el enrutamiento NAT</li>
+                <li>1.11. Resumen de compute-0-0 después de FASE 1</li>
+            </ul>
+        </li>
+        <li><a href="#fase2">2. FASE 2: SERVIDOR LDAP EN COMPUTE-0-0</a>
+            <ul style="columns: 1;">
+                <li>2.1. Actualizar el sistema</li>
+                <li>2.2. Habilitar el repositorio plus</li>
+                <li>2.3. Instalar openldap-servers y openldap-clients</li>
+                <li>2.4. Configurar la base de datos LDAP</li>
+                <li>2.5. Iniciar y habilitar slapd</li>
+                <li>2.6. Generar la contraseña del administrador</li>
+                <li>2.7. Configurar la contraseña del administrador de LDAP</li>
+                <li>2.8. Aplicar la contraseña del administrador</li>
+                <li>2.9.  Importar los esquemas básicos</li>
+                <li>2.10. Configurar el dominio LDAP</li>
+                <li>2.11. Aplicar la configuración del dominio</li>
+                <li>2.12. Crear las unidades organizativas</li>
+                <li>2.13. Aplicar las unidades organizativas</li>
+                <li>2.14. Crear el grupo cuerda</li>
+                <li>2.15. Añadir el grupo al directorio</li>
+                <li>2.16. Crear los usuarios del clúster</li>
+                <li>2.17. Añadir los usuarios al directorio</li>
+                <li>2.18. Verificar el servidor LDAP</li>
+                <li>2.19. Verificar únicamente los usuarios</li>
+                <li>2.20. Resumen de la Fase 2</li>
+            </ul>
+        </li>
+        <li><a href="#fase3">3. FASE 3: CONFIGURACIÓN TLS EN LDAP</a>
+            <ul style="columns: 1;">
+                <li>3.1. Instalar openssl</li>
+                <li>3.2. Crear la estructura de directorios para la CA</li>
+                <li>3.3. Generar la clave privada de la CA</li>
+                <li>3.4. Generar el certificado de la CA</li>
+                <li>3.5. Crear el archivo de extensiones SAN</li>
+                <li>3.6. Crear el directorio para los certificados del servidor</li>
+                <li>3.7. Generar la clave privada del servidor LDAP</li>
+                <li>3.8. Generar la solicitud de firma de certificado (CSR)</li>
+                <li>3.9.  Firmar el certificado del servidor con la CA</li>
+                <li>3.10. Verificar el certificado</li>
+                <li>3.11. Verificar que contiene las IPs y DNS correctos</li>
+                <li>3.12. Copiar los certificados a los directorios de OpenLDAP</li>
+                <li>3.13. Verificar las rutas actuales de certificados en LDAP</li>
+                <li>3.14. Crear el archivo LDIF para configurar los certificados TLS</li>
+                <li>3.15. Aplicar la configuración TLS</li>
+                <li>3.16. Crear el archivo LDIF para añadir el certificado de la CA</li>
+                <li>3.17. Aplicar la configuración del certificado CA</li>
+                <li>3.18. Verificar que los nuevos valores se han aplicado</li>
+                <li>3.19.  Configurar el cliente LDAP local para TLS</li>
+                <li>3.20. Reiniciar slapd</li>
+                <li>3.21. Probar la conexión LDAP con TLS</li>
+                <li>3.22. Configurar el firewall (opcional)</li>
+                <li>3.23. Resumen de la Fase 3</li>
+            </ul>
+        </li>
+        <li><a href="#fase4">4. FASE 4: CONFIGURACIÓN DE LOS NODOS CLIENTE</a>
+            <ul style="columns: 1;">
+                <li>4.1. Configuración base de compute-0-1</li>
+                <li>4.2. Crear compute-0-2 y compute-0-3 como clones de compute-0-1</li>
+                <li>4.3.  Comprobación previa del clúster LDAP</li>
+                <li>4.4.  Configurar compute-0-1 como cliente LDAP</li>
+                <li>4.5. Repetir la configuración LDAP en compute-0-2 y compute-0-3</li>
+                <li>4.6. Resumen de la Fase 4</li>
+            </ul>
+        </li>
+        <li><a href="#fase5">5. FASE 5: NFS Y AUTOFS</a>
+            <ul style="columns: 1;">
+                <li>5.1. Configurar el servidor NFS en compute-0-0</li>
+                <li>5.2. Configurar NFS cliente y Autofs en los nodos cliente</li>
+                <li>5.3. Probar NFS y Autofs</li>
+                <li>5.4. Resumen de la Fase 5</li>
+            </ul>
+        </li>
+        <li><a href="#fase6">6. FASE 6: SLURM — GESTOR DE TAREAS</a>
+            <ul style="columns: 1;">
+                <li>6.1.  Instalar Munge en todos los nodos</li>
+                <li>6.2.  Instalar el controlador Slurm en compute-0-0</li>
+                <li>6.3.  Instalar Slurm en los nodos cliente</li>
+                <li>6.4. Solución de problemas con CPUs (Si no funciona)</li>
+                <li>6.4.1  No funciona tras reiniciar nodos.</li>
+                <li>6.5. Probar trabajos en Slurm</li>
+                <li>6.6. Resumen de la Fase 6</li>
+            </ul>
+        </li>
+        <li><a href="#fase7">7. FASE 7: ENVIRONMENT MODULES</a>
+            <ul style="columns: 1;">
+                <li>7.1.  Instalar Environment Modules en todos los nodos</li>
+                <li>7.2.  Instalar Environment Modules en todos los nodos (creación directorios)</li>
+                <li>7.3.  Instalar Environment Modules en todos los nodos (script test)</li>
+                <li>7.4.  Crear el modulefile</li>
+                <li>7.5.  Exportar /export por NFS</li>
+                <li>7.6.  Configurar Autofs para /export en los clientes</li>
+                <li>7.7.  Distribuir el modulefile a los clientes</li>
+                <li>7.8.  Probar el módulo en compute-0-0</li>
+                <li>7.9.  Probar el módulo en los clientes</li>
+                <li>7.10.  Probar Slurm con el módulo cargado</li>
+                <li>7.11.  Resumen de la Fase 7</li>
+            </ul>
+        </li>
+        <li><a href="#ssh">8. CONFIGURAR SSH SIN CONTRASEÑA DESDE COMPUTE-0-0 A NODOS</a>
+            <ul style="columns: 1;">
+                <li>8.1. Verificar si ya existe una clave SSH</li>
+                <li>8.2. Generar el par de claves SSH</li>
+                <li>8.3. Copiar la clave pública a cada nodo cliente</li>
+                <li>8.4. Verificar el acceso sin contraseña por IP</li>
+                <li>8.5.  ¿Por qué es IMPORTANTE este paso?</li>
+            </ul>
+        </li>
     </ul>
 </div>
 
-<h2 id="introduccion">Introducción de la actividad</h2>
-<p>Actualmente dentro del campo de la administración de sistemas y las infraestructuras de computación de alto rendimiento (HPC), es importante poder configurar y disponer de entornos centralizados donde los usuarios puedan autenticarse desde cualquier dispositivo o nodo, con el fin de compartir sus datos de forma transparente y ejecutar tareas de manera distribuida. Los centros de investigación, universidades y empresas tecnológicas gestionan cientos o miles de servidores como si fueran uno solo, gracias a tecnologías como LDAP, NFS, Slurm y Environment Modules.</p>
-<p>En esta actividad, construiremos desde cero un clúster de cuatro máquinas virtuales con Rocky Linux, implementando cada uno de estos servicios de forma integrada. Al finalizar, tendremos un entorno funcional similar al de un centro de supercomputación, aunque a menor escala.</p>
+<!-- ================= INTRODUCCIÓN ================= -->
+<h2 id="introduccion">INTRODUCCIÓN DE LA ACTIVIDAD</h2>
+<p>Actualmente dentro del campo de la administración de sistemas y las infraestructuras de computación de alto rendimiento (HPC), es importante el poder configurar y disponer de entornos centralizados donde los usuarios puedan autenticarse desde cualquier dispositivo o nodo, con el fin de compartir sus datos de forma transparente y ejecutar tareas de manera distribuida. Los centros de investigación, universidades y empresas tecnológicas gestionan cientos o miles de servidores como si fueran uno solo, gracias a tecnologías como LDAP, NFS, Slurm y Environment Modules.</p>
+<p>En esta actividad, tenemos que construir desde cero un clúster de cuatro máquinas virtuales con Rocky Linux, implementando cada uno de estos servicios de forma integrada. Al finalizar, tendremos un entorno funcional similar al de un centro de supercomputación, aunque a menor escala.</p>
+
+<p>El objetivos a conseguir al completar esta actividad, seremos capaces de:</p>
+<ol>
+    <li>Diseñar e implementar una infraestructura de red interna con enrutamiento NAT.</li>
+    <li>Configurar un servidor LDAP con TLS para centralizar la autenticación de usuarios.</li>
+    <li>Configurar clientes LDAP usando SSSD para que los nodos del clúster autentiquen contra el servidor central.</li>
+    <li>Implementar NFS y Autofs para que los directorios home de los usuarios sean compartidos y se monten automáticamente bajo demanda.</li>
+    <li>Desplegar Slurm como gestor de tareas, definiendo particiones con diferentes conjuntos de nodos.</li>
+    <li>Instalar y configurar Environment Modules para gestionar dinámicamente el software del clúster.</li>
+    <li>Automatizar la administración mediante SSH sin contraseña desde el nodo maestro.</li>
+</ol>
 
 <h2 id="escenario">Escenario propuesto</h2>
 <p>Una pequeña unidad de investigación necesita montar un clúster de computación con las siguientes características:</p>
 <ul>
-    <li><strong>4 máquinas virtuales con Rocky Linux Minimal</strong>
+    <li><strong>4 máquinas virtuales con Rocky Linux Minimal:</strong>
         <ul>
             <li><code>compute-0-0</code>: nodo maestro (servidor LDAP, servidor NFS, controlador Slurm, router NAT)</li>
             <li><code>compute-0-1</code>: nodo de cómputo (cliente LDAP, cliente NFS, slurmd)</li>
@@ -190,62 +384,94 @@ Alumno: Julián_CO<br>
     <li><strong>Software compartido</strong>: todos los nodos deben poder ejecutar una aplicación de prueba (<code>test.x</code>) cargando un módulo de Environment Modules.</li>
 </ul>
 
+<p><strong>Requisitos previos antes de comenzar con la actividad:</strong></p>
+<ul>
+    <li>VirtualBox instalado en tu equipo.</li>
+    <li>ISO de Rocky Linux Minimal (versión 9).</li>
+    <li>Conocimientos básicos de Linux: edición de archivos, comandos de red, gestión de servicios con systemd.</li>
+    <li>Al menos 8 GB de RAM disponibles en el equipo anfitrión para ejecutar las cuatro máquinas virtuales simultáneamente.</li>
+    <li>Espacio en disco suficiente para cuatro máquinas virtuales con clones enlazados (aproximadamente 15-20 GB en total).</li>
+</ul>
+
+<!-- ================= FASE 1 ================= -->
 <h2 id="fase1">1. FASE 1: PREPARACIÓN DEL ENTORNO</h2>
 <p>Esta fase es la base de todo el proyecto. Antes de instalar cualquier servicio, necesitamos que las cuatro máquinas virtuales estén correctamente configuradas, se vean entre sí y tengan acceso a internet a través del nodo maestro. Si esta fase no queda bien, todo lo que viene después fallará.</p>
 
 <h3>1.1. Instalación de Rocky Linux Minimal</h3>
-<p>El punto de partida es tener Rocky Linux Minimal instalado en la máquina que actuará como nodo maestro (<code>compute-0-0</code>).</p>
+<p>El punto de partida es tener Rocky Linux Minimal instalado en la máquina que actuará como nodo maestro (compute-0-0). Esta máquina es la más importante del clúster: será servidor LDAP, servidor NFS, controlador de Slurm y router para el resto de nodos.
+La configuración mínima recomendada es:</p>
 <ul>
     <li>Disco: 200 GB</li>
     <li>RAM: 2 GB mínimo</li>
-    <li>Adaptador 1: Red NAT</li>
-    <li>Adaptador 2: Red Interna</li>
+    <li>Adaptador 1: Red NAT (para salida a internet y podernos conectar por ssh con reenvio de puertos)</li>
+    <li>Adaptador 2: Red Interna (para comunicación con los nodos cliente)</li>
 </ul>
 
-<h3>1.2. Instalar nano</h3>
+<h3>1.2. Instalar nano (si no viene instalado)</h3>
+<p>Aunque hemos trabajado con el editor “vi” inicialmente trabajaremos con nano, ya que lo conocemos mas, y para conseguir ir mas rápido. Rocky Linux Minimal no siempre incluye nano por defecto. Lo instalamos antes de empezar para poder editar archivos de configuración cómodamente a lo largo de todo el manual.</p>
 <pre><code>dnf install -y nano</code></pre>
 
-<h3>1.3. Configuración de red en compute-0-0</h3>
-<p>Configuramos la red con <code>nmtui</code>. Los pasos detallados se encuentran en el manual completo. La configuración final debe ser:</p>
-<ul>
-    <li><code>enp0s3</code> (NAT): <code>10.4.104.110/8</code>, gateway <code>10.0.0.1</code>, DNS <code>8.8.8.8</code></li>
-    <li><code>enp0s8</code> (Red Interna): <code>172.16.0.10/24</code></li>
-</ul>
+<h3>1.3. Configuración de red en compute-0-0 (Red NAT + Red Interna)</h3>
+<p>Este es uno de los pasos más importantes de la fase. compute-0-0 necesita dos interfaces de red: una con salida a internet (NAT) y otra para comunicarse con los nodos del clúster (Red Interna).
+Primero comprobamos los nombres de las interfaces disponibles:</p>
+<pre><code>ip a</code></pre>
+<p>Configuramos la red con nmtui:</p>
+<pre><code>nmtui</code></pre>
+<p>Dentro de nmtui seguimos estos pasos:</p>
+<ol>
+    <li>Seleccionar "Edit a connection" → Enter</li>
+    <li>Seleccionar la primera interfaz (NAT, enp0s3) → Enter</li>
+    <li>Configurar: IPv4 CONFIGURATION: &lt;Manual&gt;, Addresses: 10.4.104.110/8, Gateway: 10.0.0.1, DNS servers: 8.8.8.8</li>
+    <li>Navegar a "OK" → Enter</li>
+    <li>Seleccionar la segunda interfaz (Red Interna, enp0s8) → Enter</li>
+    <li>Configurar: IPv4 CONFIGURATION: &lt;Manual&gt;, Addresses: 172.16.0.10/24, Gateway: dejar vacío, DNS servers: dejar vacío</li>
+    <li>Navegar a "OK" → Enter → "Back" → "Quit"</li>
+</ol>
+<p>Reiniciamos las interfaces:</p>
+<pre><code>nmcli connection down enp0s3
+nmcli connection up enp0s3
+nmcli connection down enp0s8
+nmcli connection up enp0s8</code></pre>
+<p>Verificamos:</p>
 <pre><code>ip a | grep inet</code></pre>
+<p>Resultado esperado: enp0s3 con IP 10.4.104.110/8, enp0s8 con IP 172.16.0.10/24</p>
+<pre><code>ip route</code></pre>
+<p>Resultado esperado: default via 10.0.0.1 dev enp0s3</p>
+<pre><code>ping -c 2 8.8.8.8</code></pre>
 
-<h3>1.4. Configurar hostname</h3>
+<h3>1.4. Configurar el hostname</h3>
 <pre><code>hostnamectl set-hostname compute-0-0
 hostname</code></pre>
+<p>Resultado esperado: compute-0-0</p>
 
 <h3>1.5. Configurar /etc/hosts</h3>
 <pre><code>nano /etc/hosts</code></pre>
-<p>Contenido:</p>
+<p>El contenido debe quedar así:</p>
 <pre><code>127.0.0.1   localhost localhost.localdomain
 172.16.0.10 compute-0-0
 172.16.0.11 compute-0-1
 172.16.0.12 compute-0-2
 172.16.0.13 compute-0-3</code></pre>
 
-<h3>1.6. Configurar contraseña de root</h3>
+<h3>1.6. Configurar la contraseña de root</h3>
 <pre><code>passwd root</code></pre>
-<p>Contraseña: <code>alumno</code></p>
+<p>Contraseña: alumno (introducir dos veces)</p>
 
-<h3>1.7. Configurar SSH</h3>
+<h3>1.7. Configurar SSH para permitir conexiones como root</h3>
 <pre><code>nano /etc/ssh/sshd_config</code></pre>
-<p>Modificar:</p>
-<pre><code>PermitRootLogin yes
-PasswordAuthentication yes</code></pre>
-<pre><code>systemctl restart sshd</code></pre>
+<p>Modificar: PermitRootLogin yes, PasswordAuthentication yes</p>
+<pre><code>systemctl restart sshd
+systemctl status sshd</code></pre>
 
-<h3>1.8. Actualizar sistema e instalar herramientas</h3>
+<h3>1.8. Actualizar el sistema e instalar herramientas básicas</h3>
 <pre><code>dnf update -y
 dnf install -y vim curl wget net-tools nmap telnet</code></pre>
 
-<h3>1.9. Deshabilitar firewall</h3>
+<h3>1.9. Deshabilitar el firewall</h3>
 <pre><code>systemctl stop firewalld
 systemctl disable firewalld</code></pre>
 
-<h3>1.10. Configurar enrutamiento NAT</h3>
+<h3>1.10. Configurar el enrutamiento NAT</h3>
 <pre><code>echo 1 > /proc/sys/net/ipv4/ip_forward
 nano /etc/sysctl.conf
 # Añadir: net.ipv4.ip_forward = 1
@@ -259,20 +485,16 @@ systemctl enable iptables</code></pre>
     <strong>✅ Resumen FASE 1:</strong> Hostname, IPs, /etc/hosts, SSH, firewall, IP forwarding y NAT configurados correctamente.
 </div>
 
+<!-- ================= FASE 2 (solo estructura compacta) ================= -->
 <h2 id="fase2">2. FASE 2: SERVIDOR LDAP EN COMPUTE-0-0</h2>
+<p>LDAP (Lightweight Directory Access Protocol) es el servicio que va a permitir que los usuarios julian1, julian2, julian3 y julian4 puedan autenticarse en cualquier nodo del clúster con las mismas credenciales. En esta fase lo instalamos y configuramos completamente en compute-0-0.</p>
 
-<h3>2.1. Actualizar sistema</h3>
-<pre><code>dnf update -y</code></pre>
+<pre><code>dnf update -y
+dnf config-manager --set-enabled plus
+dnf clean all
+dnf install -y openldap-servers openldap-clients
 
-<h3>2.2. Habilitar repositorio plus</h3>
-<pre><code>dnf config-manager --set-enabled plus
-dnf clean all</code></pre>
-
-<h3>2.3. Instalar openldap</h3>
-<pre><code>dnf install -y openldap-servers openldap-clients</code></pre>
-
-<h3>2.4. Configurar base de datos LDAP</h3>
-<pre><code>mkdir -p /var/lib/ldap
+mkdir -p /var/lib/ldap
 cat > /var/lib/ldap/DB_CONFIG <<EOF
 set_cachesize 0 268435456 1
 set_lg_regionmax 262144
@@ -280,218 +502,127 @@ set_lg_bsize 2097152
 set_flags DB_LOG_AUTOREMOVE
 EOF
 chown ldap:ldap /var/lib/ldap/DB_CONFIG
-chown ldap:ldap /var/lib/ldap</code></pre>
+chown ldap:ldap /var/lib/ldap
 
-<h3>2.5. Iniciar slapd</h3>
-<pre><code>systemctl enable --now slapd
-systemctl status slapd</code></pre>
+systemctl enable --now slapd
+slappasswd   # contraseña: alumno (guardar hash)
 
-<h3>2.6. Generar contraseña administrador</h3>
-<pre><code>slappasswd</code></pre>
-<p>Contraseña: <code>alumno</code>. Se generará un hash similar a <code>{SSHA}FL7+NEcna8h5x96OtTrlEiPKOZSI+8Ar</code>.</p>
+nano changerootpw.ldif
+# Contenido: dn: olcDatabase={0}config,cn=config
+# changetype: modify
+# add: olcRootPW
+# olcRootPW: {SSHA}... (hash generado)
 
-<h3>2.7. Configurar contraseña admin</h3>
-<pre><code>nano changerootpw.ldif</code></pre>
-<pre><code>dn: olcDatabase={0}config,cn=config
-changetype: modify
-add: olcRootPW
-olcRootPW: {SSHA}FL7+NEcna8h5x96OtTrlEiPKOZSI+8Ar</code></pre>
-<pre><code>ldapadd -Y EXTERNAL -H ldapi:/// -f changerootpw.ldif</code></pre>
+ldapadd -Y EXTERNAL -H ldapi:/// -f changerootpw.ldif
 
-<h3>2.8. Importar esquemas</h3>
-<pre><code>ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/cosine.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/cosine.ldif
 ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/nis.ldif
-ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/inetorgperson.ldif</code></pre>
+ldapadd -Y EXTERNAL -H ldapi:/// -f /etc/openldap/schema/inetorgperson.ldif
 
-<h3>2.9. Configurar dominio</h3>
-<pre><code>nano setdomainname.ldif</code></pre>
-<pre><code>dn: olcDatabase={2}mdb,cn=config
-changetype: modify
-replace: olcSuffix
-olcSuffix: dc=ldap,dc=julian,dc=local
+nano setdomainname.ldif   # (contenido según manual)
+ldapmodify -Y EXTERNAL -H ldapi:/// -f setdomainname.ldif
 
-dn: olcDatabase={2}mdb,cn=config
-changetype: modify
-replace: olcRootDN
-olcRootDN: cn=admin,dc=ldap,dc=julian,dc=local
+nano adddomain.ldif   # crear UOs, admin, etc.
+ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f adddomain.ldif
 
-dn: olcDatabase={2}mdb,cn=config
-changetype: modify
-add: olcRootPW
-olcRootPW: {SSHA}FL7+NEcna8h5x96OtTrlEiPKOZSI+8Ar</code></pre>
-<pre><code>ldapmodify -Y EXTERNAL -H ldapi:/// -f setdomainname.ldif</code></pre>
+nano grupo.ldif
+ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f grupo.ldif
 
-<h3>2.10. Crear unidades organizativas</h3>
-<pre><code>nano adddomain.ldif</code></pre>
-<pre><code>dn: dc=ldap,dc=julian,dc=local
-objectClass: top
-objectClass: dcObject
-objectclass: organization
-o: julian
-dc: ldap
+nano addtestuser.ldif   # julian1..julian4 UID 1010-1013
+ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f addtestuser.ldif
 
-dn: cn=admin,dc=ldap,dc=julian,dc=local
-objectClass: organizationalRole
-cn: admin
-description: OpenLDAP Manager
-
-dn: ou=usuarios,dc=ldap,dc=julian,dc=local
-objectClass: organizationalUnit
-ou: usuarios
-
-dn: ou=grupos,dc=ldap,dc=julian,dc=local
-objectClass: organizationalUnit
-ou: grupos</code></pre>
-<pre><code>ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f adddomain.ldif</code></pre>
-
-<h3>2.11. Crear grupo cuerda</h3>
-<pre><code>nano grupo.ldif</code></pre>
-<pre><code>dn: cn=cuerda,ou=grupos,dc=ldap,dc=julian,dc=local
-objectClass: posixGroup
-cn: cuerda
-gidNumber: 501</code></pre>
-<pre><code>ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f grupo.ldif</code></pre>
-
-<h3>2.12. Crear usuarios</h3>
-<pre><code>nano addtestuser.ldif</code></pre>
-<p>Contenido para <code>julian1</code>, <code>julian2</code>, <code>julian3</code>, <code>julian4</code> con UIDs 1010-1013.</p>
-<pre><code>ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f addtestuser.ldif</code></pre>
-
-<h3>2.13. Verificar</h3>
-<pre><code>ldapsearch -xLLL -b "dc=ldap,dc=julian,dc=local"</code></pre>
+ldapsearch -xLLL -b "dc=ldap,dc=julian,dc=local"</code></pre>
 
 <div class="exito">
-    <strong>✅ Resumen FASE 2:</strong> Servidor LDAP instalado con dominio <code>ldap.julian.local</code>, grupo <code>cuerda</code> (GID 501) y usuarios <code>julian1-4</code> (UID 1010-1013).
+    <strong>✅ Resumen FASE 2:</strong> Servidor LDAP instalado con dominio ldap.julian.local, grupo cuerda (GID 501) y usuarios julian1-4 (UID 1010-1013).
 </div>
 
+<!-- ================= FASE 3 TLS ================= -->
 <h2 id="fase3">3. FASE 3: CONFIGURACIÓN TLS EN LDAP</h2>
+<p>Las comunicaciones LDAP se cifran mediante TLS. Creamos nuestra propia Autoridad Certificadora (CA), generamos certificado para el servidor LDAP y lo configuramos.</p>
 
-<h3>3.1. Instalar openssl</h3>
-<pre><code>dnf install -y openssl</code></pre>
-
-<h3>3.2. Crear estructura CA</h3>
-<pre><code>mkdir -p /etc/pki/CA
-cd /etc/pki/CA
+<pre><code>dnf install -y openssl
+mkdir -p /etc/pki/CA &amp;&amp; cd /etc/pki/CA
 mkdir -p private certs newcerts crl
-touch index.txt
-echo 01 > serial</code></pre>
+touch index.txt &amp;&amp; echo 01 > serial
 
-<h3>3.3. Generar clave CA</h3>
-<pre><code>openssl genrsa -out ca.key 4096
-chmod 600 ca.key</code></pre>
+openssl genrsa -out ca.key 4096 &amp;&amp; chmod 600 ca.key
+openssl req -new -x509 -days 365 -key ca.key -out ca.cert.pem
+# Rellenar con ES, Madrid, IESQuevedo, INF, ldap.julian.local
 
-<h3>3.4. Generar certificado CA</h3>
-<pre><code>openssl req -new -x509 -days 365 -key ca.key -out ca.cert.pem</code></pre>
-<p>Datos: ES, Madrid, Madrid, IESQuevedo, INF, ldap.julian.local, tuemail@educa.madrid.org</p>
+nano server_cert_ext.cnf   # incluir IPs 172.16.0.10-14 y DNS ldap.julian.local
+cd /etc/pki/CA/private
+openssl genrsa -out ldap.julian.local.key 4096 &amp;&amp; chmod 600 ldap.julian.local.key
+openssl req -new -key ldap.julian.local.key -out ldap.julian.local.csr
 
-<h3>3.5. Crear extensiones SAN</h3>
-<pre><code>nano /etc/pki/CA/server_cert_ext.cnf</code></pre>
-<p>Contenido con IPs 172.16.0.10-14 y DNS ldap.julian.local.</p>
+cd /etc/pki/CA
+openssl ca -keyfile ca.key -cert ca.cert.pem -in private/ldap.julian.local.csr -out private/ldap.julian.local.crt -extensions v3_ca -extfile server_cert_ext.cnf
 
-<h3>3.6. Generar clave servidor</h3>
-<pre><code>cd /etc/pki/CA/private
-openssl genrsa -out ldap.julian.local.key 4096
-chmod 600 ldap.julian.local.key</code></pre>
-
-<h3>3.7. Generar CSR</h3>
-<pre><code>openssl req -new -key ldap.julian.local.key -out ldap.julian.local.csr</code></pre>
-
-<h3>3.8. Firmar certificado</h3>
-<pre><code>cd /etc/pki/CA
-openssl ca -keyfile ca.key -cert ca.cert.pem -in private/ldap.julian.local.csr -out private/ldap.julian.local.crt -extensions v3_ca -extfile server_cert_ext.cnf</code></pre>
-
-<h3>3.9. Copiar certificados a OpenLDAP</h3>
-<pre><code>mkdir -p /etc/openldap/cacerts
+mkdir -p /etc/openldap/cacerts
 cp /etc/pki/CA/private/ldap.julian.local.crt /etc/openldap/certs/
 cp /etc/pki/CA/private/ldap.julian.local.key /etc/openldap/certs/
 cp /etc/pki/CA/ca.cert.pem /etc/openldap/cacerts/
-chown -R ldap:ldap /etc/openldap/certs
-chown -R ldap:ldap /etc/openldap/cacerts
-chmod 600 /etc/openldap/certs/ldap.julian.local.key</code></pre>
+chown -R ldap:ldap /etc/openldap/certs /etc/openldap/cacerts
+chmod 600 /etc/openldap/certs/ldap.julian.local.key
 
-<h3>3.10. Configurar TLS en LDAP</h3>
-<pre><code>nano /root/tls7.ldif</code></pre>
-<pre><code>dn: cn=config
-changetype: modify
-replace: olcTLSCertificateFile
-olcTLSCertificateFile: /etc/openldap/certs/ldap.julian.local.crt
--
-replace: olcTLSCertificateKeyFile
-olcTLSCertificateKeyFile: /etc/openldap/certs/ldap.julian.local.key</code></pre>
-<pre><code>ldapmodify -Y EXTERNAL -H ldapi:/// -f /root/tls7.ldif</code></pre>
+nano /root/tls7.ldif   # reemplazar rutas certificados
+ldapmodify -Y EXTERNAL -H ldapi:/// -f /root/tls7.ldif
 
-<pre><code>nano /root/tls7_1.ldif</code></pre>
-<pre><code>dn: cn=config
-changetype: modify
-add: olcTLSCACertificateFile
-olcTLSCACertificateFile: /etc/openldap/cacerts/ca.cert.pem</code></pre>
-<pre><code>ldapmodify -Y EXTERNAL -H ldapi:/// -f /root/tls7_1.ldif</code></pre>
+nano /root/tls7_1.ldif   # añadir olcTLSCACertificateFile
+ldapmodify -Y EXTERNAL -H ldapi:/// -f /root/tls7_1.ldif
 
-<h3>3.11. Configurar cliente LDAP</h3>
-<pre><code>nano /etc/openldap/ldap.conf</code></pre>
-<p>Añadir:</p>
-<pre><code>TLS_CACERTDIR /etc/openldap/certs
-TLS_CACERT /etc/openldap/cacerts/ca.cert.pem
-TLS_REQCERT allow</code></pre>
-
-<h3>3.12. Probar conexión TLS</h3>
-<pre><code>systemctl restart slapd
+nano /etc/openldap/ldap.conf   # TLS_CACERTDIR, TLS_CACERT, TLS_REQCERT allow
+systemctl restart slapd
 ldapsearch -x -ZZ -b "dc=ldap,dc=julian,dc=local"</code></pre>
 
 <div class="exito">
     <strong>✅ Resumen FASE 3:</strong> Comunicaciones LDAP cifradas con TLS, certificados propios creados y configurados.
 </div>
 
+<!-- ================= FASE 4 clientes ================= -->
 <h2 id="fase4">4. FASE 4: CONFIGURACIÓN DE LOS NODOS CLIENTE</h2>
+<p>Configuración base de compute-0-1, clones compute-0-2, compute-0-3, y posterior configuración como cliente LDAP (SSSD, authselect, oddjobd).</p>
+<pre><code># En compute-0-1
+nmtui   # IP 172.16.0.11/24, gateway 172.16.0.10, DNS 8.8.8.8
+hostnamectl set-hostname compute-0-1
+nano /etc/hosts   # incluir todos los nodos y alias ldap.julian.local
+passwd root
+dnf install -y openldap-clients sssd sssd-ldap oddjob-mkhomedir
 
-<h3>4.1. Configurar compute-0-1</h3>
-<p>Configurar red, hostname, /etc/hosts, SSH, firewall, instalar paquetes cliente LDAP y configurar SSSD. Los comandos detallados están en el manual completo.</p>
-
-<h3>4.2. Crear clones compute-0-2 y compute-0-3</h3>
-<p>Clonar compute-0-1 en VirtualBox y ajustar hostname e IP.</p>
-
-<h3>4.3. Configurar cliente LDAP en compute-0-1</h3>
-<pre><code>dnf install -y openldap-clients sssd sssd-ldap oddjob-mkhomedir
-nano /etc/sssd/sssd.conf
+nano /etc/sssd/sssd.conf   # (contenido del manual)
 chmod 600 /etc/sssd/sssd.conf
 systemctl enable --now sssd
 authselect select sssd with-mkhomedir --force
-systemctl enable --now oddjobd</code></pre>
+systemctl enable --now oddjobd
 
-<h3>4.4. Verificar</h3>
-<pre><code>getent passwd julian1
+getent passwd julian1   # debe mostrar el usuario
 su - julian1</code></pre>
+<p>Los mismos pasos se replican en compute-0-2 y compute-0-3 (clones).</p>
 
 <div class="exito">
     <strong>✅ Resumen FASE 4:</strong> Clientes LDAP configurados, usuarios LDAP visibles y autenticación funcionando.
 </div>
 
+<!-- ================= FASE 5 NFS y AUTOFS ================= -->
 <h2 id="fase5">5. FASE 5: NFS Y AUTOFS</h2>
-
-<h3>5.1. Servidor NFS en compute-0-0</h3>
-<pre><code>dnf install -y nfs-utils
+<pre><code># Servidor NFS (compute-0-0)
+dnf install -y nfs-utils
 systemctl enable --now rpcbind nfs-server
 mkdir -p /home/julian{1,2,3,4}
-chown 1010:501 /home/julian1
-chown 1011:501 /home/julian2
-chown 1012:501 /home/julian3
-chown 1013:501 /home/julian4
+chown 1010:501 /home/julian1 &amp;&amp; chown 1011:501 /home/julian2 &amp;&amp; chown 1012:501 /home/julian3 &amp;&amp; chown 1013:501 /home/julian4
 chmod 755 /home/julian*
 echo "/home 172.16.0.0/24(rw,sync,no_subtree_check,no_root_squash)" >> /etc/exports
-exportfs -a
-systemctl restart nfs-server</code></pre>
+exportfs -a &amp;&amp; systemctl restart nfs-server
 
-<h3>5.2. Clientes NFS y Autofs</h3>
-<pre><code>dnf install -y nfs-utils autofs
-nano /etc/auto.master
-# Añadir: /home /etc/auto.home --timeout=60
-nano /etc/auto.home
-# Añadir: * -fstype=nfs,rw,hard,intr,noatime,nolock 172.16.0.10:/home/&
+# Clientes (cada nodo)
+dnf install -y nfs-utils autofs
+echo "/home /etc/auto.home --timeout=60" >> /etc/auto.master
+echo "* -fstype=nfs,rw,hard,intr,noatime,nolock 172.16.0.10:/home/&" > /etc/auto.home
 chmod 644 /etc/auto.home
-systemctl enable --now autofs</code></pre>
+systemctl enable --now autofs
 
-<h3>5.3. Probar</h3>
-<pre><code>su - julian1
+# Prueba
+su - julian1
 df -h | grep julian1
 cat bienvenida.txt
 exit</code></pre>
@@ -500,106 +631,83 @@ exit</code></pre>
     <strong>✅ Resumen FASE 5:</strong> Directorios home compartidos por NFS y montaje automático con Autofs.
 </div>
 
+<!-- ================= FASE 6 SLURM (resumido pero completo) ================= -->
 <h2 id="fase6">6. FASE 6: SLURM — GESTOR DE TAREAS</h2>
-
-<h3>6.1. Instalar Munge</h3>
-<pre><code>dnf install -y munge
+<p>Instalación de Munge, controlador slurmctld en compute-0-0, slurmd en clientes, particiones cuerda1 y cuerda2.</p>
+<pre><code># Munge
+dnf install -y munge
 dd if=/dev/urandom of=/etc/munge/munge.key bs=1024 count=1
-chown munge:munge /etc/munge/munge.key
-chmod 400 /etc/munge/munge.key
-# Copiar clave a clientes y configurar permisos
-systemctl enable --now munge</code></pre>
+chown munge:munge /etc/munge/munge.key &amp;&amp; chmod 400 /etc/munge/munge.key
+scp /etc/munge/munge.key root@172.16.0.11:/etc/munge/   # repetir para .12, .13
+systemctl enable --now munge
 
-<h3>6.2. Instalar controlador Slurm</h3>
-<pre><code>dnf install -y epel-release
-dnf install -y slurm slurm-slurmctld
+# Controlador Slurm (compute-0-0)
+dnf install -y epel-release &amp;&amp; dnf install -y slurm slurm-slurmctld
 useradd -r -s /sbin/nologin -d /var/spool/slurm -M slurm
 mkdir -p /var/spool/slurmctld /var/log/slurm /etc/slurm
-chown slurm:slurm /var/spool/slurmctld /var/log/slurm</code></pre>
+chown slurm:slurm /var/spool/slurmctld /var/log/slurm
 
-<h3>6.3. Configurar slurm.conf</h3>
-<pre><code>nano /etc/slurm/slurm.conf</code></pre>
-<p>Contenido completo con nodos y particiones (cuerda1, cuerda2).</p>
-<pre><code>systemctl enable --now slurmctld</code></pre>
+nano /etc/slurm/slurm.conf   # (contenido completo con ControlMachine, NodeName, PartitionName)
+systemctl enable --now slurmctld
 
-<h3>6.4. Instalar slurmd en clientes</h3>
-<pre><code>ssh root@172.16.0.11 "dnf install -y epel-release && dnf install -y slurm slurm-slurmd"
-# Crear usuario slurm, directorios, copiar slurm.conf
-systemctl enable --now slurmd</code></pre>
+# Nodos cliente
+ssh root@172.16.0.11 "dnf install -y epel-release &amp;&amp; dnf install -y slurm slurm-slurmd"
+ssh root@172.16.0.11 "useradd -r -s /sbin/nologin -d /var/spool/slurm -M slurm"
+scp /etc/slurm/slurm.conf root@172.16.0.11:/etc/slurm/
+ssh root@172.16.0.11 "systemctl enable --now slurmd"
 
-<h3>6.5. Probar Slurm</h3>
-<pre><code>sinfo
+# Verificación
+sinfo
 srun -p cuerda1 hostname
 srun -p cuerda2 -N2 hostname</code></pre>
 
 <div class="exito">
-    <strong>✅ Resumen FASE 6:</strong> Slurm funcionando con particiones <code>cuerda1</code> y <code>cuerda2</code>.
+    <strong>✅ Resumen FASE 6:</strong> Slurm funcionando con particiones cuerda1 y cuerda2.
 </div>
 
+<!-- ================= FASE 7 Environment Modules ================= -->
 <h2 id="fase7">7. FASE 7: ENVIRONMENT MODULES</h2>
-
-<h3>7.1. Instalar modules</h3>
 <pre><code>dnf install -y environment-modules
 source /etc/profile.d/modules.sh
-echo "source /etc/profile.d/modules.sh" >> /etc/bashrc</code></pre>
+echo "source /etc/profile.d/modules.sh" >> /etc/bashrc
 
-<h3>7.2. Crear aplicación test</h3>
-<pre><code>mkdir -p /export/apps/test/bin
-nano /export/apps/test/bin/test.x</code></pre>
-<pre><code>#!/bin/bash
-echo "Aplicación test.x ejecutada en: $(hostname)"
-echo "Usuario: $(whoami)"
-echo "Fecha: $(date)"
-echo "Environment Modules funcionando correctamente"</code></pre>
-<pre><code>chmod 755 /export/apps/test/bin/test.x</code></pre>
+mkdir -p /export/apps/test/bin
+nano /export/apps/test/bin/test.x   # script con hostname, whoami, date
+chmod 755 /export/apps/test/bin/test.x
 
-<h3>7.3. Crear modulefile</h3>
-<pre><code>mkdir -p /usr/share/modulefiles/test
-nano /usr/share/modulefiles/test/1.0</code></pre>
-<pre><code>#%Module1.0
-proc ModulesHelp { } {
-    puts stderr "Carga el entorno para la aplicación test"
-}
-module-whatis "Aplicación de prueba del clúster"
-prepend-path PATH /export/apps/test/bin</code></pre>
+mkdir -p /usr/share/modulefiles/test
+nano /usr/share/modulefiles/test/1.0   # #%Module, prepend-path PATH /export/apps/test/bin
 
-<h3>7.4. Exportar /export por NFS</h3>
-<pre><code>echo "/export 172.16.0.0/24(rw,sync,no_subtree_check,no_root_squash)" >> /etc/exports
-exportfs -a
-systemctl restart nfs-server</code></pre>
+echo "/export 172.16.0.0/24(rw,sync,no_subtree_check,no_root_squash)" >> /etc/exports
+exportfs -a &amp;&amp; systemctl restart nfs-server
 
-<h3>7.5. Configurar autofs para /export</h3>
-<pre><code>ssh root@172.16.0.11 "echo '/export /etc/auto.export --timeout=60' >> /etc/auto.master"
+# Autofs para /export en clientes
+ssh root@172.16.0.11 "echo '/export /etc/auto.export --timeout=60' >> /etc/auto.master"
 ssh root@172.16.0.11 "echo 'apps -fstype=nfs,rw,hard,intr,noatime,nolock 172.16.0.10:/export/apps' > /etc/auto.export"
-ssh root@172.16.0.11 "systemctl restart autofs"</code></pre>
+ssh root@172.16.0.11 "systemctl restart autofs"
 
-<h3>7.6. Probar módulo</h3>
-<pre><code>module avail
+# Distribuir modulefile
+scp /usr/share/modulefiles/test/1.0 root@172.16.0.11:/usr/share/modulefiles/test/1.0
+
+# Pruebas
+module avail
 module load test/1.0
 test.x</code></pre>
-
-<h3>7.7. Probar con Slurm</h3>
-<pre><code>sbatch -p cuerda1 /root/script_test.sh</code></pre>
 
 <div class="exito">
     <strong>✅ Resumen FASE 7:</strong> Environment Modules funcionando en todos los nodos, integración con Slurm exitosa.
 </div>
 
-<h2 id="ssh">8. CONFIGURAR SSH SIN CONTRASEÑA</h2>
-
-<h3>8.1. Generar clave SSH</h3>
-<pre><code>ssh-keygen -t rsa -b 4096 -N "" -f /root/.ssh/id_rsa</code></pre>
-
-<h3>8.2. Copiar clave a clientes</h3>
-<pre><code>ssh-copy-id root@172.16.0.11
+<!-- ================= SSH SIN CONTRASEÑA ================= -->
+<h2 id="ssh">8. CONFIGURAR SSH SIN CONTRASEÑA DESDE COMPUTE-0-0 A NODOS</h2>
+<pre><code>ssh-keygen -t rsa -b 4096 -N "" -f /root/.ssh/id_rsa
+ssh-copy-id root@172.16.0.11
 ssh-copy-id root@172.16.0.12
-ssh-copy-id root@172.16.0.13</code></pre>
+ssh-copy-id root@172.16.0.13
 
-<h3>8.3. Verificar</h3>
-<pre><code>ssh root@172.16.0.11 hostname
+ssh root@172.16.0.11 hostname
 ssh root@172.16.0.12 hostname
 ssh root@172.16.0.13 hostname</code></pre>
-
 <div class="advertencia">
     <strong>⚠️ Importante:</strong> Sin SSH sin contraseña, Slurm no funcionará correctamente, ya que el controlador necesita comunicarse con los nodos slurmd sin intervención manual.
 </div>
