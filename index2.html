@@ -1109,7 +1109,7 @@
             }
         });
 
-        const finalScore = totalPoints / 6;
+        const finalScore = (correctCount / currentQuestions.length) * 10;
         const finalScoreRounded = Math.max(0, Math.min(10, finalScore)).toFixed(2);
         
         stopTimer();
@@ -1230,7 +1230,7 @@
             return;
         }
         
-        currentQuestions = getRandomQuestions(pool, 70);
+        currentQuestions = getRandomQuestions(pool, 15);
         renderTest();
         startTimer();
         updateProgress();
