@@ -1,0 +1,1465 @@
+He integrado completamente tu información. He creado una página web que sigue **exactamente el mismo diseño y estructura** que el ejemplo que me diste (modo oscuro, sidebar fijo, hero gradient, tarjetas, bloques de código con botón de copiar, tablas estilizadas, etc.), pero con el **contenido adaptado a tu temario basado en Debian/Ubuntu** (usando `apt` en lugar de `dnf`).
+
+La página incluye:
+- **Sidebar fijo** con índice completo colapsable.
+- **Hero** con badges y gradientes.
+- **Todas las fases** (1 a 7 + anexo SSH) con pasos detallados.
+- **Bloques de código** con sintaxis coloreada y botón "copiar".
+- **Tablas** para respuestas de configuración (pantallas de `pam-auth-update`, etc.).
+- **Callouts** (info, warning, danger, success) para destacar información importante.
+- **Totalmente responsive** (sidebar colapsable en móvil).
+
+Aquí tienes el código HTML completo. Cópialo y guárdalo como `.html` para visualizarlo en tu navegador.
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clúster HPC con LDAP, NFS, Slurm y Modules — Debian/Ubuntu</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2430;
+  --border: #30363d;
+  --accent: #00d4ff;
+  --accent2: #7c3aed;
+  --accent3: #10b981;
+  --accent4: #f59e0b;
+  --danger: #ef4444;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --code-bg: #161b22;
+  --radius: 8px;
+  --sidebar-w: 280px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* SIDEBAR */
+#sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding-bottom: 2rem;
+}
+
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-track { background: var(--bg2); }
+#sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-header {
+  padding: 1.5rem 1.2rem 1rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg2);
+  z-index: 1;
+}
+
+.sidebar-logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+
+.sidebar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.toc-section { padding: 0.5rem 0; }
+
+.toc-group-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  padding: 0.8rem 1.2rem 0.3rem;
+}
+
+.toc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 1.2rem;
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 12.5px;
+  line-height: 1.4;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.toc-item:hover {
+  color: var(--text);
+  background: rgba(0,212,255,0.05);
+  border-left-color: var(--accent);
+}
+
+.toc-item.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: rgba(0,212,255,0.08);
+}
+
+.toc-item .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  flex-shrink: 0;
+  margin-top: 1px;
+  min-width: 28px;
+}
+
+.toc-sub {
+  padding-left: 2.2rem;
+}
+
+.toc-sub .toc-item {
+  font-size: 11.5px;
+  padding: 3px 1.2rem 3px 0;
+}
+
+/* MAIN */
+#main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+}
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, #0d1117 0%, #1a1033 50%, #0d1117 100%);
+  padding: 5rem 3rem 4rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  right: 5%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.25);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.hero h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.hero h1 span {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--text2);
+  max-width: 680px;
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.tag.green { border-color: rgba(16,185,129,0.4); color: var(--accent3); background: rgba(16,185,129,0.08); }
+.tag.blue { border-color: rgba(0,212,255,0.4); color: var(--accent); background: rgba(0,212,255,0.08); }
+.tag.purple { border-color: rgba(124,58,237,0.4); color: #a78bfa; background: rgba(124,58,237,0.08); }
+.tag.amber { border-color: rgba(245,158,11,0.4); color: var(--accent4); background: rgba(245,158,11,0.08); }
+
+/* INTRO BOX */
+.intro-section {
+  padding: 3rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.info-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.info-card-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.objective-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.objective-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--text2);
+}
+
+.objective-list li::before {
+  content: '→';
+  color: var(--accent3);
+  flex-shrink: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* NODE DIAGRAM */
+.node-diagram {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.node-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.node-item:hover { border-color: rgba(0,212,255,0.3); }
+
+.node-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.node-master .node-icon { background: rgba(124,58,237,0.2); }
+.node-client .node-icon { background: rgba(0,212,255,0.1); }
+
+.node-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.node-desc {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* CONTENT AREA */
+.content {
+  padding: 0 3rem 5rem;
+}
+
+/* PHASE HEADER */
+.phase-header {
+  padding: 3rem 0 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.phase-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+
+.phase-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.phase-desc {
+  color: var(--text2);
+  max-width: 700px;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+/* STEP */
+.step {
+  margin-bottom: 2.5rem;
+  scroll-margin-top: 20px;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.25);
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.step-title {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.step-body {
+  padding-left: 0;
+}
+
+.step-body p {
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+
+.step-body p:last-child { margin-bottom: 0; }
+
+/* CODE BLOCKS */
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-lang {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.copy-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+.code-block pre {
+  padding: 1.2rem 1.5rem;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #79c0ff;
+}
+
+/* RESULT BOX */
+.result-box {
+  background: rgba(16,185,129,0.05);
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+}
+
+.result-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--accent3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.result-box pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  color: #86efac;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+/* CALLOUTS */
+.callout {
+  display: flex;
+  gap: 14px;
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius);
+  margin: 1rem 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.callout-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.callout.warning {
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.25);
+  color: #fcd34d;
+}
+
+.callout.info {
+  background: rgba(0,212,255,0.06);
+  border: 1px solid rgba(0,212,255,0.2);
+  color: #7dd3fc;
+}
+
+.callout.success {
+  background: rgba(16,185,129,0.06);
+  border: 1px solid rgba(16,185,129,0.2);
+  color: #6ee7b7;
+}
+
+.callout.danger {
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: #fca5a5;
+}
+
+.callout p { margin: 0; }
+.callout strong { font-weight: 600; }
+
+/* TABLE */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 1rem 0;
+}
+
+.data-table th {
+  background: var(--bg3);
+  color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(48,54,61,0.5);
+  color: var(--text2);
+  vertical-align: top;
+}
+
+.data-table td:first-child {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* SUMMARY CARD */
+.summary-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-top: 2rem;
+}
+
+.summary-card-header {
+  background: var(--bg3);
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(48,54,61,0.4);
+  font-size: 13px;
+}
+
+.summary-item:last-child { border-bottom: none; }
+
+.summary-item-label { color: var(--text2); }
+
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.badge.ok { background: rgba(16,185,129,0.15); color: var(--accent3); border: 1px solid rgba(16,185,129,0.3); }
+.badge.pending { background: rgba(245,158,11,0.1); color: var(--accent4); border: 1px solid rgba(245,158,11,0.25); }
+
+/* DIVIDER */
+.phase-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 3rem 0;
+}
+
+/* INLINE CODE */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: rgba(110,118,129,0.15);
+  border: 1px solid rgba(110,118,129,0.2);
+  color: #79c0ff;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* LDIF BLOCK */
+.ldif-block {
+  background: #0d1b0d;
+  border: 1px solid rgba(16,185,129,0.25);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.ldif-block .code-header {
+  background: rgba(16,185,129,0.08);
+  border-bottom: 1px solid rgba(16,185,129,0.2);
+}
+
+.ldif-block .code-lang { color: var(--accent3); }
+
+.ldif-block pre {
+  padding: 1.2rem 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #86efac;
+  overflow-x: auto;
+}
+
+/* FOOTER */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 3rem;
+  background: var(--bg2);
+  color: var(--text3);
+  font-size: 13px;
+  text-align: center;
+}
+
+.footer strong { color: var(--text2); }
+
+/* MOBILE */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  #sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+  #sidebar.open { transform: translateX(0); }
+  #main { margin-left: 0; }
+  .menu-toggle { display: flex; }
+  .hero { padding: 3rem 1.5rem; }
+  .intro-grid { grid-template-columns: 1fr; }
+  .content { padding: 0 1.5rem 4rem; }
+  .intro-section { padding: 2rem 1.5rem; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero > * {
+  animation: fadeIn 0.6s ease both;
+}
+.hero > *:nth-child(1) { animation-delay: 0.1s; }
+.hero > *:nth-child(2) { animation-delay: 0.2s; }
+.hero > *:nth-child(3) { animation-delay: 0.3s; }
+.hero > *:nth-child(4) { animation-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">🖥 1º ASIR · ISO</div>
+    <div class="sidebar-title">Clúster HPC<br>Debian/Ubuntu</div>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Introducción</div>
+    <a href="#intro" class="toc-item"><span class="num">00</span>Descripción de la actividad</a>
+    <a href="#escenario" class="toc-item"><span class="num">00</span>Escenario y requisitos</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 1</div>
+    <a href="#fase1" class="toc-item"><span class="num">1.</span>Preparación del servidor</a>
+    <div class="toc-sub">
+      <a href="#s1-1" class="toc-item"><span class="num">1.1</span>Verificar hostname/IP</a>
+      <a href="#s1-2" class="toc-item"><span class="num">1.2</span>/etc/hosts</a>
+      <a href="#s1-3" class="toc-item"><span class="num">1.3</span>Conectividad</a>
+    </div>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 2</div>
+    <a href="#fase2" class="toc-item"><span class="num">2.</span>Servidor LDAP</a>
+    <div class="toc-sub">
+      <a href="#s2-1" class="toc-item"><span class="num">2.1</span>Instalar slapd</a>
+      <a href="#s2-2" class="toc-item"><span class="num">2.2</span>Reconfigurar slapd</a>
+      <a href="#s2-3" class="toc-item"><span class="num">2.3</span>Verificar instalación</a>
+      <a href="#s2-4" class="toc-item"><span class="num">2.4</span>Crear UOs, grupo, usuarios</a>
+    </div>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 3</div>
+    <a href="#fase3" class="toc-item"><span class="num">3.</span>Clientes LDAP</a>
+    <div class="toc-sub">
+      <a href="#s3-1" class="toc-item"><span class="num">3.1</span>Preparar compute-0-1</a>
+      <a href="#s3-2" class="toc-item"><span class="num">3.2</span>Instalar clientes LDAP</a>
+      <a href="#s3-3" class="toc-item"><span class="num">3.3</span>Configurar NSS/PAM</a>
+      <a href="#s3-4" class="toc-item"><span class="num">3.4</span>Verificar login</a>
+    </div>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 4</div>
+    <a href="#fase4" class="toc-item"><span class="num">4.</span>NFS y Autofs</a>
+    <div class="toc-sub">
+      <a href="#s4-1" class="toc-item"><span class="num">4.1</span>Servidor NFS</a>
+      <a href="#s4-2" class="toc-item"><span class="num">4.2</span>Clientes NFS + Autofs</a>
+    </div>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 5</div>
+    <a href="#fase5" class="toc-item"><span class="num">5.</span>Slurm</a>
+    <div class="toc-sub">
+      <a href="#s5-1" class="toc-item"><span class="num">5.1</span>Munge en todos</a>
+      <a href="#s5-2" class="toc-item"><span class="num">5.2</span>Controlador slurmctld</a>
+      <a href="#s5-3" class="toc-item"><span class="num">5.3</span>Nodos slurmd</a>
+    </div>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 6</div>
+    <a href="#fase6" class="toc-item"><span class="num">6.</span>Environment Modules</a>
+    <div class="toc-sub">
+      <a href="#s6-1" class="toc-item"><span class="num">6.1</span>Instalar modules</a>
+      <a href="#s6-2" class="toc-item"><span class="num">6.2</span>Crear test.x y modulefile</a>
+      <a href="#s6-3" class="toc-item"><span class="num">6.3</span>Exportar /export</a>
+      <a href="#s6-4" class="toc-item"><span class="num">6.4</span>Autofs para /export</a>
+    </div>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Anexo</div>
+    <a href="#ssh" class="toc-item"><span class="num">A.</span>SSH sin contraseña</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">⚡ 1º ASIR · Instalación de Sistemas Operativos</div>
+  <h1>Clúster <span>HPC</span><br>con LDAP + NFS + Slurm</h1>
+  <p class="hero-subtitle">
+    Construye desde cero un clúster de cuatro máquinas virtuales con autenticación centralizada LDAP, almacenamiento compartido NFS, gestor de trabajos Slurm y módulos de software dinámicos. Una infraestructura real de computación de alto rendimiento, a escala de laboratorio.
+  </p>
+  <div class="hero-tags">
+    <span class="tag blue">Debian/Ubuntu</span>
+    <span class="tag purple">OpenLDAP</span>
+    <span class="tag green">NFS + Autofs</span>
+    <span class="tag amber">Slurm WLM</span>
+    <span class="tag blue">Environment Modules</span>
+    <span class="tag">VirtualBox</span>
+  </div>
+</div>
+
+<!-- INTRO -->
+<section class="intro-section" id="intro">
+  <div class="phase-number">Introducción</div>
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:0.8rem;">Descripción de la actividad</h2>
+  <p style="color:var(--text2);font-size:14.5px;max-width:750px;line-height:1.75;">
+    En el campo de la administración de sistemas y las infraestructuras de computación de alto rendimiento (HPC), es fundamental poder configurar entornos centralizados donde los usuarios puedan autenticarse desde cualquier nodo, compartir sus datos de forma transparente y ejecutar tareas de manera distribuida. Los centros de investigación, universidades y empresas tecnológicas gestionan cientos o miles de servidores como si fueran uno solo, gracias a tecnologías como <strong>LDAP, NFS, Slurm y Environment Modules</strong>.
+  </p>
+  <div class="intro-grid">
+    <div class="info-card">
+      <div class="info-card-title">🎯 Objetivos de la práctica</div>
+      <ul class="objective-list">
+        <li>Configurar un servidor LDAP con dominio ldap.julian.local</li>
+        <li>Crear el grupo cuerda (GID 501) y usuarios julian1-4 (UID 1010-1013)</li>
+        <li>Configurar clientes LDAP con libnss-ldap y libpam-ldap</li>
+        <li>Implementar NFS y Autofs para directorios home compartidos</li>
+        <li>Desplegar Slurm con particiones cuerda1 y cuerda2</li>
+        <li>Instalar Environment Modules para gestión dinámica de software</li>
+        <li>Configurar SSH sin contraseña para administración remota</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">⚙️ Requisitos previos</div>
+      <ul class="objective-list">
+        <li>VirtualBox instalado en el equipo</li>
+        <li>ISO de Ubuntu Server / Debian (versión 22.04/24.04 o 12)</li>
+        <li>Conocimientos básicos de Linux: edición de archivos, comandos de red, systemd</li>
+        <li>Al menos 8 GB de RAM disponibles para las cuatro VMs</li>
+        <li>~15-20 GB de espacio en disco (clones enlazados)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="intro-section" id="escenario" style="border-top:1px solid var(--border);">
+  <div class="phase-number">Escenario</div>
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;margin-bottom:0.8rem;">Arquitectura del clúster</h2>
+  <p style="color:var(--text2);font-size:14px;margin-bottom:1.5rem;">Una pequeña unidad de investigación necesita montar un clúster de computación con cuatro nodos en red interna <code>172.16.0.0/24</code>, con salida a internet a través del nodo maestro mediante NAT.</p>
+  <div class="node-diagram">
+    <div class="info-card-title">🗺️ Nodos del clúster</div>
+    <div class="node-item node-master">
+      <div class="node-icon">👑</div>
+      <div>
+        <div class="node-name">compute-0-0 — 172.16.0.10</div>
+        <div class="node-desc">Nodo maestro · Servidor LDAP · Servidor NFS · Controlador Slurm · Router NAT</div>
+      </div>
+    </div>
+    <div class="node-item node-client">
+      <div class="node-icon">🖥</div>
+      <div>
+        <div class="node-name">compute-0-1 — 172.16.0.11</div>
+        <div class="node-desc">Nodo de cómputo · Cliente LDAP · Cliente NFS · slurmd · Partición <strong style="color:var(--accent)">cuerda1</strong></div>
+      </div>
+    </div>
+    <div class="node-item node-client">
+      <div class="node-icon">🖥</div>
+      <div>
+        <div class="node-name">compute-0-2 — 172.16.0.12</div>
+        <div class="node-desc">Nodo de cómputo · Cliente LDAP · Cliente NFS · slurmd · Partición <strong style="color:#a78bfa">cuerda2</strong></div>
+      </div>
+    </div>
+    <div class="node-item node-client">
+      <div class="node-icon">🖥</div>
+      <div>
+        <div class="node-name">compute-0-3 — 172.16.0.13</div>
+        <div class="node-desc">Nodo de cómputo · Cliente LDAP · Cliente NFS · slurmd · Partición <strong style="color:#a78bfa">cuerda2</strong></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:1.5rem;">
+    <table class="data-table">
+      <thead><tr><th>Usuario LDAP</th><th>UID</th><th>GID</th><th>Grupo</th><th>Home</th></tr></thead>
+      <tbody>
+        <tr><td>julian1</td><td>1010</td><td>501</td><td>cuerda</td><td>/home/julian1</td></tr>
+        <tr><td>julian2</td><td>1011</td><td>501</td><td>cuerda</td><td>/home/julian2</td></tr>
+        <tr><td>julian3</td><td>1012</td><td>501</td><td>cuerda</td><td>/home/julian3</td></tr>
+        <tr><td>julian4</td><td>1013</td><td>501</td><td>cuerda</td><td>/home/julian4</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ===== FASE 1 ===== -->
+<div class="phase-header" id="fase1">
+  <div class="phase-number">Fase 1</div>
+  <h2 class="phase-title">Preparación del servidor (compute-0-0)</h2>
+  <p class="phase-desc">Verificar que la red, hostname y resolución están correctos antes de instalar LDAP.</p>
+</div>
+
+<div class="step" id="s1-1">
+  <div class="step-header"><span class="step-num">1.1</span><span class="step-title">Verificar hostname y IPs</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>hostname
+# Resultado esperado: compute-0-0
+
+ip a | grep inet
+# enp0s3 (NAT): 10.4.104.110/8
+# enp0s8 (Red Interna): 172.16.0.10/24</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s1-2">
+  <div class="step-header"><span class="step-num">1.2</span><span class="step-title">Verificar /etc/hosts</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>cat /etc/hosts | grep compute
+# 172.16.0.10 compute-0-0
+# 172.16.0.11 compute-0-1
+# 172.16.0.12 compute-0-2
+# 172.16.0.13 compute-0-3</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s1-3">
+  <div class="step-header"><span class="step-num">1.3</span><span class="step-title">Verificar conectividad</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ping -c 2 8.8.8.8
+# Debe tener salida a internet (a través de NAT)</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 2 ===== -->
+<div class="phase-header" id="fase2">
+  <div class="phase-number">Fase 2</div>
+  <h2 class="phase-title">Servidor LDAP en compute-0-0</h2>
+  <p class="phase-desc">Instalamos y configuramos OpenLDAP con dominio <code>dc=ldap,dc=julian,dc=local</code>, grupo cuerda y usuarios julian1-4.</p>
+</div>
+
+<div class="step" id="s2-1">
+  <div class="step-header"><span class="step-num">2.1</span><span class="step-title">Instalar slapd y ldap-utils</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>apt update
+apt install -y slapd ldap-utils</pre></div>
+    <div class="callout info"><div class="callout-icon">ℹ️</div><p>Durante la instalación, se solicitará la contraseña del administrador: <strong>alumno</strong>.</p></div>
+  </div>
+</div>
+
+<div class="step" id="s2-2">
+  <div class="step-header"><span class="step-num">2.2</span><span class="step-title">Reconfigurar slapd</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>dpkg-reconfigure slapd -f noninteractive</pre></div>
+    <table class="data-table">
+      <thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>
+      <tbody>
+        <tr><td>¿Omitir la configuración del servidor OpenLDAP?</td><td>No</td></tr>
+        <tr><td>Nombre de dominio DNS</td><td>ldap.julian.local</td></tr>
+        <tr><td>Nombre de la organización</td><td>julian</td></tr>
+        <tr><td>Contraseña del administrador</td><td>alumno</td></tr>
+        <tr><td>Base de datos a usar</td><td>HDB</td></tr>
+        <tr><td>¿Eliminar BD al purgar slapd?</td><td>No</td></tr>
+        <tr><td>¿Mover BD antigua?</td><td>Sí</td></tr>
+        <tr><td>¿Permitir LDAP v2?</td><td>No</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="step" id="s2-3">
+  <div class="step-header"><span class="step-num">2.3</span><span class="step-title">Verificar instalación</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>systemctl status slapd
+ldapsearch -x -LLL -b "dc=ldap,dc=julian,dc=local"
+ldapwhoami -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W
+# Contraseña: alumno</pre></div>
+    <div class="result-box"><div class="result-label">✅ Resultado esperado</div><pre>dn:cn=admin,dc=ldap,dc=julian,dc=local
+Result: Success (0)</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s2-4">
+  <div class="step-header"><span class="step-num">2.4</span><span class="step-title">Crear UOs, grupo y usuarios</span></div>
+  <div class="step-body">
+    <p><strong>estructura.ldif</strong> (Unidades Organizativas)</p>
+    <div class="ldif-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">estructura.ldif</span></div><pre>dn: ou=usuarios,dc=ldap,dc=julian,dc=local
+objectClass: organizationalUnit
+ou: usuarios
+
+dn: ou=grupos,dc=ldap,dc=julian,dc=local
+objectClass: organizationalUnit
+ou: grupos</pre></div>
+    <p><strong>grupo.ldif</strong> (grupo cuerda)</p>
+    <div class="ldif-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">grupo.ldif</span></div><pre>dn: cn=cuerda,ou=grupos,dc=ldap,dc=julian,dc=local
+objectClass: posixGroup
+cn: cuerda
+gidNumber: 501</pre></div>
+    <p><strong>usuarios.ldif</strong> (julian1-4)</p>
+    <div class="ldif-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">usuarios.ldif (ejemplo julian1)</span></div><pre>dn: uid=julian1,ou=usuarios,dc=ldap,dc=julian,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: julian1
+sn: julian1
+givenName: julian1
+cn: julian1
+uidNumber: 1010
+gidNumber: 501
+userPassword: alumno
+loginShell: /bin/bash
+homeDirectory: /home/julian1
+mail: julian1@ldap.julian.local</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · añadir al directorio</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f estructura.ldif
+ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f grupo.ldif
+ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f usuarios.ldif
+
+# Verificar
+ldapsearch -x -LLL -b "dc=ldap,dc=julian,dc=local"</pre></div>
+    <div class="callout success"><div class="callout-icon">✅</div><p><strong>Captura de pantalla requerida para el Ejercicio 01.</strong> Debe mostrar todas las entradas: dominio, admin, OUs, grupo cuerda y los 4 usuarios.</p></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 3 ===== -->
+<div class="phase-header" id="fase3">
+  <div class="phase-number">Fase 3</div>
+  <h2 class="phase-title">Configuración de los nodos cliente</h2>
+  <p class="phase-desc">Configuramos compute-0-1, creamos clones compute-0-2 y compute-0-3, y los configuramos como clientes LDAP.</p>
+</div>
+
+<div class="step" id="s3-1">
+  <div class="step-header"><span class="step-num">3.1</span><span class="step-title">Preparar compute-0-1</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>hostnamectl set-hostname compute-0-1
+nmtui  # IP: 172.16.0.11/24, Gateway: 172.16.0.10, DNS: 8.8.8.8
+nano /etc/hosts
+# Añadir:
+172.16.0.10 compute-0-0
+172.16.0.11 compute-0-1
+172.16.0.12 compute-0-2
+172.16.0.13 compute-0-3
+
+ping -c 2 172.16.0.10
+ping -c 2 8.8.8.8</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s3-2">
+  <div class="step-header"><span class="step-num">3.2</span><span class="step-title">Instalar clientes LDAP en compute-0-1</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>apt update
+apt install -y libnss-ldap libpam-ldap ldap-utils nscd</pre></div>
+    <table class="data-table">
+      <thead><tr><th>Pantalla</th><th>Respuesta</th></tr></thead>
+      <tbody>
+        <tr><td>URI del servidor LDAP</td><td>ldap://172.16.0.10</td></tr>
+        <tr><td>Nombre base de búsqueda</td><td>dc=ldap,dc=julian,dc=local</td></tr>
+        <tr><td>Versión de LDAP</td><td>3</td></tr>
+        <tr><td>¿La base de datos LDAP requiere login?</td><td>No</td></tr>
+        <tr><td>Cuenta para el root</td><td>cn=admin,dc=ldap,dc=julian,dc=local</td></tr>
+        <tr><td>Contraseña del root</td><td>alumno</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="step" id="s3-3">
+  <div class="step-header"><span class="step-num">3.3</span><span class="step-title">Configurar NSS y PAM</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano /etc/nsswitch.conf
+# Modificar:
+passwd: files ldap
+group:  files ldap
+shadow: files ldap
+
+echo "alumno" > /etc/ldap.secret
+chmod 600 /etc/ldap.secret
+
+pam-auth-update
+# Marcar: [X] Unix authentication, [X] LDAP Authentication, [X] Create home directory on login
+
+systemctl restart nscd
+systemctl enable nscd</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s3-4">
+  <div class="step-header"><span class="step-num">3.4</span><span class="step-title">Verificar cliente LDAP</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>getent passwd julian1
+getent group cuerda
+su - julian1   # Contraseña: alumno
+whoami && pwd
+exit</pre></div>
+    <div class="callout warning"><div class="callout-icon">⚠️</div><p>Es normal que aparezca un mensaje de que no existe <code>/home/julian1</code>. Esto se solucionará en la Fase 4 con NFS+Autofs.</p></div>
+    <div class="callout info"><div class="callout-icon">ℹ️</div><p>Repetir los pasos 3.1 a 3.4 en <strong>compute-0-2</strong> y <strong>compute-0-3</strong>. Para acelerar, crear clones enlazados desde compute-0-1.</p></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 4 ===== -->
+<div class="phase-header" id="fase4">
+  <div class="phase-number">Fase 4</div>
+  <h2 class="phase-title">NFS y Autofs</h2>
+  <p class="phase-desc">Compartimos los directorios home de los usuarios mediante NFS y configuramos montaje automático con Autofs.</p>
+</div>
+
+<div class="step" id="s4-1">
+  <div class="step-header"><span class="step-num">4.1</span><span class="step-title">Configurar NFS servidor en compute-0-0</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>apt update
+apt install -y nfs-kernel-server
+
+mkdir -p /home/julian{1,2,3,4}
+chown 1010:501 /home/julian1
+chown 1011:501 /home/julian2
+chown 1012:501 /home/julian3
+chown 1013:501 /home/julian4
+chmod 755 /home/julian*
+
+nano /etc/exports
+# Añadir:
+# /home   172.16.0.0/24(rw,sync,no_subtree_check,no_root_squash)
+
+exportfs -a
+systemctl restart nfs-kernel-server
+showmount -e localhost</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s4-2">
+  <div class="step-header"><span class="step-num">4.2</span><span class="step-title">Configurar NFS cliente y Autofs en los nodos</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · en compute-0-1, 0-2, 0-3</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>apt install -y nfs-common autofs
+
+nano /etc/auto.master
+# Añadir:
+# /home   /etc/auto.home   --timeout=60
+
+nano /etc/auto.home
+# Contenido:
+# *  -fstype=nfs,rw,hard,intr,noatime,nolock  172.16.0.10:/home/&
+
+chmod 644 /etc/auto.home
+systemctl restart autofs
+systemctl enable autofs
+
+# Probar
+su - julian1
+df -h | grep julian1
+cat bienvenida.txt
+exit</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 5 ===== -->
+<div class="phase-header" id="fase5">
+  <div class="phase-number">Fase 5</div>
+  <h2 class="phase-title">Slurm — Gestor de tareas</h2>
+  <p class="phase-desc">Instalamos Munge en todos los nodos, configuramos el controlador slurmctld en compute-0-0 y slurmd en los clientes.</p>
+</div>
+
+<div class="step" id="s5-1">
+  <div class="step-header"><span class="step-num">5.1</span><span class="step-title">Instalar y configurar Munge en todos los nodos</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · compute-0-0</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>apt install -y munge
+dd if=/dev/urandom of=/etc/munge/munge.key bs=1024 count=1
+chown munge:munge /etc/munge/munge.key
+chmod 400 /etc/munge/munge.key
+
+# Copiar clave a clientes
+scp /etc/munge/munge.key root@172.16.0.11:/etc/munge/
+scp /etc/munge/munge.key root@172.16.0.12:/etc/munge/
+scp /etc/munge/munge.key root@172.16.0.13:/etc/munge/
+
+# En cada cliente
+ssh root@172.16.0.11 "chown munge:munge /etc/munge/munge.key && chmod 400 /etc/munge/munge.key && systemctl enable --now munge"
+ssh root@172.16.0.12 "chown munge:munge /etc/munge/munge.key && chmod 400 /etc/munge/munge.key && systemctl enable --now munge"
+ssh root@172.16.0.13 "chown munge:munge /etc/munge/munge.key && chmod 400 /etc/munge/munge.key && systemctl enable --now munge"
+
+systemctl enable --now munge
+
+# Verificar
+munge -n | ssh root@172.16.0.11 unmunge</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s5-2">
+  <div class="step-header"><span class="step-num">5.2</span><span class="step-title">Instalar controlador Slurm en compute-0-0</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>apt install -y slurm-wlm
+
+mkdir -p /var/spool/slurmctld /var/log/slurm /etc/slurm
+chown -R slurm:slurm /var/spool/slurmctld /var/log/slurm
+
+nano /etc/slurm/slurm.conf</pre></div>
+    <div class="ldif-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">slurm.conf</span></div><pre>ControlMachine=compute-0-0
+ClusterName=Cluster_julian
+SlurmUser=slurm
+SlurmdUser=root
+SlurmctldLogFile=/var/log/slurm/slurmctld.log
+SlurmdLogFile=/var/log/slurm/slurmd.log
+StateSaveLocation=/var/spool/slurmctld
+SlurmdPort=6818
+SlurmctldPort=6817
+AuthType=auth/munge
+SchedulerType=sched/backfill
+SelectType=select/cons_tres
+NodeName=compute-0-1 CPUs=2 RealMemory=1024 State=UNKNOWN
+NodeName=compute-0-2 CPUs=2 RealMemory=1024 State=UNKNOWN
+NodeName=compute-0-3 CPUs=2 RealMemory=1024 State=UNKNOWN
+PartitionName=cuerda1 Nodes=compute-0-1 Default=NO MaxTime=INFINITE State=UP
+PartitionName=cuerda2 Nodes=compute-0-2,compute-0-3 Default=YES MaxTime=INFINITE State=UP</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>chmod 644 /etc/slurm/slurm.conf
+chown slurm:slurm /etc/slurm/slurm.conf
+systemctl enable --now slurmctld
+sinfo</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s5-3">
+  <div class="step-header"><span class="step-num">5.3</span><span class="step-title">Instalar slurmd en los clientes</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · desde compute-0-0</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ssh root@172.16.0.11 "apt install -y slurmd"
+ssh root@172.16.0.12 "apt install -y slurmd"
+ssh root@172.16.0.13 "apt install -y slurmd"
+
+# Crear directorios en clientes
+for ip in 172.16.0.11 172.16.0.12 172.16.0.13; do
+  ssh root@$ip "mkdir -p /var/spool/slurmd /var/log/slurm && touch /var/log/slurm/slurmd.log && chown -R slurm:slurm /var/spool/slurmd /var/log/slurm"
+done
+
+# Copiar slurm.conf
+scp /etc/slurm/slurm.conf root@172.16.0.11:/etc/slurm/
+scp /etc/slurm/slurm.conf root@172.16.0.12:/etc/slurm/
+scp /etc/slurm/slurm.conf root@172.16.0.13:/etc/slurm/
+
+for ip in 172.16.0.11 172.16.0.12 172.16.0.13; do
+  ssh root@$ip "systemctl enable --now slurmd"
+done
+
+sleep 30 && sinfo
+
+srun -p cuerda1 hostname
+srun -p cuerda2 -N2 hostname</pre></div>
+    <div class="callout success"><div class="callout-icon">✅</div><p><strong>Captura de pantalla requerida para el Ejercicio 02.</strong> Debe mostrar <code>sinfo</code> con nodos idle y el resultado de <code>srun hostname</code>.</p></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 6 ===== -->
+<div class="phase-header" id="fase6">
+  <div class="phase-number">Fase 6</div>
+  <h2 class="phase-title">Environment Modules</h2>
+  <p class="phase-desc">Instalamos Environment Modules en todos los nodos, creamos un módulo de prueba <code>test</code> y lo integramos con Slurm.</p>
+</div>
+
+<div class="step" id="s6-1">
+  <div class="step-header"><span class="step-num">6.1</span><span class="step-title">Instalar Environment Modules en todos los nodos</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>apt install -y environment-modules
+source /etc/profile.d/modules.sh
+echo "source /etc/profile.d/modules.sh" >> /etc/bashrc
+
+ssh root@172.16.0.11 "apt install -y environment-modules && echo 'source /etc/profile.d/modules.sh' >> /etc/bashrc"
+ssh root@172.16.0.12 "apt install -y environment-modules && echo 'source /etc/profile.d/modules.sh' >> /etc/bashrc"
+ssh root@172.16.0.13 "apt install -y environment-modules && echo 'source /etc/profile.d/modules.sh' >> /etc/bashrc"</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s6-2">
+  <div class="step-header"><span class="step-num">6.2</span><span class="step-title">Crear script test.x y modulefile</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · compute-0-0</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>mkdir -p /export/apps/test/bin
+nano /export/apps/test/bin/test.x</pre></div>
+    <div class="ldif-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">test.x</span></div><pre>#!/bin/bash
+echo "Aplicación test.x ejecutada en: $(hostname)"
+echo "Usuario: $(whoami)"
+echo "Fecha: $(date)"
+echo "Environment Modules funcionando correctamente"</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>chmod 755 /export/apps/test/bin/test.x
+
+mkdir -p /usr/share/modules/modulefiles/test
+nano /usr/share/modules/modulefiles/test/1.0</pre></div>
+    <div class="ldif-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">/usr/share/modules/modulefiles/test/1.0</span></div><pre>#%Module1.0
+proc ModulesHelp { } {
+    puts stderr "Carga el entorno para la aplicación test"
+}
+module-whatis "Aplicación de prueba del clúster"
+prepend-path PATH /export/apps/test/bin</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s6-3">
+  <div class="step-header"><span class="step-num">6.3</span><span class="step-title">Exportar /export por NFS</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · compute-0-0</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano /etc/exports
+# Añadir:
+# /export   172.16.0.0/24(rw,sync,no_subtree_check,no_root_squash)
+
+exportfs -a
+systemctl restart nfs-kernel-server
+showmount -e localhost</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s6-4">
+  <div class="step-header"><span class="step-num">6.4</span><span class="step-title">Configurar Autofs para /export en clientes</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · desde compute-0-0</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>for ip in 172.16.0.11 172.16.0.12 172.16.0.13; do
+  ssh root@$ip "echo '/export  /etc/auto.export  --timeout=60' >> /etc/auto.master"
+  ssh root@$ip "echo 'apps -fstype=nfs,rw,hard,intr,noatime,nolock 172.16.0.10:/export/apps' > /etc/auto.export"
+  ssh root@$ip "chmod 644 /etc/auto.export && systemctl restart autofs"
+done
+
+# Distribuir modulefile
+for ip in 172.16.0.11 172.16.0.12 172.16.0.13; do
+  ssh root@$ip "mkdir -p /usr/share/modules/modulefiles/test"
+  scp /usr/share/modules/modulefiles/test/1.0 root@$ip:/usr/share/modules/modulefiles/test/1.0
+done
+
+# Probar
+ssh root@172.16.0.11 "source /etc/profile.d/modules.sh && module load test/1.0 && test.x"
+ssh root@172.16.0.12 "source /etc/profile.d/modules.sh && module load test/1.0 && test.x"
+ssh root@172.16.0.13 "source /etc/profile.d/modules.sh && module load test/1.0 && test.x"</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · probar con Slurm</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano /root/script_test.sh
+# Contenido:
+#!/bin/bash
+#SBATCH --job-name=test_modulos
+#SBATCH --output=/root/resultado_%j.txt
+#SBATCH --ntasks=1
+source /etc/profile.d/modules.sh
+module load test/1.0
+test.x
+
+chmod 755 /root/script_test.sh
+sbatch -p cuerda1 /root/script_test.sh
+sbatch -p cuerda2 /root/script_test.sh
+cat /root/resultado_*.txt</pre></div>
+    <div class="callout success"><div class="callout-icon">✅</div><p><strong>Captura de pantalla requerida para el Ejercicio 03.</strong> Debe mostrar el resultado de <code>test.x</code> ejecutándose en los nodos del clúster.</p></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== ANEXO SSH ===== -->
+<div class="phase-header" id="ssh">
+  <div class="phase-number">Anexo A</div>
+  <h2 class="phase-title">Configurar SSH sin contraseña desde compute-0-0 a nodos</h2>
+  <p class="phase-desc">Requisito indispensable para la administración remota y el correcto funcionamiento de Slurm.</p>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">A.1</span><span class="step-title">Generar clave SSH</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · compute-0-0</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ssh-keygen -t rsa -b 4096 -N "" -f /root/.ssh/id_rsa</pre></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">A.2</span><span class="step-title">Copiar clave pública a los nodos</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ssh-copy-id root@172.16.0.11
+ssh-copy-id root@172.16.0.12
+ssh-copy-id root@172.16.0.13
+# Contraseña: alumno (última vez que la pide)</pre></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">A.3</span><span class="step-title">Verificar acceso sin contraseña</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ssh root@172.16.0.11 hostname
+ssh root@172.16.0.12 hostname
+ssh root@172.16.0.13 hostname</pre></div>
+    <div class="callout warning"><div class="callout-icon">⚠️</div><p><strong>Sin SSH sin contraseña no funcionarán:</strong> distribución de clave Munge, copia de slurm.conf, ejecución remota de comandos en el clúster.</p></div>
+  </div>
+</div>
+
+<!-- FINAL SUMMARY -->
+<div class="summary-card" style="margin-top:3rem;">
+  <div class="summary-card-header">🏁 Resumen Final del Proyecto</div>
+  <div class="summary-item"><span class="summary-item-label">Fase 1 — Preparación del servidor</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 2 — Servidor LDAP</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 3 — Clientes LDAP</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 4 — NFS y Autofs</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 5 — Slurm</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 6 — Environment Modules</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Anexo A — SSH sin contraseña</span><span class="badge ok">Completado ✓</span></div>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong>Clúster HPC con LDAP + NFS + Slurm</strong> · Práctica de 1º ASIR — Instalación de Sistemas Operativos<br>
+  Manual elaborado por el alumno · Basado en Debian/Ubuntu
+</div>
+
+</div>
+
+<!-- MOBILE TOGGLE -->
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<script>
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ copiado';
+    btn.style.color = 'var(--accent3)';
+    btn.style.borderColor = 'var(--accent3)';
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  });
+}
+
+// Active TOC tracking
+const sections = document.querySelectorAll('[id]');
+const tocLinks = document.querySelectorAll('.toc-item');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.toc-item[href="#${entry.target.id}"]`);
+      if (active) {
+        active.classList.add('active');
+        active.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  });
+}, { rootMargin: '-20% 0% -75% 0%' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
+```
