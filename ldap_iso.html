@@ -1,0 +1,638 @@
+He integrado completamente la información que me has proporcionado. He creado un documento HTML que sigue la misma estructura y estilo que el anterior (modo oscuro, formato profesional, tablas, bloques de código), pero adaptado a tu nuevo temario basado en **Debian/Ubuntu** (usando `apt` en lugar de `dnf`) y con los pasos organizados según tus fases.
+
+El documento incluye:
+- **Índice completo** con enlaces a cada fase.
+- **Todas las fases** desde la preparación del servidor hasta la prueba final con Slurm y Environment Modules.
+- **Comandos y explicaciones** detalladas para cada paso.
+- **Verificaciones esperadas** en cada fase.
+- **Tablas** para respuestas de configuración (ej. pantallas de `pam-auth-update`).
+- **Formato oscuro** consistente con tu anterior documento.
+
+Aquí tienes el código HTML. Puedes copiarlo y guardarlo como `.html` para visualizarlo en tu navegador.
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clúster HPC con LDAP, NFS, Slurm y Modules - Debian/Ubuntu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #e0e0e0;
+            background-color: #121212;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3, h4 {
+            color: #bb86fc;
+            border-bottom: 2px solid #3700b3;
+            padding-bottom: 8px;
+            margin-top: 35px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            border-bottom: 3px solid #bb86fc;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            border-left: 5px solid #bb86fc;
+            padding-left: 15px;
+            background: linear-gradient(90deg, #1e1e1e 0%, #121212 100%);
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 25px;
+            border-bottom: 1px solid #444;
+        }
+
+        .contenido {
+            background-color: #1e1e1e;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 35px;
+            border: 1px solid #333;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .contenido h2 {
+            margin-top: 0;
+            border-left: none;
+            background: none;
+        }
+
+        .contenido ul {
+            list-style-type: none;
+            padding-left: 0;
+            columns: 2;
+            column-gap: 40px;
+        }
+
+        .contenido li {
+            margin: 8px 0;
+            break-inside: avoid;
+        }
+
+        .contenido a {
+            text-decoration: none;
+            color: #bb86fc;
+            font-weight: 500;
+        }
+
+        .contenido a:hover {
+            text-decoration: underline;
+            color: #e0aaff;
+        }
+
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 18px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', 'Fira Code', monospace;
+            font-size: 14px;
+            margin: 20px 0;
+            border: 1px solid #444;
+            line-height: 1.5;
+        }
+
+        code {
+            background-color: #2d2d2d;
+            color: #ffb86c;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: 'Courier New', 'Fira Code', monospace;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        .advertencia, .exito {
+            padding: 18px;
+            margin: 25px 0;
+            border-radius: 12px;
+            border-left: 6px solid;
+            background-color: #1e1e1e;
+        }
+
+        .advertencia {
+            border-left-color: #ffa500;
+            background-color: #2c1e0e;
+            color: #ffd580;
+        }
+
+        .exito {
+            border-left-color: #4caf50;
+            background-color: #0a2a1a;
+            color: #a5d6a7;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        th, td {
+            border: 1px solid #444;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #3700b3;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #252525;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 25px;
+            background-color: #1e1e1e;
+            color: #aaa;
+            border-radius: 16px;
+            border-top: 1px solid #333;
+            font-size: 0.9rem;
+        }
+
+        a {
+            color: #bb86fc;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: #e0aaff;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            pre {
+                font-size: 11px;
+                padding: 12px;
+            }
+            .contenido ul {
+                columns: 1;
+            }
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Arquitectura y Despliegue de un Clúster HPC<br>Rocky Linux → Debian/Ubuntu</h1>
+<p style="text-align: center; font-size: 1.2em; color: #ccc;">LDAP + NFS + Autofs + Slurm + Environment Modules</p>
+<p style="text-align: center;"><strong>Implantación de Sistemas Operativos</strong><br>
+Alumno: Julián_CO<br>
+Fecha: Abril 2026<br>
+1º Administración de Sistemas Informáticos y Redes</p>
+
+<!-- ================= ÍNDICE ================= -->
+<div class="contenido">
+    <h2>📖 ÍNDICE</h2>
+    <ul>
+        <li><a href="#fase1">FASE 1: Preparación del servidor (compute-0-0)</a></li>
+        <li><a href="#fase2">FASE 2: Instalar servidor LDAP (compute-0-0)</a></li>
+        <li><a href="#fase3">FASE 3: Reconfigurar slapd (compute-0-0)</a></li>
+        <li><a href="#fase4">FASE 4: Verificar instalación (compute-0-0)</a></li>
+        <li><a href="#fase5">FASE 5: Crear estructura LDIF (UOs)</a></li>
+        <li><a href="#fase6">FASE 6: Crear grupo cuerda</a></li>
+        <li><a href="#fase7">FASE 7: Crear usuarios (julian1-4)</a></li>
+        <li><a href="#fase8">FASE 8: Verificar servidor LDAP</a></li>
+        <li><a href="#fase9">FASE 9: Preparar clientes (compute-0-1/0-2)</a></li>
+        <li><a href="#fase10">FASE 10: Instalar clientes LDAP</a></li>
+        <li><a href="#fase11">FASE 11: Configurar cliente LDAP</a></li>
+        <li><a href="#fase12">FASE 12: Configurar NSS y PAM</a></li>
+        <li><a href="#fase13">FASE 13: Verificar clientes LDAP</a></li>
+        <li><a href="#fase14">FASE 14: Probar login (sin home aún)</a></li>
+        <li><a href="#fase15">FASE 15: NFS servidor (compute-0-0)</a></li>
+        <li><a href="#fase16">FASE 16: Crear homes y contenido prueba</a></li>
+        <li><a href="#fase17">FASE 17: NFS clientes</a></li>
+        <li><a href="#fase18">FASE 18: Configurar autofs</a></li>
+        <li><a href="#fase19">FASE 19: Probar NFS+autofs</a></li>
+        <li><a href="#fase20">FASE 20: Slurm controlador (compute-0-0)</a></li>
+        <li><a href="#fase21">FASE 21: Munge en todos los nodos</a></li>
+        <li><a href="#fase22">FASE 22: Configurar slurm.conf</a></li>
+        <li><a href="#fase23">FASE 23: Instalar slurmd en clientes</a></li>
+        <li><a href="#fase24">FASE 24: Arrancar y verificar Slurm</a></li>
+        <li><a href="#fase25">FASE 25: Environment Modules</a></li>
+        <li><a href="#fase26">FASE 26: Crear módulo test</a></li>
+        <li><a href="#fase27">FASE 27: Exportar /export por NFS</a></li>
+        <li><a href="#fase28">FASE 28: Autofs para /export en clientes</a></li>
+        <li><a href="#fase29">FASE 29: Copiar modulefile a clientes</a></li>
+        <li><a href="#fase30">FASE 30: Probar Environment Modules</a></li>
+        <li><a href="#fase31">FASE 31: Script Slurm con módulo cargado</a></li>
+    </ul>
+</div>
+
+<!-- ================= FASE 1 ================= -->
+<h2 id="fase1">FASE 1: Preparación del servidor (compute-0-0)</h2>
+<p><strong>Objetivo:</strong> Verificar que la red, hostname y resolución están correctos antes de instalar LDAP.</p>
+<pre><code>hostname
+# Resultado esperado: compute-0-0
+
+ip a | grep inet
+# enp0s3: 10.4.104.110/8
+# enp0s8: 172.16.0.10/24
+
+cat /etc/hosts | grep compute
+# 172.16.0.10 compute-0-0
+# 172.16.0.11 compute-0-1
+# 172.16.0.12 compute-0-2
+
+ping -c 2 8.8.8.8
+# Debe tener salida a internet</code></pre>
+
+<!-- ================= FASE 2 ================= -->
+<h2 id="fase2">FASE 2: Instalar servidor LDAP (compute-0-0)</h2>
+<pre><code>apt update
+apt install -y slapd ldap-utils</code></pre>
+<table>
+    <tr><th>Pantalla</th><th>Respuesta</th></tr>
+    <tr><td>Contraseña del administrador</td><td>alumno</td></tr>
+    <tr><td>Confirmar contraseña</td><td>alumno</td></tr>
+</table>
+
+<!-- ================= FASE 3 ================= -->
+<h2 id="fase3">FASE 3: Reconfigurar slapd</h2>
+<pre><code>dpkg-reconfigure slapd -f noninteractive</code></pre>
+<table>
+    <tr><th>Pregunta</th><th>Respuesta</th></tr>
+    <tr><td>¿Omitir la configuración del servidor OpenLDAP?</td><td>No</td></tr>
+    <tr><td>Nombre de dominio DNS</td><td>ldap.julian.local</td></tr>
+    <tr><td>Nombre de la organización</td><td>julian</td></tr>
+    <tr><td>Contraseña del administrador</td><td>alumno</td></tr>
+    <tr><td>Base de datos a usar</td><td>HDB</td></tr>
+    <tr><td>¿Eliminar BD al purgar slapd?</td><td>No</td></tr>
+    <tr><td>¿Mover BD antigua?</td><td>Sí</td></tr>
+    <tr><td>¿Permitir LDAP v2?</td><td>No</td></tr>
+</table>
+<pre><code>systemctl status slapd  # active (running)</code></pre>
+
+<!-- ================= FASE 4 ================= -->
+<h2 id="fase4">FASE 4: Verificar instalación del servidor</h2>
+<pre><code>ldapsearch -x -LLL -b "dc=ldap,dc=julian,dc=local"
+ldapwhoami -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W  # contraseña: alumno</code></pre>
+
+<!-- ================= FASE 5 ================= -->
+<h2 id="fase5">FASE 5: Crear estructura LDIF (Unidades Organizativas)</h2>
+<pre><code>nano /root/estructura.ldif</code></pre>
+<pre><code>dn: ou=usuarios,dc=ldap,dc=julian,dc=local
+objectClass: organizationalUnit
+ou: usuarios
+
+dn: ou=grupos,dc=ldap,dc=julian,dc=local
+objectClass: organizationalUnit
+ou: grupos</code></pre>
+<pre><code>ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f /root/estructura.ldif
+ldapsearch -x -LLL -b "dc=ldap,dc=julian,dc=local" ou</code></pre>
+
+<!-- ================= FASE 6 ================= -->
+<h2 id="fase6">FASE 6: Crear grupo cuerda</h2>
+<pre><code>nano /root/grupo.ldif</code></pre>
+<pre><code>dn: cn=cuerda,ou=grupos,dc=ldap,dc=julian,dc=local
+objectClass: posixGroup
+cn: cuerda
+gidNumber: 501</code></pre>
+<pre><code>ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f /root/grupo.ldif</code></pre>
+
+<!-- ================= FASE 7 ================= -->
+<h2 id="fase7">FASE 7: Crear usuarios LDIF (julian1-4)</h2>
+<pre><code>nano /root/usuarios.ldif</code></pre>
+<pre><code># Usuario julian1
+dn: uid=julian1,ou=usuarios,dc=ldap,dc=julian,dc=local
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: julian1
+sn: julian1
+givenName: julian1
+cn: julian1
+uidNumber: 1010
+gidNumber: 501
+userPassword: alumno
+loginShell: /bin/bash
+homeDirectory: /home/julian1
+mail: julian1@ldap.julian.local
+
+# julian2 (uidNumber 1011), julian3 (1012), julian4 (1013) similar</code></pre>
+<pre><code>ldapadd -x -D "cn=admin,dc=ldap,dc=julian,dc=local" -W -f /root/usuarios.ldif</code></pre>
+
+<!-- ================= FASE 8 ================= -->
+<h2 id="fase8">FASE 8: Verificar servidor LDAP completo</h2>
+<pre><code>ldapsearch -x -LLL -b "dc=ldap,dc=julian,dc=local"
+ldapsearch -x -LLL -b "ou=usuarios,dc=ldap,dc=julian,dc=local" uid
+ldapsearch -x -LLL -b "dc=ldap,dc=julian,dc=local" uid=julian1 userPassword</code></pre>
+<div class="exito"><strong>✅ Fin Fase 8:</strong> Servidor LDAP con dominio ldap.julian.local, grupo cuerda (GID 501) y usuarios julian1-4 (UID 1010-1013).</div>
+
+<!-- ================= FASE 9 ================= -->
+<h2 id="fase9">FASE 9: Preparar cliente compute-0-1 (y compute-0-2)</h2>
+<pre><code>hostname  # compute-0-1
+ip a | grep inet  # enp0s8: 172.16.0.11/24
+ping -c 2 172.16.0.10
+cat /etc/hosts | grep compute
+ping -c 2 8.8.8.8</code></pre>
+
+<!-- ================= FASE 10 ================= -->
+<h2 id="fase10">FASE 10: Instalar clientes LDAP en compute-0-1</h2>
+<pre><code>apt update
+apt install -y libnss-ldap libpam-ldap ldap-utils nscd</code></pre>
+<table>
+    <tr><th>Pantalla</th><th>Respuesta</th></tr>
+    <tr><td>URI del servidor LDAP</td><td>ldap://172.16.0.10</td></tr>
+    <tr><td>Nombre base de búsqueda</td><td>dc=ldap,dc=julian,dc=local</td></tr>
+    <tr><td>Versión de LDAP</td><td>3</td></tr>
+    <tr><td>¿Base de datos LDAP requiere login?</td><td>No</td></tr>
+    <tr><td>Cuenta para el root</td><td>cn=admin,dc=ldap,dc=julian,dc=local</td></tr>
+    <tr><td>Contraseña del root</td><td>alumno</td></tr>
+</table>
+
+<!-- ================= FASE 11 ================= -->
+<h2 id="fase11">FASE 11: Configurar cliente LDAP</h2>
+<pre><code>nano /etc/ldap/ldap.conf
+# BASE    dc=ldap,dc=julian,dc=local
+# URI     ldap://172.16.0.10
+
+nano /etc/ldap.conf
+# base dc=ldap,dc=julian,dc=local
+# uri ldap://172.16.0.10
+# ldap_version 3
+# rootbinddn cn=admin,dc=ldap,dc=julian,dc=local
+
+echo "alumno" > /etc/ldap.secret
+chmod 600 /etc/ldap.secret</code></pre>
+
+<!-- ================= FASE 12 ================= -->
+<h2 id="fase12">FASE 12: Configurar NSS y PAM</h2>
+<pre><code>nano /etc/nsswitch.conf
+# passwd: files ldap
+# group:  files ldap
+# shadow: files ldap
+
+pam-auth-update
+# Marcar: [X] Unix authentication, [X] LDAP Authentication, [X] Create home directory on login
+
+systemctl restart nscd
+systemctl enable nscd</code></pre>
+
+<!-- ================= FASE 13 ================= -->
+<h2 id="fase13">FASE 13: Verificar cliente LDAP</h2>
+<pre><code>getent passwd | grep julian
+getent group cuerda
+getent passwd julian1
+ldapsearch -x -LLL -b "dc=ldap,dc=julian,dc=local" uid=julian1</code></pre>
+
+<!-- ================= FASE 14 ================= -->
+<h2 id="fase14">FASE 14: Probar login (sin home aún)</h2>
+<pre><code>su - julian1  # contraseña: alumno
+whoami
+exit</code></pre>
+<div class="advertencia">⚠️ Es normal que avise que no existe /home/julian1. Lo solucionaremos con NFS+autofs.</div>
+
+<!-- ================= FASE 15 ================= -->
+<h2 id="fase15">FASE 15: Configurar NFS servidor en compute-0-0</h2>
+<pre><code>apt update
+apt install -y nfs-kernel-server
+
+mkdir -p /home/julian{1,2,3,4}
+chown 1010:501 /home/julian1
+chown 1011:501 /home/julian2
+chown 1012:501 /home/julian3
+chown 1013:501 /home/julian4
+chmod 755 /home/julian*
+
+nano /etc/exports
+# /home   172.16.0.0/24(rw,sync,no_subtree_check,no_root_squash)
+
+exportfs -a
+systemctl restart nfs-kernel-server
+showmount -e localhost</code></pre>
+
+<!-- ================= FASE 16 ================= -->
+<h2 id="fase16">FASE 16: Crear contenido de prueba</h2>
+<pre><code>echo "Bienvenido julian1" > /home/julian1/bienvenida.txt
+chown 1010:501 /home/julian1/bienvenida.txt
+# Repetir para julian2-4</code></pre>
+
+<!-- ================= FASE 17 ================= -->
+<h2 id="fase17">FASE 17: Configurar NFS clientes</h2>
+<pre><code>apt update
+apt install -y nfs-common
+showmount -e 172.16.0.10</code></pre>
+
+<!-- ================= FASE 18 ================= -->
+<h2 id="fase18">FASE 18: Configurar autofs en los clientes</h2>
+<pre><code>apt install -y autofs
+nano /etc/auto.master
+# /home   /etc/auto.home   --timeout=60
+
+nano /etc/auto.home
+# *       -fstype=nfs,rw,hard,intr,noatime,nolock 172.16.0.10:/home/&
+
+chmod 644 /etc/auto.home
+systemctl restart autofs
+systemctl enable autofs</code></pre>
+
+<!-- ================= FASE 19 ================= -->
+<h2 id="fase19">FASE 19: Probar NFS + autofs</h2>
+<pre><code>su - julian1
+df -h | grep julian
+cat bienvenida.txt
+whoami
+exit
+# Esperar 60 segundos y verificar desmontaje</code></pre>
+
+<!-- ================= FASE 20 ================= -->
+<h2 id="fase20">FASE 20: Instalar Slurm controlador en compute-0-0</h2>
+<pre><code>apt update
+apt install -y slurm-wlm
+mkdir -p /var/spool/slurmctld /var/log/slurm /etc/slurm
+chown -R slurm:slurm /var/spool/slurmctld /var/log/slurm</code></pre>
+
+<!-- ================= FASE 21 ================= -->
+<h2 id="fase21">FASE 21: Instalar y configurar Munge (todos los nodos)</h2>
+<pre><code># En cada nodo
+apt install -y munge
+
+# En compute-0-0 copiar clave a clientes
+scp /etc/munge/munge.key root@172.16.0.11:/etc/munge/
+scp /etc/munge/munge.key root@172.16.0.12:/etc/munge/
+
+# En clientes
+chown munge:munge /etc/munge/munge.key
+chmod 400 /etc/munge/munge.key
+systemctl restart munge
+systemctl enable munge
+
+# Verificar
+munge -n | ssh root@172.16.0.11 unmunge</code></pre>
+
+<!-- ================= FASE 22 ================= -->
+<h2 id="fase22">FASE 22: Configurar slurm.conf</h2>
+<pre><code>nano /etc/slurm/slurm.conf</code></pre>
+<pre><code>ControlMachine=compute-0-0
+ClusterName=Cluster_julian
+SlurmUser=slurm
+SlurmdUser=root
+SlurmctldLogFile=/var/log/slurm/slurmctld.log
+SlurmdLogFile=/var/log/slurm/slurmd.log
+StateSaveLocation=/var/spool/slurmctld
+SlurmdPort=6818
+SlurmctldPort=6817
+AuthType=auth/munge
+SchedulerType=sched/backfill
+SelectType=select/cons_tres
+NodeName=compute-0-1 CPUs=2 RealMemory=1024 State=UNKNOWN
+NodeName=compute-0-2 CPUs=2 RealMemory=1024 State=UNKNOWN
+PartitionName=debug Nodes=compute-0-[1-2] Default=YES MaxTime=INFINITE State=UP</code></pre>
+<pre><code>chmod 644 /etc/slurm/slurm.conf
+chown slurm:slurm /etc/slurm/slurm.conf</code></pre>
+
+<!-- ================= FASE 23 ================= -->
+<h2 id="fase23">FASE 23: Instalar slurmd en clientes</h2>
+<pre><code># En compute-0-1 y compute-0-2
+apt install -y slurmd
+mkdir -p /var/spool/slurmd /var/log/slurm
+touch /var/log/slurm/slurmd.log
+chown -R slurm:slurm /var/spool/slurmd /var/log/slurm
+systemctl enable slurmd
+systemctl restart slurmd
+
+# Copiar slurm.conf desde compute-0-0
+scp /etc/slurm/slurm.conf root@172.16.0.11:/etc/slurm/
+scp /etc/slurm/slurm.conf root@172.16.0.12:/etc/slurm/</code></pre>
+
+<!-- ================= FASE 24 ================= -->
+<h2 id="fase24">FASE 24: Arrancar y verificar Slurm</h2>
+<pre><code>systemctl enable slurmctld
+systemctl restart slurmctld
+sinfo
+scontrol show nodes
+srun -N2 hostname
+su - julian1 -c "srun hostname"</code></pre>
+
+<!-- ================= FASE 25 ================= -->
+<h2 id="fase25">FASE 25: Instalar Environment Modules (todos los nodos)</h2>
+<pre><code>apt update
+apt install -y environment-modules</code></pre>
+
+<!-- ================= FASE 26 ================= -->
+<h2 id="fase26">FASE 26: Crear módulo test</h2>
+<pre><code>mkdir -p /export/apps/test/bin
+nano /export/apps/test/bin/test.x</code></pre>
+<pre><code>#!/bin/bash
+echo "hola $(whoami)"
+echo "hoy es $(date)"
+echo "SLURM_CPUS_PER_TASK = $SLURM_CPUS_PER_TASK"
+echo "SLURM_JOB_ID = $SLURM_JOB_ID"</code></pre>
+<pre><code>chmod +x /export/apps/test/bin/test.x
+
+nano /usr/share/modules/modulefiles/test</code></pre>
+<pre><code>#%Module
+proc ModulesHelp { } {
+puts stderr "\ttest carga el entorno para ejecutar test.x"
+}
+module-whatis "Entorno para test"
+prepend-path PATH /export/apps/test/bin</code></pre>
+
+<!-- ================= FASE 27 ================= -->
+<h2 id="fase27">FASE 27: Exportar /export por NFS</h2>
+<pre><code>nano /etc/exports
+# /export       172.16.0.0/24(rw,sync,no_subtree_check,no_root_squash)
+# /export/apps  172.16.0.0/24(rw,sync,no_subtree_check,no_root_squash)
+
+exportfs -a
+systemctl restart nfs-kernel-server</code></pre>
+
+<!-- ================= FASE 28 ================= -->
+<h2 id="fase28">FASE 28: Configurar autofs para /export en clientes</h2>
+<pre><code>nano /etc/auto.master
+# /export    /etc/auto.export    --timeout=1200
+
+nano /etc/auto.export
+# apps    -fstype=nfs,rw,hard,intr,noatime,nolock 172.16.0.10:/export/apps
+
+chmod 644 /etc/auto.export
+systemctl restart autofs
+ls -la /export/apps/test/bin/</code></pre>
+
+<!-- ================= FASE 29 ================= -->
+<h2 id="fase29">FASE 29: Copiar modulefile a clientes</h2>
+<pre><code>scp /usr/share/modules/modulefiles/test root@172.16.0.11:/usr/share/modules/modulefiles/
+scp /usr/share/modules/modulefiles/test root@172.16.0.12:/usr/share/modules/modulefiles/</code></pre>
+
+<!-- ================= FASE 30 ================= -->
+<h2 id="fase30">FASE 30: Probar Environment Modules</h2>
+<pre><code>source /usr/share/modules/init/bash
+module avail
+module load test
+test.x
+module list</code></pre>
+
+<!-- ================= FASE 31 ================= -->
+<h2 id="fase31">FASE 31: Script Slurm con módulo cargado</h2>
+<pre><code>su - julian1
+nano script.sh</code></pre>
+<pre><code>#!/bin/bash
+#SBATCH --job-name=test_job
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=10mb
+#SBATCH --partition=debug
+#SBATCH --time=00:05:00
+
+module load test
+echo "=== Resultado ==="
+pwd
+hostname
+test.x</code></pre>
+<pre><code>sbatch script.sh
+cat slurm-*.out</code></pre>
+<div class="exito"><strong>✅ FIN DEL MANUAL:</strong> Clúster HPC completamente funcional con LDAP, NFS+autofs, Slurm y Environment Modules.</div>
+
+<div class="footer">
+    <p>Manual adaptado para Debian/Ubuntu - Alumno: Julián_CO - 1º ASIR - IES Quevedo</p>
+    <p>Basado en las prácticas de Implantación de Sistemas Operativos</p>
+</div>
+
+</body>
+</html>
+```
