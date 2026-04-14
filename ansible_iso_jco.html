@@ -1,0 +1,1662 @@
+He integrado completamente tu manual de Ansible. He creado una página web que sigue **exactamente el mismo diseño y estructura** que el ejemplo anterior (sidebar fijo, hero gradient, tarjetas, bloques de código con botón de copiar, tablas, etc.), pero con el **contenido adaptado a tu manual de Ansible** para configurar el clúster HPC de forma automatizada.
+
+La página incluye:
+- **Sidebar fijo** con índice completo de todas las fases (0 a 14).
+- **Hero** con badges indicando las tecnologías (Ansible, Netplan, LDAP, NFS, Slurm).
+- **Todas las fases**:
+  - Fase 0: Configuración manual inicial de compute-0-0 (Netplan, hostname, /etc/hosts, SSH, NAT, iptables)
+  - Fase 1: Instalación de Ansible
+  - Fase 2: Configuración mínima de clientes
+  - Fase 3: Configuración de SSH sin contraseña
+  - Fase 4: Prueba de Ansible (ping, ad-hoc commands)
+  - Fase 5: Playbook para servidor LDAP (con templates y variables)
+  - Fase 6: Playbook para clientes LDAP
+  - Fase 7: Playbook para servidor NFS
+  - Fase 8: Playbook para Autofs en clientes
+  - Fase 9: Verificación final de clientes
+  - Fase 10: Playbook para Munge (todos los nodos)
+  - Fase 11: Plantilla para slurm.conf
+  - Fase 12: Playbook para controlador Slurm
+  - Fase 13: Playbook para nodos Slurm
+  - Fase 14: Verificación de Slurm y solución de problemas
+- **Bloques de código** con sintaxis coloreada y botón "copiar".
+- **Tablas** para respuestas de configuración.
+- **Callouts** (info, warning, success) para destacar información importante.
+- **Totalmente responsive** (sidebar colapsable en móvil).
+
+Aquí tienes el código HTML completo. Cópialo y guárdalo como `.html` para visualizarlo en tu navegador.
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ansible para Clúster HPC — Automatización con LDAP, NFS y Slurm</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #1c2430;
+  --border: #30363d;
+  --accent: #00d4ff;
+  --accent2: #7c3aed;
+  --accent3: #10b981;
+  --accent4: #f59e0b;
+  --danger: #ef4444;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+  --code-bg: #161b22;
+  --radius: 8px;
+  --sidebar-w: 280px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* SIDEBAR */
+#sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding-bottom: 2rem;
+}
+
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-track { background: var(--bg2); }
+#sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-header {
+  padding: 1.5rem 1.2rem 1rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg2);
+  z-index: 1;
+}
+
+.sidebar-logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+
+.sidebar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.toc-section { padding: 0.5rem 0; }
+
+.toc-group-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  padding: 0.8rem 1.2rem 0.3rem;
+}
+
+.toc-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 5px 1.2rem;
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 12.5px;
+  line-height: 1.4;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.toc-item:hover {
+  color: var(--text);
+  background: rgba(0,212,255,0.05);
+  border-left-color: var(--accent);
+}
+
+.toc-item.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: rgba(0,212,255,0.08);
+}
+
+.toc-item .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  flex-shrink: 0;
+  margin-top: 1px;
+  min-width: 28px;
+}
+
+.toc-sub {
+  padding-left: 2.2rem;
+}
+
+.toc-sub .toc-item {
+  font-size: 11.5px;
+  padding: 3px 1.2rem 3px 0;
+}
+
+/* MAIN */
+#main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+}
+
+/* HERO */
+.hero {
+  background: linear-gradient(135deg, #0d1117 0%, #1a1033 50%, #0d1117 100%);
+  padding: 5rem 3rem 4rem;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  right: 5%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.25);
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.hero h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.hero h1 span {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--text2);
+  max-width: 680px;
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.tag.green { border-color: rgba(16,185,129,0.4); color: var(--accent3); background: rgba(16,185,129,0.08); }
+.tag.blue { border-color: rgba(0,212,255,0.4); color: var(--accent); background: rgba(0,212,255,0.08); }
+.tag.purple { border-color: rgba(124,58,237,0.4); color: #a78bfa; background: rgba(124,58,237,0.08); }
+.tag.amber { border-color: rgba(245,158,11,0.4); color: var(--accent4); background: rgba(245,158,11,0.08); }
+
+/* CONTENT AREA */
+.content {
+  padding: 0 3rem 5rem;
+}
+
+/* PHASE HEADER */
+.phase-header {
+  padding: 3rem 0 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.phase-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+}
+
+.phase-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+
+.phase-desc {
+  color: var(--text2);
+  max-width: 700px;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+/* STEP */
+.step {
+  margin-bottom: 2.5rem;
+  scroll-margin-top: 20px;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.25);
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.step-title {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.step-body {
+  padding-left: 0;
+}
+
+.step-body p {
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+
+/* CODE BLOCKS */
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-lang {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.copy-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+.code-block pre {
+  padding: 1.2rem 1.5rem;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #79c0ff;
+}
+
+/* YAML BLOCK */
+.yaml-block {
+  background: #0d1b0d;
+  border: 1px solid rgba(16,185,129,0.25);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.yaml-block .code-header {
+  background: rgba(16,185,129,0.08);
+  border-bottom: 1px solid rgba(16,185,129,0.2);
+}
+
+.yaml-block .code-lang { color: var(--accent3); }
+
+.yaml-block pre {
+  padding: 1.2rem 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #86efac;
+  overflow-x: auto;
+}
+
+/* RESULT BOX */
+.result-box {
+  background: rgba(16,185,129,0.05);
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+}
+
+.result-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--accent3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.result-box pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  color: #86efac;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+/* CALLOUTS */
+.callout {
+  display: flex;
+  gap: 14px;
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius);
+  margin: 1rem 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.callout-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.callout.warning {
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.25);
+  color: #fcd34d;
+}
+
+.callout.info {
+  background: rgba(0,212,255,0.06);
+  border: 1px solid rgba(0,212,255,0.2);
+  color: #7dd3fc;
+}
+
+.callout.success {
+  background: rgba(16,185,129,0.06);
+  border: 1px solid rgba(16,185,129,0.2);
+  color: #6ee7b7;
+}
+
+.callout.danger {
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.2);
+  color: #fca5a5;
+}
+
+/* TABLE */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 1rem 0;
+}
+
+.data-table th {
+  background: var(--bg3);
+  color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(48,54,61,0.5);
+  color: var(--text2);
+  vertical-align: top;
+}
+
+.data-table td:first-child {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* SUMMARY CARD */
+.summary-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-top: 2rem;
+}
+
+.summary-card-header {
+  background: var(--bg3);
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--accent3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(48,54,61,0.4);
+  font-size: 13px;
+}
+
+.summary-item:last-child { border-bottom: none; }
+
+.summary-item-label { color: var(--text2); }
+
+.badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.badge.ok { background: rgba(16,185,129,0.15); color: var(--accent3); border: 1px solid rgba(16,185,129,0.3); }
+
+/* DIVIDER */
+.phase-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 3rem 0;
+}
+
+/* INLINE CODE */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: rgba(110,118,129,0.15);
+  border: 1px solid rgba(110,118,129,0.2);
+  color: #79c0ff;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* FOOTER */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 3rem;
+  background: var(--bg2);
+  color: var(--text3);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* MOBILE */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  #sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+  #sidebar.open { transform: translateX(0); }
+  #main { margin-left: 0; }
+  .menu-toggle { display: flex; }
+  .content { padding: 0 1.5rem 4rem; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero > * {
+  animation: fadeIn 0.6s ease both;
+}
+.hero > *:nth-child(1) { animation-delay: 0.1s; }
+.hero > *:nth-child(2) { animation-delay: 0.2s; }
+.hero > *:nth-child(3) { animation-delay: 0.3s; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">🖥 1º ASIR · ISO</div>
+    <div class="sidebar-title">Ansible HPC<br>Automatización</div>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 0</div>
+    <a href="#fase0" class="toc-item"><span class="num">0.</span>Configuración manual de compute-0-0</a>
+    <div class="toc-sub">
+      <a href="#s0-1" class="toc-item"><span class="num">0.1</span>Netplan</a>
+      <a href="#s0-2" class="toc-item"><span class="num">0.2</span>Hostname y /etc/hosts</a>
+      <a href="#s0-3" class="toc-item"><span class="num">0.3</span>SSH y herramientas</a>
+      <a href="#s0-4" class="toc-item"><span class="num">0.4</span>IP forwarding y NAT</a>
+    </div>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 1</div>
+    <a href="#fase1" class="toc-item"><span class="num">1.</span>Instalar Ansible</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 2</div>
+    <a href="#fase2" class="toc-item"><span class="num">2.</span>Configuración mínima de clientes</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 3</div>
+    <a href="#fase3" class="toc-item"><span class="num">3.</span>SSH sin contraseña</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 4</div>
+    <a href="#fase4" class="toc-item"><span class="num">4.</span>Probar Ansible</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 5</div>
+    <a href="#fase5" class="toc-item"><span class="num">5.</span>Playbook servidor LDAP</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 6</div>
+    <a href="#fase6" class="toc-item"><span class="num">6.</span>Playbook clientes LDAP</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 7</div>
+    <a href="#fase7" class="toc-item"><span class="num">7.</span>Playbook servidor NFS</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 8</div>
+    <a href="#fase8" class="toc-item"><span class="num">8.</span>Playbook Autofs</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 9</div>
+    <a href="#fase9" class="toc-item"><span class="num">9.</span>Verificación final</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 10</div>
+    <a href="#fase10" class="toc-item"><span class="num">10.</span>Playbook Munge</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 11</div>
+    <a href="#fase11" class="toc-item"><span class="num">11.</span>Plantilla slurm.conf</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 12</div>
+    <a href="#fase12" class="toc-item"><span class="num">12.</span>Playbook controlador Slurm</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 13</div>
+    <a href="#fase13" class="toc-item"><span class="num">13.</span>Playbook nodos Slurm</a>
+  </div>
+  <div class="toc-section">
+    <div class="toc-group-label">Fase 14</div>
+    <a href="#fase14" class="toc-item"><span class="num">14.</span>Verificar Slurm</a>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">⚡ 1º ASIR · Instalación de Sistemas Operativos</div>
+  <h1>Ansible para <span>Clúster HPC</span></h1>
+  <p class="hero-subtitle">
+    Automatiza la configuración completa de un clúster de cuatro máquinas virtuales con Ansible: LDAP, NFS, Slurm y Environment Modules. Infraestructura como código para entornos de computación de alto rendimiento.
+  </p>
+  <div class="hero-tags">
+    <span class="tag blue">Ansible</span>
+    <span class="tag purple">Netplan</span>
+    <span class="tag green">OpenLDAP</span>
+    <span class="tag amber">NFS + Autofs</span>
+    <span class="tag blue">Slurm</span>
+    <span class="tag">Ubuntu/Debian</span>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- ===== FASE 0 ===== -->
+<div class="phase-header" id="fase0">
+  <div class="phase-number">Fase 0</div>
+  <h2 class="phase-title">Configuración manual inicial de compute-0-0</h2>
+  <p class="phase-desc">Trabajamos en compute-0-0 como root. Esta configuración se realiza manualmente antes de empezar con Ansible.</p>
+</div>
+
+<div class="step" id="s0-1">
+  <div class="step-header"><span class="step-num">0.1</span><span class="step-title">Configurar red con Netplan</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ls /etc/netplan/
+# Resultado esperado: 50-installer-config.yaml
+
+nano /etc/netplan/50-installer-config.yaml</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">50-installer-config.yaml</span></div><pre>network:
+  version: 2
+  ethernets:
+    enp0s3:
+      addresses:
+        - 10.4.104.110/8
+      nameservers:
+        addresses:
+          - 8.8.8.8
+      routes:
+        - to: default
+          via: 10.0.0.1
+    enp0s8:
+      addresses:
+        - 172.16.0.10/24</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>netplan apply</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s0-2">
+  <div class="step-header"><span class="step-num">0.2</span><span class="step-title">Configurar hostname y /etc/hosts</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>hostnamectl set-hostname compute-0-0
+hostname
+
+nano /etc/hosts</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">/etc/hosts</span></div><pre>127.0.0.1       localhost
+10.4.104.110    compute-0-0
+172.16.0.10     compute-0-0
+172.16.0.11     compute-0-1
+172.16.0.12     compute-0-2
+172.16.0.13     compute-0-3
+
+::1             ip6-localhost ip6-loopback
+fe00::0         ip6-localnet
+ff00::0         ip6-mcastprefix
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>cat /etc/hosts | grep compute</pre></div>
+    <div class="result-box"><div class="result-label">✅ Resultado esperado</div><pre>10.4.104.110    compute-0-0
+172.16.0.10     compute-0-0
+172.16.0.11     compute-0-1
+172.16.0.12     compute-0-2
+172.16.0.13     compute-0-3</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s0-3">
+  <div class="step-header"><span class="step-num">0.3</span><span class="step-title">Configurar SSH y herramientas básicas</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>passwd root
+# Contraseña: alumno
+
+nano /etc/ssh/sshd_config
+# Asegurar: PermitRootLogin yes, PasswordAuthentication yes
+
+systemctl restart ssh
+systemctl status ssh
+
+apt update
+apt install -y vim tree curl wget net-tools</pre></div>
+  </div>
+</div>
+
+<div class="step" id="s0-4">
+  <div class="step-header"><span class="step-num">0.4</span><span class="step-title">Configurar IP forwarding y NAT</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano /etc/sysctl.conf
+# Descomentar: net.ipv4.ip_forward=1
+
+sysctl -p
+# Resultado esperado: net.ipv4.ip_forward = 1
+
+iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
+iptables -t nat -L -n -v
+
+apt install -y iptables-persistent
+# Seleccionar "Yes" para guardar reglas</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 1 ===== -->
+<div class="phase-header" id="fase1">
+  <div class="phase-number">Fase 1</div>
+  <h2 class="phase-title">Instalar Ansible en compute-0-0</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">1.1</span><span class="step-title">Instalar y verificar Ansible</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>apt update
+apt install -y ansible
+ansible --version
+
+mkdir -p /etc/ansible
+
+nano /etc/ansible/hosts</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">/etc/ansible/hosts</span></div><pre>[server]
+compute-0-0 ansible_host=172.16.0.10
+compute-0-1 ansible_host=172.16.0.11
+compute-0-2 ansible_host=172.16.0.12
+compute-0-3 ansible_host=172.16.0.13
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ansible-inventory --list -y</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 2 ===== -->
+<div class="phase-header" id="fase2">
+  <div class="phase-number">Fase 2</div>
+  <h2 class="phase-title">Configuración mínima de clientes (compute-0-1, 0-2, 0-3)</h2>
+  <p class="phase-desc">Configurar manualmente cada cliente: IP, hostname y /etc/hosts.</p>
+</div>
+
+<div class="step">
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · compute-0-1</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>hostnamectl set-hostname compute-0-1
+nano /etc/netplan/50-installer-config.yaml
+# IP: 172.16.0.11/24, gateway: 172.16.0.10, DNS: 8.8.8.8
+netplan apply
+
+nano /etc/hosts</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">/etc/hosts (en cada cliente)</span></div><pre>127.0.0.1       localhost
+172.16.0.10     compute-0-0
+172.16.0.11     compute-0-1
+172.16.0.12     compute-0-2
+172.16.0.13     compute-0-3</pre></div>
+    <div class="callout info"><div class="callout-icon">ℹ️</div><p>Repetir para compute-0-2 (IP 172.16.0.12) y compute-0-3 (IP 172.16.0.13).</p></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 3 ===== -->
+<div class="phase-header" id="fase3">
+  <div class="phase-number">Fase 3</div>
+  <h2 class="phase-title">Configurar acceso SSH sin contraseña</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">3.1</span><span class="step-title">Generar y distribuir clave SSH</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · compute-0-0</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ssh-keygen -t rsa -b 4096 -N "" -f /root/.ssh/id_rsa
+
+ssh-copy-id root@172.16.0.10
+ssh-copy-id root@172.16.0.11
+ssh-copy-id root@172.16.0.12
+ssh-copy-id root@172.16.0.13
+# Contraseña: alumno (última vez)
+
+ssh root@172.16.0.10 hostname
+ssh root@172.16.0.11 hostname
+ssh root@172.16.0.12 hostname
+ssh root@172.16.0.13 hostname</pre></div>
+    <div class="result-box"><div class="result-label">✅ Resultado esperado</div><pre>compute-0-0
+compute-0-1
+compute-0-2
+compute-0-3</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 4 ===== -->
+<div class="phase-header" id="fase4">
+  <div class="phase-number">Fase 4</div>
+  <h2 class="phase-title">Probar Ansible</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">4.1</span><span class="step-title">Pruebas de conectividad y ad-hoc</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ansible all -m ping -u root
+ansible all -a "hostname" -u root
+ansible all -a "df -h /" -u root
+ansible all -m apt -a "name=tree state=present" -u root
+ansible all -a "tree --version" -u root</pre></div>
+    <div class="result-box"><div class="result-label">✅ Resultado esperado ping</div><pre>compute-0-0 | SUCCESS => { "ping": "pong" }
+compute-0-1 | SUCCESS => { "ping": "pong" }
+compute-0-2 | SUCCESS => { "ping": "pong" }
+compute-0-3 | SUCCESS => { "ping": "pong" }</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 5 ===== -->
+<div class="phase-header" id="fase5">
+  <div class="phase-number">Fase 5</div>
+  <h2 class="phase-title">Crear playbook para servidor LDAP</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">5.1</span><span class="step-title">Estructura de directorios y variables</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>mkdir -p /root/ansible-ldap/{group_vars,host_vars,files/ldif,templates}
+cd /root/ansible-ldap
+
+nano group_vars/all.yml</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">group_vars/all.yml</span></div><pre>---
+ldap_domain: ldap.julian.local
+ldap_base_dn: "dc=ldap,dc=julian,dc=local"
+ldap_admin_password: alumno
+ldap_organization: julian
+
+ldap_users:
+  - uid: julian1
+    uid_number: 1010
+    password: alumno
+  - uid: julian2
+    uid_number: 1011
+    password: alumno
+  - uid: julian3
+    uid_number: 1012
+    password: alumno
+  - uid: julian4
+    uid_number: 1013
+    password: alumno
+
+ldap_group_name: cuerda
+ldap_group_gid: 501
+internal_network: 172.16.0.0/24
+gateway_ip: 172.16.0.10</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · host_vars</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>echo "---\nserver_role: master" > host_vars/compute-0-0.yml
+echo "---\nserver_role: client" > host_vars/compute-0-1.yml
+echo "---\nserver_role: client" > host_vars/compute-0-2.yml
+echo "---\nserver_role: client" > host_vars/compute-0-3.yml</pre></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">5.2</span><span class="step-title">Archivos LDIF y plantilla</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · estructura.ldif</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano files/ldif/estructura.ldif</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">estructura.ldif</span></div><pre>dn: ou=usuarios,{{ ldap_base_dn }}
+objectClass: organizationalUnit
+ou: usuarios
+
+dn: ou=grupos,{{ ldap_base_dn }}
+objectClass: organizationalUnit
+ou: grupos</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · grupo.ldif</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano files/ldif/grupo.ldif</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">grupo.ldif</span></div><pre>dn: cn={{ ldap_group_name }},ou=grupos,{{ ldap_base_dn }}
+objectClass: posixGroup
+cn: {{ ldap_group_name }}
+gidNumber: {{ ldap_group_gid }}</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · plantilla usuarios.ldif.j2</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano templates/usuarios.ldif.j2</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">usuarios.ldif.j2</span></div><pre>{% for user in ldap_users %}
+dn: uid={{ user.uid }},ou=usuarios,{{ ldap_base_dn }}
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: {{ user.uid }}
+sn: {{ user.uid }}
+givenName: {{ user.uid }}
+cn: {{ user.uid }}
+uidNumber: {{ user.uid_number }}
+gidNumber: {{ ldap_group_gid }}
+userPassword: {{ user.password }}
+loginShell: /bin/bash
+homeDirectory: /home/{{ user.uid }}
+mail: {{ user.uid }}@{{ ldap_domain }}
+
+{% endfor %}</pre></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">5.3</span><span class="step-title">Playbook site.yml</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano site.yml</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">site.yml</span></div><pre>---
+- name: Configurar servidor LDAP
+  hosts: compute-0-0
+  become: yes
+  tasks:
+    - name: Instalar paquetes LDAP
+      apt:
+        name:
+          - slapd
+          - ldap-utils
+        state: present
+        update_cache: yes
+
+    - name: Configurar slapd con el dominio correcto
+      shell: |
+        debconf-set-selections <<EOF
+        slapd slapd/domain string {{ ldap_domain }}
+        slapd slapd/organization string {{ ldap_organization }}
+        slapd slapd/password1 password {{ ldap_admin_password }}
+        slapd slapd/password2 password {{ ldap_admin_password }}
+        slapd slapd/backend select HDB
+        slapd slapd/purge_database boolean false
+        slapd slapd/move_old_database boolean true
+        slapd slapd/allow_ldap_v2 boolean false
+        EOF
+        dpkg-reconfigure -f noninteractive slapd
+      register: reconfigure_result
+      changed_when: true
+
+    - name: Asegurar que slapd está corriendo
+      systemd:
+        name: slapd
+        state: started
+        enabled: yes
+
+    - name: Crear directorio temporal para archivos LDIF
+      tempfile:
+        state: directory
+        suffix: ldif
+      register: temp_dir
+
+    - name: Copiar archivo estructura.ldif
+      template:
+        src: files/ldif/estructura.ldif
+        dest: "{{ temp_dir.path }}/estructura.ldif"
+
+    - name: Añadir unidades organizativas
+      command: |
+        ldapadd -x -D "cn=admin,{{ ldap_base_dn }}" -w {{ ldap_admin_password }} -f {{ temp_dir.path }}/estructura.ldif
+      register: ldap_add_result
+      failed_when: false
+      changed_when: "'adding new entry' in ldap_add_result.stdout"
+
+    - name: Copiar archivo grupo.ldif
+      template:
+        src: files/ldif/grupo.ldif
+        dest: "{{ temp_dir.path }}/grupo.ldif"
+
+    - name: Añadir grupo
+      command: |
+        ldapadd -x -D "cn=admin,{{ ldap_base_dn }}" -w {{ ldap_admin_password }} -f {{ temp_dir.path }}/grupo.ldif
+      register: group_add_result
+      failed_when: false
+      changed_when: "'adding new entry' in group_add_result.stdout"
+
+    - name: Generar archivo usuarios.ldif desde plantilla
+      template:
+        src: templates/usuarios.ldif.j2
+        dest: "{{ temp_dir.path }}/usuarios.ldif"
+
+    - name: Añadir usuarios
+      command: |
+        ldapadd -x -D "cn=admin,{{ ldap_base_dn }}" -w {{ ldap_admin_password }} -f {{ temp_dir.path }}/usuarios.ldif
+      register: users_add_result
+      failed_when: false
+      changed_when: "'adding new entry' in users_add_result.stdout"
+
+    - name: Limpiar directorio temporal
+      file:
+        path: "{{ temp_dir.path }}"
+        state: absent</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · ejecutar</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ansible-playbook site.yml --syntax-check
+ansible-playbook site.yml --list-tasks
+ansible-playbook site.yml -u root</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 6 ===== -->
+<div class="phase-header" id="fase6">
+  <div class="phase-number">Fase 6</div>
+  <h2 class="phase-title">Playbook para clientes LDAP</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">6.1</span><span class="step-title">Crear site-clients.yml</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano site-clients.yml</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">site-clients.yml</span></div><pre>---
+- name: Configurar clientes LDAP
+  hosts: compute-0-1, compute-0-2, compute-0-3
+  become: yes
+  tasks:
+    - name: Instalar paquetes cliente LDAP
+      apt:
+        name:
+          - libnss-ldap
+          - libpam-ldap
+          - ldap-utils
+          - nscd
+        state: present
+        update_cache: yes
+
+    - name: Configurar /etc/ldap/ldap.conf
+      copy:
+        dest: /etc/ldap/ldap.conf
+        content: |
+          BASE    {{ ldap_base_dn }}
+          URI     ldap://{{ gateway_ip }}
+
+    - name: Configurar /etc/ldap.conf
+      copy:
+        dest: /etc/ldap.conf
+        content: |
+          base {{ ldap_base_dn }}
+          uri ldap://{{ gateway_ip }}
+          ldap_version 3
+          rootbinddn cn=admin,{{ ldap_base_dn }}
+
+    - name: Crear archivo de credenciales root
+      copy:
+        dest: /etc/ldap.secret
+        content: "{{ ldap_admin_password }}\n"
+        mode: '0600'
+
+    - name: Configurar /etc/nsswitch.conf para LDAP
+      lineinfile:
+        path: /etc/nsswitch.conf
+        regexp: "^{{ item.key }}:"
+        line: "{{ item.key }}: files ldap"
+        backup: yes
+      loop:
+        - { key: passwd }
+        - { key: group }
+        - { key: shadow }
+
+    - name: Configurar PAM para autenticación LDAP
+      shell: |
+        debconf-set-selections <<EOF
+        libpam-ldap shared/move_old_database boolean true
+        libpam-ldap libpam-ldap/dbrootlogin boolean true
+        libpam-ldap libpam-ldap/override boolean true
+        EOF
+        pam-auth-update --package
+      register: pam_result
+      changed_when: true
+
+    - name: Reiniciar nscd
+      systemd:
+        name: nscd
+        state: restarted
+        enabled: yes
+
+    - name: Verificar que los usuarios LDAP son visibles
+      command: getent passwd julian1
+      register: getent_result
+      changed_when: false
+      failed_when: "'julian1' not in getent_result.stdout"</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash · ejecutar</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ansible-playbook site-clients.yml --syntax-check
+ansible-playbook site-clients.yml --list-hosts
+ansible-playbook site-clients.yml -u root
+
+ansible compute-0-1 -a "getent passwd julian1" -u root</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 7 ===== -->
+<div class="phase-header" id="fase7">
+  <div class="phase-number">Fase 7</div>
+  <h2 class="phase-title">Playbook para servidor NFS</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">7.1</span><span class="step-title">Crear site-nfs.yml</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano site-nfs.yml</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">site-nfs.yml</span></div><pre>---
+- name: Configurar servidor NFS
+  hosts: compute-0-0
+  become: yes
+  tasks:
+    - name: Instalar servidor NFS
+      apt:
+        name: nfs-kernel-server
+        state: present
+        update_cache: yes
+
+    - name: Crear directorios home para usuarios LDAP
+      file:
+        path: "/home/{{ item.uid }}"
+        state: directory
+        owner: "{{ item.uid_number }}"
+        group: "{{ ldap_group_gid }}"
+        mode: '0755'
+      loop: "{{ ldap_users }}"
+
+    - name: Crear archivo de bienvenida
+      copy:
+        dest: "/home/{{ item.uid }}/bienvenida.txt"
+        content: "Bienvenido {{ item.uid }}\n"
+        owner: "{{ item.uid_number }}"
+        group: "{{ ldap_group_gid }}"
+        mode: '0644'
+      loop: "{{ ldap_users }}"
+
+    - name: Configurar /etc/exports
+      copy:
+        dest: /etc/exports
+        content: |
+          /home           {{ internal_network }}(rw,sync,no_subtree_check,no_root_squash)
+
+    - name: Aplicar configuración NFS
+      command: exportfs -a
+      changed_when: true
+
+    - name: Reiniciar servidor NFS
+      systemd:
+        name: nfs-kernel-server
+        state: restarted
+        enabled: yes</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ansible-playbook site-nfs.yml -u root</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 8 ===== -->
+<div class="phase-header" id="fase8">
+  <div class="phase-number">Fase 8</div>
+  <h2 class="phase-title">Playbook para Autofs en clientes</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">8.1</span><span class="step-title">Crear site-autofs.yml</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano site-autofs.yml</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">site-autofs.yml</span></div><pre>---
+- name: Configurar autofs en clientes
+  hosts: compute-0-1, compute-0-2, compute-0-3
+  become: yes
+  tasks:
+    - name: Instalar autofs
+      apt:
+        name: autofs
+        state: present
+
+    - name: Configurar /etc/auto.master
+      lineinfile:
+        path: /etc/auto.master
+        line: "/home /etc/auto.home --timeout=60"
+        insertafter: EOF
+        state: present
+        backup: yes
+
+    - name: Crear archivo /etc/auto.home
+      copy:
+        dest: /etc/auto.home
+        content: |
+          * -fstype=nfs,rw,hard,intr,noatime,nolock {{ gateway_ip }}:/home/&
+        mode: '0644'
+
+    - name: Reiniciar autofs
+      systemd:
+        name: autofs
+        state: restarted
+        enabled: yes</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ansible-playbook site-autofs.yml -u root</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 9 ===== -->
+<div class="phase-header" id="fase9">
+  <div class="phase-number">Fase 9</div>
+  <h2 class="phase-title">Verificación final de clientes</h2>
+</div>
+
+<div class="step">
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ansible all -a "getent passwd julian1" -u root
+
+ssh root@172.16.0.11 "su - julian1 -c 'pwd'"
+ssh root@172.16.0.12 "su - julian1 -c 'pwd'"
+ssh root@172.16.0.13 "su - julian1 -c 'pwd'"
+
+ansible compute-0-1 -a "cat /home/julian1/bienvenida.txt" -u root</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 10 ===== -->
+<div class="phase-header" id="fase10">
+  <div class="phase-number">Fase 10</div>
+  <h2 class="phase-title">Playbook para Munge (todos los nodos)</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">10.1</span><span class="step-title">Crear site-munge.yml</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano site-munge.yml</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">site-munge.yml</span></div><pre>---
+- name: Configurar Munge en todos los nodos
+  hosts: all
+  become: yes
+  tasks:
+    - name: Instalar munge
+      apt:
+        name: munge
+        state: present
+        update_cache: yes
+
+    - name: Asegurar que el servicio munge está detenido para configurar
+      systemd:
+        name: munge
+        state: stopped
+      when: inventory_hostname != "compute-0-0"
+
+    - name: Generar clave munge en el servidor
+      command: /usr/sbin/create-munge-key
+      when: inventory_hostname == "compute-0-0"
+      args:
+        creates: /etc/munge/munge.key
+
+    - name: Copiar clave munge desde el servidor a los clientes
+      synchronize:
+        src: /etc/munge/munge.key
+        dest: /etc/munge/munge.key
+        mode: push
+      delegate_to: compute-0-0
+      when: inventory_hostname != "compute-0-0"
+
+    - name: Configurar permisos de la clave
+      file:
+        path: /etc/munge/munge.key
+        owner: munge
+        group: munge
+        mode: '0400'
+
+    - name: Habilitar y arrancar munge
+      systemd:
+        name: munge
+        state: started
+        enabled: yes
+
+    - name: Verificar que munge está funcionando
+      shell: munge -n | unmunge
+      register: munge_test
+      changed_when: false
+      failed_when: "'Success' not in munge_test.stdout"</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ansible-playbook site-munge.yml -u root</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 11 ===== -->
+<div class="phase-header" id="fase11">
+  <div class="phase-number">Fase 11</div>
+  <h2 class="phase-title">Plantilla para slurm.conf</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">11.1</span><span class="step-title">Crear templates/slurm.conf.j2</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano templates/slurm.conf.j2</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">slurm.conf.j2</span></div><pre>ControlMachine=compute-0-0
+ClusterName=Cluster_julian
+SlurmUser=slurm
+SlurmdUser=root
+SlurmctldLogFile=/var/log/slurm/slurmctld.log
+SlurmdLogFile=/var/log/slurm/slurmd.log
+SlurmdSpoolDir=/var/spool/slurmd
+StateSaveLocation=/var/spool/slurmctld
+SlurmdPort=6818
+SlurmctldPort=6817
+AuthType=auth/munge
+AccountingStorageType=none
+SchedulerType=sched/backfill
+SelectType=select/cons_tres
+SelectTypeParameters=CR_Core
+NodeName=compute-0-1 CPUs=2 RealMemory=1024 State=UNKNOWN
+NodeName=compute-0-2 CPUs=2 RealMemory=1024 State=UNKNOWN
+NodeName=compute-0-3 CPUs=2 RealMemory=1024 State=UNKNOWN
+PartitionName=cuerda1 Nodes=compute-0-1 Default=NO MaxTime=INFINITE State=UP
+PartitionName=cuerda2 Nodes=compute-0-[2-3] Default=YES MaxTime=INFINITE State=UP</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 12 ===== -->
+<div class="phase-header" id="fase12">
+  <div class="phase-number">Fase 12</div>
+  <h2 class="phase-title">Playbook para controlador Slurm</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">12.1</span><span class="step-title">Crear site-slurm-controller.yml</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano site-slurm-controller.yml</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">site-slurm-controller.yml</span></div><pre>---
+- name: Configurar controlador Slurm
+  hosts: compute-0-0
+  become: yes
+  tasks:
+    - name: Instalar slurm-wlm
+      apt:
+        name: slurm-wlm
+        state: present
+        update_cache: yes
+
+    - name: Crear directorios necesarios
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: slurm
+        group: slurm
+        mode: '0755'
+      loop:
+        - /var/spool/slurmctld
+        - /var/log/slurm
+        - /etc/slurm
+
+    - name: Copiar configuración slurm.conf
+      template:
+        src: templates/slurm.conf.j2
+        dest: /etc/slurm/slurm.conf
+        owner: slurm
+        group: slurm
+        mode: '0644'
+
+    - name: Habilitar y arrancar slurmctld
+      systemd:
+        name: slurmctld
+        state: started
+        enabled: yes</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ansible-playbook site-slurm-controller.yml -u root
+systemctl status slurmctld
+sinfo  # Los nodos aparecerán como "unk" hasta configurar slurmd</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 13 ===== -->
+<div class="phase-header" id="fase13">
+  <div class="phase-number">Fase 13</div>
+  <h2 class="phase-title">Playbook para nodos Slurm</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">13.1</span><span class="step-title">Crear site-slurm-nodes.yml</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>nano site-slurm-nodes.yml</pre></div>
+    <div class="yaml-block"><div class="code-header"><span class="code-lang" style="color:var(--accent3)">site-slurm-nodes.yml</span></div><pre>---
+- name: Configurar nodos Slurm
+  hosts: compute-0-1, compute-0-2, compute-0-3
+  become: yes
+  tasks:
+    - name: Instalar slurmd
+      apt:
+        name: slurmd
+        state: present
+        update_cache: yes
+
+    - name: Crear directorios necesarios
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: slurm
+        group: slurm
+        mode: '0755'
+      loop:
+        - /var/spool/slurmd
+        - /var/log/slurm
+        - /etc/slurm
+
+    - name: Crear archivo de log
+      file:
+        path: /var/log/slurm/slurmd.log
+        state: touch
+        owner: slurm
+        group: slurm
+        mode: '0644'
+
+    - name: Copiar configuración slurm.conf desde el servidor
+      synchronize:
+        src: /etc/slurm/slurm.conf
+        dest: /etc/slurm/slurm.conf
+        mode: push
+      delegate_to: compute-0-0
+
+    - name: Asegurar permisos de slurm.conf
+      file:
+        path: /etc/slurm/slurm.conf
+        owner: slurm
+        group: slurm
+        mode: '0644'
+
+    - name: Habilitar y arrancar slurmd
+      systemd:
+        name: slurmd
+        state: started
+        enabled: yes</pre></div>
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>ansible-playbook site-slurm-nodes.yml -u root</pre></div>
+  </div>
+</div>
+
+<hr class="phase-divider">
+
+<!-- ===== FASE 14 ===== -->
+<div class="phase-header" id="fase14">
+  <div class="phase-number">Fase 14</div>
+  <h2 class="phase-title">Verificar Slurm y solución de problemas</h2>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">14.1</span><span class="step-title">Verificar estado y forzar nodos idle</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>sinfo
+
+# Si los nodos aparecen como "down"
+scontrol update nodename=compute-0-1 state=idle
+scontrol update nodename=compute-0-2 state=idle
+scontrol update nodename=compute-0-3 state=idle
+
+# Reiniciar slurmd en los nodos
+ssh root@172.16.0.11 "systemctl restart slurmd"
+ssh root@172.16.0.12 "systemctl restart slurmd"
+ssh root@172.16.0.13 "systemctl restart slurmd"
+
+systemctl restart slurmctld
+sinfo
+
+# Si un nodo no responde, forzar
+scontrol update nodename=compute-0-3 state=IDLE reason="Forced idle"</pre></div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-header"><span class="step-num">14.2</span><span class="step-title">Probar trabajos en Slurm</span></div>
+  <div class="step-body">
+    <div class="code-block"><div class="code-header"><span class="code-lang">bash</span><button class="copy-btn" onclick="copyCode(this)">copiar</button></div><pre>srun -p cuerda1 hostname
+srun -p cuerda2 -N2 hostname
+srun -N3 hostname
+
+su - julian1
+srun -p cuerda1 hostname
+srun -p cuerda2 -N2 hostname
+exit</pre></div>
+    <div class="result-box"><div class="result-label">✅ Resultado esperado</div><pre>compute-0-1
+compute-0-2
+compute-0-3</pre></div>
+  </div>
+</div>
+
+<!-- FINAL SUMMARY -->
+<div class="summary-card" style="margin-top:3rem;">
+  <div class="summary-card-header">🏁 Resumen Final de la Automatización con Ansible</div>
+  <div class="summary-item"><span class="summary-item-label">Fase 0 — Configuración manual compute-0-0</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 1 — Instalación de Ansible</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 2 — Configuración mínima clientes</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 3 — SSH sin contraseña</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 4 — Pruebas de Ansible</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 5 — Playbook servidor LDAP</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 6 — Playbook clientes LDAP</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 7 — Playbook servidor NFS</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 8 — Playbook Autofs</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 9 — Verificación final</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 10 — Playbook Munge</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 11 — Plantilla slurm.conf</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 12 — Playbook controlador Slurm</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 13 — Playbook nodos Slurm</span><span class="badge ok">Completada ✓</span></div>
+  <div class="summary-item"><span class="summary-item-label">Fase 14 — Verificación Slurm</span><span class="badge ok">Completada ✓</span></div>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong>Ansible para Clúster HPC</strong> · Práctica de 1º ASIR — Instalación de Sistemas Operativos<br>
+  Automatización completa con Ansible · Basado en Ubuntu/Debian
+</div>
+
+</div>
+
+<!-- MOBILE TOGGLE -->
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+<script>
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ copiado';
+    btn.style.color = 'var(--accent3)';
+    btn.style.borderColor = 'var(--accent3)';
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  });
+}
+
+// Active TOC tracking
+const sections = document.querySelectorAll('[id]');
+const tocLinks = document.querySelectorAll('.toc-item');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.toc-item[href="#${entry.target.id}"]`);
+      if (active) {
+        active.classList.add('active');
+        active.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  });
+}, { rootMargin: '-20% 0% -75% 0%' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
+```
