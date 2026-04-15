@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prácticas BD - Funciones de Fecha Oracle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0e1a;
+            font-family: 'Segoe UI', 'Courier New', 'Fira Code', monospace;
+            color: #e0e0e0;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Encabezado */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #2a2f3f;
+        }
+
+        .header h1 {
+            color: #6c9eff;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #1e2a3a;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #6c9eff;
+            margin-top: 0.5rem;
+        }
+
+        /* Tarjetas de código */
+        .card {
+            background: #0f1219;
+            border: 1px solid #252a3a;
+            border-radius: 12px;
+            margin-bottom: 1.8rem;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: #3a4055;
+        }
+
+        .card-header {
+            background: #131720;
+            padding: 0.8rem 1.2rem;
+            border-bottom: 1px solid #252a3a;
+            font-weight: 600;
+            color: #6c9eff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .card-header i {
+            font-style: normal;
+            font-weight: bold;
+        }
+
+        .step-number {
+            background: #2a3a5a;
+            border-radius: 30px;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .code-block {
+            padding: 1.2rem;
+            overflow-x: auto;
+            background: #0a0d12;
+        }
+
+        pre {
+            font-family: 'Courier New', 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #cbd5e6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            tab-size: 4;
+        }
+
+        code {
+            font-family: 'Courier New', 'Fira Code', monospace;
+        }
+
+        /* Botón copiar */
+        .copy-btn {
+            background: #1e2a3a;
+            border: none;
+            color: #6c9eff;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin: 0.8rem 1.2rem 0.8rem auto;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #2a3a55;
+        }
+
+        .flex-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* Ejercicios */
+        .exercises {
+            margin-top: 2.5rem;
+        }
+
+        .exercises-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+            color: #a0b8ff;
+            border-left: 4px solid #6c9eff;
+            padding-left: 1rem;
+        }
+
+        .exercise-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .exercise-item {
+            background: #0f1219;
+            border: 1px solid #252a3a;
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            transition: background 0.2s;
+        }
+
+        .exercise-item:hover {
+            background: #131725;
+        }
+
+        .exercise-num {
+            display: inline-block;
+            background: #1e2a3a;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #6c9eff;
+            margin-right: 0.8rem;
+        }
+
+        .exercise-text {
+            font-size: 1rem;
+            color: #ddd;
+            font-family: 'Segoe UI', monospace;
+        }
+
+        .exercise-code {
+            margin-top: 0.6rem;
+            padding: 0.6rem;
+            background: #070a10;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #b0c4de;
+            border-left: 3px solid #3a5a8a;
+        }
+
+        hr {
+            border-color: #252a3a;
+            margin: 1rem 0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            font-size: 0.75rem;
+            color: #555;
+            border-top: 1px solid #1e2230;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🗄️ Funciones de Fecha en Oracle</h1>
+        <p>Base de datos EMPLE · Prácticas ASIR · Administración de Sistemas</p>
+        <div class="badge">🐘 Modo oscuro · SQL para administración de redes</div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- SCRIPT COMPLETO PARA CREAR LA BASE DE DATOS      -->
+    <!-- ================================================= -->
+    <div class="card">
+        <div class="card-header">
+            <span class="step-number">📘</span> SCRIPT COMPLETO · TABLA EMPLE
+        </div>
+        <div class="flex-header">
+            <div></div>
+            <button class="copy-btn" onclick="copyToClipboard('full-script')">📋 Copiar script completo</button>
+        </div>
+        <div class="code-block" id="full-script">
+            <pre><code>-- =====================================================
+-- BASE DE DATOS PARA PRÁCTICAS DE FUNCIONES DE FECHA
+-- ASIGNATURA: BASES DE DATOS - ASIR
+-- TABLA: EMPLE (Empleados de una empresa)
+-- =====================================================
+
+-- PASO 1: CREAR LA TABLA
+-- =====================================================
+CREATE TABLE emple (
+    id_empleado    NUMBER(4) PRIMARY KEY,
+    apellido       VARCHAR2(30) NOT NULL,
+    nombre         VARCHAR2(30),
+    oficio         VARCHAR2(20),
+    fecha_alt      DATE,        -- Fecha de alta/contratación
+    salario        NUMBER(8,2),
+    comision       NUMBER(8,2),
+    dept_no        NUMBER(2)
+);
+
+-- =====================================================
+-- PASO 2: INSERTAR DATOS DE EJEMPLO
+-- =====================================================
+
+INSERT INTO emple VALUES (7369, 'SANCHEZ', 'LUIS', 'EMPLEADO', 
+    TO_DATE('17/12/2004', 'DD/MM/YYYY'), 104000, NULL, 20);
+
+INSERT INTO emple VALUES (7499, 'ARROYO', 'ANA', 'VENDEDOR', 
+    TO_DATE('20/02/2009', 'DD/MM/YYYY'), 208000, 39000, 30);
+
+INSERT INTO emple VALUES (7521, 'SALA', 'CARLOS', 'VENDEDOR', 
+    TO_DATE('22/10/2012', 'DD/MM/YYYY'), 162500, 65000, 30);
+
+INSERT INTO emple VALUES (7566, 'JIMENEZ', 'MARIA', 'DIRECTOR', 
+    TO_DATE('02/04/2014', 'DD/MM/YYYY'), 386750, NULL, 20);
+
+INSERT INTO emple VALUES (7654, 'MARTIN', 'JAVIER', 'VENDEDOR', 
+    TO_DATE('29/09/2016', 'DD/MM/YYYY'), 162500, 182000, 30);
+
+INSERT INTO emple VALUES (7698, 'NEGRO', 'LAURA', 'DIRECTOR', 
+    TO_DATE('01/05/2018', 'DD/MM/YYYY'), 370500, NULL, 30);
+
+INSERT INTO emple VALUES (7782, 'CLARK', 'PEDRO', 'DIRECTOR', 
+    TO_DATE('09/06/2019', 'DD/MM/YYYY'), 285000, NULL, 10);
+
+INSERT INTO emple VALUES (7788, 'GIL', 'ALBERTO', 'ANALISTA', 
+    TO_DATE('09/11/2021', 'DD/MM/YYYY'), 390000, NULL, 20);
+
+INSERT INTO emple VALUES (7839, 'REY', 'SOFIA', 'PRESIDENTE', 
+    TO_DATE('17/11/2022', 'DD/MM/YYYY'), 650000, NULL, 10);
+
+INSERT INTO emple VALUES (7844, 'TOVAR', 'PABLO', 'VENDEDOR', 
+    TO_DATE('08/10/2025', 'DD/MM/YYYY'), 195000, 0, 30);
+
+INSERT INTO emple VALUES (7876, 'ALONSO', 'ELENA', 'EMPLEADO', 
+    TO_DATE('23/12/2023', 'DD/MM/YYYY'), 143000, NULL, 20);
+
+INSERT INTO emple VALUES (7900, 'JIMENO', 'DAVID', 'EMPLEADO', 
+    TO_DATE('03/01/2024', 'DD/MM/YYYY'), 123500, NULL, 30);
+
+-- =====================================================
+-- PASO 3: VERIFICAR DATOS
+-- =====================================================
+SELECT * FROM emple;</code></pre>
+        </div>
+    </div>
+
+    <!-- CONFIGURACIÓN VISUAL PARA SQL*PLUS -->
+    <div class="card">
+        <div class="card-header">
+            <span class="step-number">🖥️</span> CONFIGURACIÓN VISUAL (SQL*Plus)
+        </div>
+        <div class="flex-header">
+            <div></div>
+            <button class="copy-btn" onclick="copyToClipboard('visual-config')">📋 Copiar configuración</button>
+        </div>
+        <div class="code-block" id="visual-config">
+            <pre><code>-- Mejorar visualización en SQL*Plus
+SET LINESIZE 150
+SET PAGESIZE 100
+SET TRIMSPOOL ON
+SET TRIMOUT ON
+
+-- Formato de columnas
+COLUMN id_empleado FORMAT 9999
+COLUMN apellido FORMAT A15
+COLUMN nombre FORMAT A12
+COLUMN oficio FORMAT A12
+COLUMN fecha_alt FORMAT A12
+COLUMN salario FORMAT 999,999
+COLUMN comision FORMAT 999,999
+COLUMN dept_no FORMAT 99
+
+-- Formato de fecha legible
+ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
+
+-- Ver la tabla ordenada
+SELECT id_empleado, apellido, nombre, oficio, fecha_alt, salario, dept_no 
+FROM emple 
+ORDER BY fecha_alt;</code></pre>
+        </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- ENUNCIADOS DE LOS EJERCICIOS                      -->
+    <!-- ================================================= -->
+    <div class="exercises">
+        <div class="exercises-title">📌 EJERCICIOS PRÁCTICOS</div>
+        <div class="exercise-list">
+
+            <!-- Ejercicio 1 -->
+            <div class="exercise-item">
+                <div>
+                    <span class="exercise-num">EJERCICIO 1</span>
+                    <span class="exercise-text"><strong>Sumar 15 horas a la fecha de hoy.</strong></span>
+                </div>
+                <div class="exercise-code">
+                    SELECT SYSDATE + 15/24 FROM DUAL;
+                </div>
+            </div>
+
+            <!-- Ejercicio 2 -->
+            <div class="exercise-item">
+                <div>
+                    <span class="exercise-num">EJERCICIO 2</span>
+                    <span class="exercise-text"><strong>Mostrar el texto del día en el cual naciste. ¿En qué día naciste?</strong> (cambia la fecha)</span>
+                </div>
+                <div class="exercise-code">
+                    SELECT TO_CHAR(TO_DATE('06/10/1967','DD/MM/YYYY'), 'DAY') FROM DUAL;
+                </div>
+            </div>
+
+            <!-- Ejercicio 4 -->
+            <div class="exercise-item">
+                <div>
+                    <span class="exercise-num">EJERCICIO 4</span>
+                    <span class="exercise-text"><strong>¿Cuántos días tiene el mes de febrero del año que viene?</strong> Consulta válida independientemente del año actual.</span>
+                </div>
+                <div class="exercise-code">
+                    SELECT ADD_MONTHS(TRUNC(SYSDATE + 365, 'YEAR'), 2) - 
+                           ADD_MONTHS(TRUNC(SYSDATE + 365, 'YEAR'), 1) AS dias_febrero
+                    FROM DUAL;
+                </div>
+                <div class="exercise-code" style="margin-top: 5px;">
+                    -- Alternativa más clara:
+                    SELECT LAST_DAY(TO_DATE('01/02/' || EXTRACT(YEAR FROM SYSDATE+365), 'DD/MM/YYYY')) 
+                    FROM DUAL;
+                </div>
+            </div>
+
+            <!-- Ejercicio 5 -->
+            <div class="exercise-item">
+                <div>
+                    <span class="exercise-num">EJERCICIO 5</span>
+                    <span class="exercise-text"><strong>Muestra de cada empleado su apellido y el nombre del mes en que llegó a la empresa.</strong></span>
+                </div>
+                <div class="exercise-code">
+                    SELECT apellido, TO_CHAR(fecha_alt, 'Month') AS mes_contratacion FROM emple;
+                </div>
+            </div>
+
+            <!-- Ejercicio 6 -->
+            <div class="exercise-item">
+                <div>
+                    <span class="exercise-num">EJERCICIO 6</span>
+                    <span class="exercise-text"><strong>Visualiza el apellido de cada empleado y el número de meses (sin decimales) que lleva trabajando en la empresa.</strong></span>
+                </div>
+                <div class="exercise-code">
+                    SELECT apellido, ROUND(MONTHS_BETWEEN(SYSDATE, fecha_alt)) AS meses_trabajados FROM emple;
+                </div>
+            </div>
+
+            <!-- Ejercicio 7 -->
+            <div class="exercise-item">
+                <div>
+                    <span class="exercise-num">EJERCICIO 7</span>
+                    <span class="exercise-text"><strong>¿Cuántos meses lleva trabajando el empleado que más meses lleva?</strong></span>
+                </div>
+                <div class="exercise-code">
+                    SELECT MAX(ROUND(MONTHS_BETWEEN(SYSDATE, fecha_alt))) AS max_antiguedad_meses FROM emple;
+                </div>
+            </div>
+
+            <!-- Ejercicio extra (opcional) -->
+            <div class="exercise-item">
+                <div>
+                    <span class="exercise-num">➕ EXTRA</span>
+                    <span class="exercise-text"><strong>Muestra el nombre completo del mes de contratación para cada empleado (ej: 'Enero', 'Febrero')</strong></span>
+                </div>
+                <div class="exercise-code">
+                    SELECT apellido, TO_CHAR(fecha_alt, 'Month', 'NLS_DATE_LANGUAGE=SPANISH') FROM emple;
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comandos útiles adicionales -->
+    <div class="card" style="margin-top: 1rem;">
+        <div class="card-header">
+            <span class="step-number">⚙️</span> COMANDOS ÚTILES PARA PRACTICAR
+        </div>
+        <div class="code-block">
+            <pre><code>-- Ver estructura de la tabla
+DESC emple;
+
+-- Contar empleados
+SELECT COUNT(*) FROM emple;
+
+-- Ver fechas en formato extendido
+SELECT apellido, TO_CHAR(fecha_alt, 'DD/MM/YYYY HH24:MI:SS') FROM emple;
+
+-- Configuración recomendada siempre al inicio
+SET LINESIZE 180
+SET PAGESIZE 60
+ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';</code></pre>
+        </div>
+    </div>
+
+    <footer>
+        📚 Bases de Datos · ASIR · Funciones de fecha en Oracle · Modo oscuro para sesiones prácticas
+    </footer>
+</div>
+
+<script>
+    function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
+        const codeText = element.innerText || element.textContent;
+        navigator.clipboard.writeText(codeText).then(() => {
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = '✅ ¡Copiado!';
+            setTimeout(() => {
+                btn.innerText = originalText;
+            }, 1500);
+        }).catch(err => {
+            alert('Error al copiar: ' + err);
+        });
+    }
+</script>
+</body>
+</html>
