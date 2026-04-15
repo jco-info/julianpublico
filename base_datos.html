@@ -308,33 +308,8 @@ SELECT * FROM emple;</code></pre>
         </div>
         <div class="flex-header">
             <div></div>
-            <button class="copy-btn" onclick="copyToClipboard('visual-config')">📋 Copiar configuración</button>
         </div>
-        <div class="code-block" id="visual-config">
-            <pre><code>-- Mejorar visualización en SQL*Plus
-SET LINESIZE 150
-SET PAGESIZE 100
-SET TRIMSPOOL ON
-SET TRIMOUT ON
-
--- Formato de columnas
-COLUMN id_empleado FORMAT 9999
-COLUMN apellido FORMAT A15
-COLUMN nombre FORMAT A12
-COLUMN oficio FORMAT A12
-COLUMN fecha_alt FORMAT A12
-COLUMN salario FORMAT 999,999
-COLUMN comision FORMAT 999,999
-COLUMN dept_no FORMAT 99
-
--- Formato de fecha legible
-ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';
-
--- Ver la tabla ordenada
-SELECT id_empleado, apellido, nombre, oficio, fecha_alt, salario, dept_no 
-FROM emple 
-ORDER BY fecha_alt;</code></pre>
-        </div>
+      
     </div>
 
     <!-- ================================================= -->
