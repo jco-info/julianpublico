@@ -403,27 +403,12 @@ SELECT * FROM emple;
     <!-- Comandos útiles adicionales -->
     <div class="card" style="margin-top: 1rem;">
         <div class="card-header">
-            <span class="step-number">⚙️</span> COMANDOS ÚTILES PARA PRACTICAR
         </div>
-        <div class="code-block">
-            <pre><code>-- Ver estructura de la tabla
-DESC emple;
 
--- Contar empleados
-SELECT COUNT(*) FROM emple;
-
--- Ver fechas en formato extendido
-SELECT apellido, TO_CHAR(fecha_alt, 'DD/MM/YYYY HH24:MI:SS') FROM emple;
-
--- Configuración recomendada siempre al inicio
-SET LINESIZE 180
-SET PAGESIZE 60
-ALTER SESSION SET NLS_DATE_FORMAT = 'DD/MM/YYYY';</code></pre>
-        </div>
     </div>
 
     <footer>
-        📚 Bases de Datos · ASIR · Funciones de fecha en Oracle · Modo oscuro para sesiones prácticas
+        📚 Bases de Datos · ASIR · Funciones de fecha en Oracle 
     </footer>
 </div>
 
