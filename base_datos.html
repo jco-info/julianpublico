@@ -351,7 +351,6 @@ ORDER BY fecha_alt;</code></pre>
                     <span class="exercise-text"><strong>Sumar 15 horas a la fecha de hoy.</strong></span>
                 </div>
                 <div class="exercise-code">
-                    SELECT SYSDATE + 15/24 FROM DUAL;
                 </div>
             </div>
 
@@ -362,7 +361,6 @@ ORDER BY fecha_alt;</code></pre>
                     <span class="exercise-text"><strong>Mostrar el texto del día en el cual naciste. ¿En qué día naciste?</strong> (cambia la fecha)</span>
                 </div>
                 <div class="exercise-code">
-                    SELECT TO_CHAR(TO_DATE('06/10/1967','DD/MM/YYYY'), 'DAY') FROM DUAL;
                 </div>
             </div>
 
@@ -373,14 +371,7 @@ ORDER BY fecha_alt;</code></pre>
                     <span class="exercise-text"><strong>¿Cuántos días tiene el mes de febrero del año que viene?</strong> Consulta válida independientemente del año actual.</span>
                 </div>
                 <div class="exercise-code">
-                    SELECT ADD_MONTHS(TRUNC(SYSDATE + 365, 'YEAR'), 2) - 
-                           ADD_MONTHS(TRUNC(SYSDATE + 365, 'YEAR'), 1) AS dias_febrero
-                    FROM DUAL;
-                </div>
-                <div class="exercise-code" style="margin-top: 5px;">
-                    -- Alternativa más clara:
-                    SELECT LAST_DAY(TO_DATE('01/02/' || EXTRACT(YEAR FROM SYSDATE+365), 'DD/MM/YYYY')) 
-                    FROM DUAL;
+                    
                 </div>
             </div>
 
@@ -391,7 +382,6 @@ ORDER BY fecha_alt;</code></pre>
                     <span class="exercise-text"><strong>Muestra de cada empleado su apellido y el nombre del mes en que llegó a la empresa.</strong></span>
                 </div>
                 <div class="exercise-code">
-                    SELECT apellido, TO_CHAR(fecha_alt, 'Month') AS mes_contratacion FROM emple;
                 </div>
             </div>
 
@@ -402,7 +392,6 @@ ORDER BY fecha_alt;</code></pre>
                     <span class="exercise-text"><strong>Visualiza el apellido de cada empleado y el número de meses (sin decimales) que lleva trabajando en la empresa.</strong></span>
                 </div>
                 <div class="exercise-code">
-                    SELECT apellido, ROUND(MONTHS_BETWEEN(SYSDATE, fecha_alt)) AS meses_trabajados FROM emple;
                 </div>
             </div>
 
@@ -413,7 +402,6 @@ ORDER BY fecha_alt;</code></pre>
                     <span class="exercise-text"><strong>¿Cuántos meses lleva trabajando el empleado que más meses lleva?</strong></span>
                 </div>
                 <div class="exercise-code">
-                    SELECT MAX(ROUND(MONTHS_BETWEEN(SYSDATE, fecha_alt))) AS max_antiguedad_meses FROM emple;
                 </div>
             </div>
 
@@ -424,7 +412,7 @@ ORDER BY fecha_alt;</code></pre>
                     <span class="exercise-text"><strong>Muestra el nombre completo del mes de contratación para cada empleado (ej: 'Enero', 'Febrero')</strong></span>
                 </div>
                 <div class="exercise-code">
-                    SELECT apellido, TO_CHAR(fecha_alt, 'Month', 'NLS_DATE_LANGUAGE=SPANISH') FROM emple;
+                    
                 </div>
             </div>
         </div>
