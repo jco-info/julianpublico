@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Test POO Python · Modo Oscuro · Preguntas Aleatorias</title>
+    <title>Test POO Python · Modo Oscuro · Preguntas Oficiales</title>
     <style>
         * {
             margin: 0;
@@ -112,7 +112,6 @@
             border-radius: 1.5rem;
             padding: 1.6rem;
             margin-bottom: 1.8rem;
-            transition: 0.1s;
         }
 
         .question-title {
@@ -165,33 +164,12 @@
             accent-color: #3b82f6;
         }
 
-        input[type="text"], .rel-select {
+        input[type="text"] {
             background: #0f172a;
             border: 1px solid #334155;
             padding: 0.5rem 1rem;
             border-radius: 1rem;
             color: white;
-        }
-
-        .rel-row {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-            margin-bottom: 0.7rem;
-            background: #111827;
-            padding: 0.5rem;
-            border-radius: 1rem;
-        }
-
-        .rel-label {
-            min-width: 200px;
-            font-weight: 500;
-        }
-
-        select.rel-select {
-            min-width: 140px;
-            cursor: pointer;
         }
 
         .feedback {
@@ -227,19 +205,13 @@
             border-color: #1e293b;
             margin: 1rem 0;
         }
-
-        code {
-            background: #00000040;
-            padding: 0.2rem 0.4rem;
-            border-radius: 0.5rem;
-        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="test-header">
         <h1>🐍 Test POO · Python</h1>
-        <div class="sub">Clases, objetos, métodos, atributos — preguntas aleatorias + respuestas mezcladas</div>
+        <div class="sub">Clases, objetos, métodos, atributos — basado en cuestionarios oficiales</div>
         <div class="controls">
             <div class="num-selector">
                 <label>📌 Número de preguntas</label>
@@ -263,90 +235,75 @@
 </div>
 
 <script>
-    // --------------------------------------------------------------
-    // BASE DE DATOS COMPLETA (58 preguntas únicas y bien tipadas)
-    // --------------------------------------------------------------
+    // ============================================================
+    // BASE DE DATOS DE PREGUNTAS (extraídas de los códigos fuente)
+    // ============================================================
+    // Cuestionario 1 POO (5 preguntas)
+    // Cuestionario 2 POO (5 preguntas)
+    // Cuestionario 3 POO (5 preguntas)
+    // Cuestionario 4 POO (5 preguntas)
+    // Cuestionario 5 POO (5 preguntas)
+    // Total únicas: 25 preguntas (sin duplicados)
+    // ============================================================
+
     const MASTER_QUESTIONS = [
-        // ÚNICAS (30)
-        { id: 1, type: "unique", text: "¿Qué muestra este código?\n\nclass Bombilla:\n    def __init__(self):\n        self.encendida = False\n    def encender(self):\n        self.encendida = True\n\nb = Bombilla()\nb.encender()\nprint(b.encendida)", options: ["encendida", "Da error", "1", "False", "True"], correct: "True", feedback: "encender() cambia a True" },
-        { id: 2, type: "unique", text: "class Cuenta:\n    def __init__(self, saldo=0):\n        self.saldo = saldo\n    def ingresar(self, cantidad):\n        self.saldo += cantidad\n    def retirar(self, cantidad):\n        if cantidad <= self.saldo:\n            self.saldo -= cantidad\n\nc = Cuenta(50)\nc.ingresar(20)\nc.retirar(10)\nprint(c.saldo)", options: ["40","60","50","70","Da error"], correct: "60", feedback: "50→70→60" },
-        { id: 3, type: "unique", text: "class Rectangulo:\n    def __init__(self, base, altura):\n        self.base = base\n        self.altura = altura\n    def area(self):\n        return self.base * self.altura\n\nr = Rectangulo(4,5)\nprint(r.area())", options: ["base * altura","Da error","9","20","45"], correct: "20", feedback: "4*5=20" },
-        { id: 4, type: "unique", text: "class Termometro:\n    def __init__(self, temperatura=0):\n        self.temperatura = temperatura\n    def subir(self, grados):\n        self.temperatura += grados\n    def bajar(self, grados):\n        self.temperatura -= grados\n\nt = Termometro(15)\nt.subir(5)\nt.bajar(2)\nprint(t.temperatura)", options: ["17","20","18","Da error","15"], correct: "18", feedback: "15+5-2=18" },
-        { id: 5, type: "unique", text: "class Libro:\n    def __init__(self, titulo):\n        self.titulo = titulo\n        self.prestado = False\n    def prestar(self):\n        self.prestado = True\n\nlibro = Libro('Dune')\nlibro.prestar()\nprint(libro.prestado)", options: ["True","Da error","False","prestado","Dune"], correct: "True", feedback: "prestar() cambia a True" },
-        { id: 6, type: "unique", text: "class Alumno:\n    def __init__(self, nota1, nota2):\n        self.nota1 = nota1\n        self.nota2 = nota2\n    def media(self):\n        return (self.nota1 + self.nota2) / 2\n\na = Alumno(6,8)\nprint(a.media())", options: ["7.0","Da error","14","6.8","7"], correct: "7.0", feedback: "(6+8)/2=7.0" },
-        { id: 7, type: "unique", text: "class Cuenta:\n    def __init__(self, saldo=0):\n        self.saldo = saldo\n    def ingresar(self, cantidad):\n        self.saldo += cantidad\n\nc = Cuenta(10)\nc.ingresar(5)\nprint(c.saldo)", options: ["5","15","10","0","Error"], correct: "15", feedback: "10+5=15" },
-        { id: 8, type: "unique", text: "Rectangulo(3,6).area()", options: ["9","12","18","36","6"], correct: "18", feedback: "3*6=18" },
-        { id: 9, type: "unique", text: "Termometro(7).subir(4).temperatura", options: ["3","7","11","4","28"], correct: "11", feedback: "7+4=11" },
-        { id: 10, type: "unique", text: "class Persona:\n    def __init__(self, nombre):\n        self.nombre = nombre\np = Persona('Luis')\nprint(p.nombre)", options: ["self.nombre","None","Luis","Da error","nombre"], correct: "Luis", feedback: "Atributo nombre = Luis" },
-        { id: 11, type: "unique", text: "class Coche:\n    def __init__(self, velocidad=0):\n        self.velocidad = velocidad\n    def acelerar(self, cantidad):\n        self.velocidad += cantidad\nc = Coche('Ford')\nc.acelerar(30)\nprint(c.velocidad)", options: ["Error falta modelo","0","Ford","Error no existe","30"], correct: "30", feedback: "velocidad 0+30=30" },
-        { id: 12, type: "unique", text: "class Libro:\n    def __init__(self):\n        self.prestado = False\n    def prestar(self):\n        self.prestado = True\n    def devolver(self):\n        self.prestado = False\nl = Libro()\nl.prestar()\nl.devolver()\nprint(l.prestado)", options: ["0","Error","True","False","prestado"], correct: "False", feedback: "prestar y devolver vuelve a False" },
-        { id: 13, type: "unique", text: "a = Coche(); b = Coche(10); a.acelerar(15); b.acelerar(5); print(a.velocidad, b.velocidad)", options: ["Error","0 15","15 15","15 5","10 15"], correct: "15 15", feedback: "ambos 15" },
-        { id: 14, type: "unique", text: "class Bombilla:\n    def __init__(self):\n        self.encendida = False\n    def interruptor(self):\n        self.encendida = not self.encendida\nb = Bombilla()\nb.interruptor()\nb.interruptor()\nprint(b.encendida)", options: ["False","0","Error","1","True"], correct: "False", feedback: "dos veces vuelve a False" },
-        { id: 15, type: "unique", text: "Rectangulo(3,4).area()", options: ["7","12","16","14","10"], correct: "12", feedback: "3*4=12" },
-        { id: 16, type: "unique", text: "Alumno(9,1).aprobado()", options: ["True","False","Error","1","0"], correct: "True", feedback: "media 5 >=5" },
-        { id: 17, type: "unique", text: "Rectangulo(4,3).area() + 2", options: ["Error","11","14","10","24"], correct: "14", feedback: "12+2=14" },
-        { id: 18, type: "unique", text: "class Contador:\n    def __init__(self, valor):\n        self.valor = valor\n    def restar(self, cantidad):\n        if cantidad <= self.valor:\n            self.valor -= cantidad\nc = Contador(2)\nc.restar(5)\nprint(c.valor)", options: ["5","-3","Error","0","2"], correct: "2", feedback: "no resta porque 5>2" },
-        { id: 19, type: "unique", text: "Termometro(15).subir(5).bajar(2).temperatura", options: ["18","15","Error","20","17"], correct: "18", feedback: "15+5-2=18" },
-        { id: 20, type: "unique", text: "Libro('Dune').prestar(); print(prestado)", options: ["True","Dune","Da error","False","prestado"], correct: "True", feedback: "se pone True" },
-        { id: 21, type: "unique", text: "Rectangulo(4,5).area()", options: ["base*altura","20","45","9","Da error"], correct: "20", feedback: "4*5=20" },
-        { id: 22, type: "unique", text: "Coche a=Coche(); b=Coche(20); a.acelerar(5); ¿a.velocidad?", options: ["0","5","20","Error","10"], correct: "5", feedback: "a parte de 0+5=5" },
-        { id: 23, type: "unique", text: "Cuenta(40).retirar(15); saldo final", options: ["15","25","40","0","Error"], correct: "25", feedback: "40-15=25" },
-        { id: 24, type: "unique", text: "Rectangulo(2,3).area()", options: ["5","6","8","9","10"], correct: "6", feedback: "2*3=6" },
-        { id: 25, type: "unique", text: "Termometro(5).bajar(2).subir(1).temperatura", options: ["4","6","3","5","7"], correct: "4", feedback: "5-2+1=4" },
-        { id: 26, type: "unique", text: "Producto(3,8).vender(2); stock final", options: ["8","6","3","5","2"], correct: "6", feedback: "8-2=6" },
-        { id: 27, type: "unique", text: "Caja(6).total()", options: ["0","6","Error","total","None"], correct: "6", feedback: "devuelve 6" },
-        { id: 28, type: "unique", text: "Contador(5).sumar(2).valor", options: ["5","2","7","10","Error"], correct: "7", feedback: "5+2=7" },
-        { id: 29, type: "unique", text: "Persona('Ana').nombre", options: ["Ana","nombre","self","None","Error"], correct: "Ana", feedback: "nombre='Ana'" },
-        { id: 30, type: "unique", text: "Cuenta(12).saldo", options: ["12","0","saldo","None","Error"], correct: "12", feedback: "saldo inicial 12" },
+        // ==================== CUESTIONARIO 1 POO ====================
+        { id: 1, type: "unique", text: "¿Qué muestra este código?\n\nclass Bombilla:\n    def __init__(self):\n        self.encendida = False\n\n    def encender(self):\n        self.encendida = True\n\nb = Bombilla()\nb.encender()\nprint(b.encendida)", options: ["encendida", "Da error", "1", "False", "True"], correct: "True", feedback: "El método encender cambia el atributo encendida a True." },
+        
+        { id: 2, type: "unique", text: "¿Qué muestra este código?\n\nclass Cuenta:\n    def __init__(self, saldo=0):\n        self.saldo = saldo\n\n    def ingresar(self, cantidad):\n        self.saldo += cantidad\n\n    def retirar(self, cantidad):\n        if cantidad <= self.saldo:\n            self.saldo -= cantidad\n\nc = Cuenta(50)\nc.ingresar(20)\nc.retirar(10)\nprint(c.saldo)", options: ["40", "60", "50", "70", "Da error"], correct: "60", feedback: "El saldo pasa de 50 a 70 con ingresar(20) y después a 60 con retirar(10)." },
+        
+        { id: 3, type: "unique", text: "¿Qué muestra este código?\n\nclass Rectangulo:\n    def __init__(self, base, altura):\n        self.base = base\n        self.altura = altura\n\n    def area(self):\n        return self.base * self.altura\n\nr = Rectangulo(4, 5)\nprint(r.area())", options: ["base * altura", "Da error", "9", "20", "45"], correct: "20", feedback: "El método area devuelve 4 * 5, es decir, 20." },
+        
+        { id: 4, type: "multiple", text: "Observa el código y marca las afirmaciones correctas.\n\nclass Termometro:\n    def __init__(self, temperatura=0):\n        self.temperatura = temperatura\n\n    def subir(self, grados):\n        self.temperatura += grados\n\nt = Termometro()\nt.subir(3)", options: ["subir crea un objeto nuevo", "La temperatura inicial es 0", "temperatura=0 es un valor por defecto", "La temperatura final es -3", "Después de subir(3), la temperatura vale 3", "t es una función"], correct: ["La temperatura inicial es 0", "temperatura=0 es un valor por defecto", "Después de subir(3), la temperatura vale 3"], feedback: "El termómetro empieza en 0 por defecto y subir(3) añade 3." },
+        
+        { id: 5, type: "multiple", text: "Observa el código y marca las afirmaciones correctas.\n\nclass Alumno:\n    def __init__(self, nombre, nota):\n        self.nombre = nombre\n        self.nota = nota\n\na = Alumno(\"Eva\", 8)", options: ["a es el constructor", "a.nombre vale \"Eva\"", "a.nota vale \"Eva\"", "a.nota vale 8", "El código da error porque faltan métodos", "nombre y nota son clases"], correct: ["a.nombre vale \"Eva\"", "a.nota vale 8"], feedback: "El objeto a guarda los valores pasados al constructor: nombre = Eva y nota = 8." },
 
-        // MÚLTIPLES (12)
-        { id: 31, type: "multiple", text: "Termometro()\nt = Termometro()\nt.subir(3)\nAfirmaciones correctas:", options: ["subir crea objeto","La temperatura inicial es 0","temperatura=0 es valor por defecto","Temperatura final -3","Después subir vale 3","t es función"], correct: ["La temperatura inicial es 0","temperatura=0 es valor por defecto","Después subir vale 3"], feedback: "inicia 0, sube 3" },
-        { id: 32, type: "multiple", text: "Alumno('Eva',8)\na = Alumno('Eva',8)", options: ["a es constructor","a.nombre='Eva'","a.nota='Eva'","a.nota=8","Faltan métodos","nombre y nota son clases"], correct: ["a.nombre='Eva'","a.nota=8"], feedback: "nombre=Eva, nota=8" },
-        { id: 33, type: "multiple", text: "Rectangulo(3,4)\nr = Rectangulo(3,4)", options: ["r.altura=4","r es objeto Rectangulo","Da error","area()=12","r.base=3","area suma base+altura"], correct: ["r.altura=4","r es objeto Rectangulo","area()=12","r.base=3"], feedback: "base 3, altura4, area12" },
-        { id: 34, type: "multiple", text: "Cuenta(40).retirar(10)", options: ["c es objeto","saldo=40 al inicio","elimina saldo","saldo final 30","retirar suma","solo resta si alcanza"], correct: ["c es objeto","saldo=40 al inicio","saldo final 30","solo resta si alcanza"], feedback: "40→30" },
-        { id: 35, type: "multiple", text: "Bombilla b.encender()", options: ["b es método","encendida cambia","no crea objetos","tras encender=True","encender devuelve True","inicio=False"], correct: ["encendida cambia","tras encender=True","inicio=False"], feedback: "False->True" },
-        { id: 36, type: "multiple", text: "Coche a=Coche(); b=Coche(20); a.acelerar(5)", options: ["b se modifica","a.velocidad sigue 0","comparten velocidad","b.velocidad=5","acelerar crea objeto","a.velocidad=5"], correct: ["a.velocidad=5"], feedback: "solo a cambia" },
-        { id: 37, type: "multiple", text: "Cuenta(40).retirar(15)", options: ["retirar siempre deja 0","saldo inicial 0","c.saldo=25","retirar devuelve saldo","c es método","solo resta si alcanza"], correct: ["c.saldo=25","solo resta si alcanza"], feedback: "40-15=25" },
-        { id: 38, type: "multiple", text: "Rectangulo(2,5); x=r.area()", options: ["imprime 10","area cambia base","r es objeto","x=10","area devuelve valor","base/altura globales"], correct: ["r es objeto","x=10","area devuelve valor"], feedback: "no imprime, pero x=10" },
-        { id: 39, type: "multiple", text: "Termometro t.subir(3) [segunda versión]", options: ["subir crea objeto","inicial 0","defecto temperatura=0","final -3","después vale 3","t función"], correct: ["inicial 0","defecto temperatura=0","después vale 3"], feedback: "0→3" },
-        { id: 40, type: "multiple", text: "Coche a.acelerar(5) con b=20 (reforzado)", options: ["b se modifica","acelerar crea objeto","b vale 5","a.velocidad=5","a sigue 0","comparten velocidad"], correct: ["a.velocidad=5"], feedback: "a=5" },
-        { id: 41, type: "multiple", text: "Cuenta(40).retirar(15) (reforzado)", options: ["siempre deja 0","saldo inicial 0","c es método","retirar devuelve saldo","solo resta si alcanza","c.saldo=25"], correct: ["solo resta si alcanza","c.saldo=25"], feedback: "40-15=25" },
-        { id: 42, type: "multiple", text: "Libro prestar/devolver afirmaciones", options: ["prestado cambia","devolver pone False","prestar pone True","prestado no existe","error","inicia True"], correct: ["prestado cambia","devolver pone False","prestar pone True"], feedback: "estados" },
+        // ==================== CUESTIONARIO 2 POO ====================
+        { id: 6, type: "multiple", text: "Observa el código y marca las afirmaciones correctas.\n\nclass Termometro:\n    def __init__(self, temperatura=0):\n        self.temperatura = temperatura\n\n    def subir(self, grados):\n        self.temperatura += grados\n\nt = Termometro()\nt.subir(3)", options: ["Después de subir(3), la temperatura vale 3", "temperatura=0 es un valor por defecto", "subir crea un objeto nuevo", "t es una función", "La temperatura inicial es 0", "La temperatura final es -3"], correct: ["Después de subir(3), la temperatura vale 3", "temperatura=0 es un valor por defecto", "La temperatura inicial es 0"], feedback: "El termómetro empieza en 0 por defecto y subir(3) añade 3." },
+        
+        { id: 7, type: "multiple", text: "Observa el código y marca las afirmaciones correctas.\n\nclass Cuenta:\n    def __init__(self, saldo):\n        self.saldo = saldo\n\n    def retirar(self, cantidad):\n        if cantidad <= self.saldo:\n            self.saldo -= cantidad\n\nc = Cuenta(40)\nc.retirar(10)", options: ["c.saldo vale 40 justo después de crear el objeto", "retirar solo resta si hay saldo suficiente", "El código elimina el atributo saldo", "El método retirar suma la cantidad", "Después de retirar(10), c.saldo vale 30", "c es un objeto de la clase Cuenta"], correct: ["c.saldo vale 40 justo después de crear el objeto", "retirar solo resta si hay saldo suficiente", "Después de retirar(10), c.saldo vale 30", "c es un objeto de la clase Cuenta"], feedback: "La cuenta empieza con 40 y retirar(10) deja el saldo en 30." },
+        
+        { id: 8, type: "multiple", text: "Observa el código y marca las afirmaciones correctas.\n\nclass Bombilla:\n    def __init__(self):\n        self.encendida = False\n\n    def encender(self):\n        self.encendida = True\n\nb = Bombilla()\nb.encender()", options: ["b es un método", "El atributo encendida cambia de valor durante la ejecución", "El código no crea ningún objeto", "Después de llamar a encender(), b.encendida vale True", "encender devuelve obligatoriamente True", "Después de crear b, b.encendida vale False"], correct: ["El atributo encendida cambia de valor durante la ejecución", "Después de llamar a encender(), b.encendida vale True", "Después de crear b, b.encendida vale False"], feedback: "La bombilla empieza apagada y el método encender cambia su estado a True." },
+        
+        { id: 9, type: "relacionar", text: "Relaciona cada hueco con la palabra que completa correctamente el código.\n\nClases: Libro, Persona, Cuenta, Alumno, Coche", left: ["class Libro: print(l._____)", "class Persona: print(p._____)", "class Cuenta: print(c._____)", "class Alumno: print(a._____)", "class Coche: print(c._____)"], rightOptions: ["prestado", "nombre", "saldo", "nota", "velocidad"], correct: ["prestado", "nombre", "saldo", "nota", "velocidad"], feedback: "Cada objeto imprime el atributo definido en su constructor." },
+        
+        { id: 10, type: "relacionar", text: "Relaciona cada fragmento de código con el resultado que produce (área del rectángulo).", left: ["Rectangulo(2, 3)", "Rectangulo(3, 3)", "Rectangulo(2, 2)", "Rectangulo(2, 5)", "Rectangulo(1, 2)"], rightOptions: ["6", "9", "4", "10", "2"], correct: ["6", "9", "4", "10", "2"], feedback: "El área se calcula como base × altura." },
 
-        // RELACIONAR (10)
-        { id: 43, type: "relacionar", text: "Relaciona cada clase con su atributo: Libro(prestado), Persona(nombre), Cuenta(saldo), Alumno(nota), Coche(velocidad)", left: ["Libro", "Persona", "Cuenta", "Alumno", "Coche"], rightOptions: ["prestado","nombre","saldo","nota","velocidad"], correct: ["prestado","nombre","saldo","nota","velocidad"], feedback: "atributo correcto" },
-        { id: 44, type: "relacionar", text: "Áreas rectángulo: (2,3), (3,3), (2,2), (2,5), (1,2)", left: ["(2,3)","(3,3)","(2,2)","(2,5)","(1,2)"], rightOptions: ["6","9","4","10","2"], correct: ["6","9","4","10","2"], feedback: "base*altura" },
-        { id: 45, type: "relacionar", text: "Relaciona método llamado: t.subir(2), c.ingresar(10), c.acelerar(), b.encender(), l.prestar()", left: ["t.subir(2)","c.ingresar(10)","c.acelerar()","b.encender()","l.prestar()"], rightOptions: ["subir","ingresar","acelerar","encender","prestar"], correct: ["subir","ingresar","acelerar","encender","prestar"], feedback: "nombre método" },
-        { id: 46, type: "relacionar", text: "Valores de velocidad: Coche con velocidad 2,1,3,0,4", left: ["Coche vel=2","Coche vel=1","Coche vel=3","Coche vel=0","Coche vel=4"], rightOptions: ["2","1","3","0","4"], correct: ["2","1","3","0","4"], feedback: "atributo velocidad" },
-        { id: 47, type: "relacionar", text: "Áreas: (2,3)=6, (4,2)=8, (3,3)=9, (2,4)=8, (5,2)=10", left: ["(2,3)","(4,2)","(3,3)","(2,4)","(5,2)"], rightOptions: ["6","8","9","8","10"], correct: ["6","8","9","8","10"], feedback: "multiplicar" },
-        { id: 48, type: "relacionar", text: "Saldos finales: ingresar5(10)=15, retirar3(10)=7, solo12=12, retirar10(8)=8, ingresar5(7)=12", left: ["ingresar5 desde10","retirar3 desde10","solo12","retirar10 desde8","ingresar5 desde7"], rightOptions: ["15","7","12","8","12"], correct: ["15","7","12","8","12"], feedback: "operaciones" },
-        { id: 49, type: "relacionar", text: "Libro valores True/False: (False inicial), (True+devolver), (False+prestar), (prestar+devolver), (True inicial)", left: ["False sin métodos","True con devolver","False con prestar","prestar+devolver","True inicial"], rightOptions: ["False","False","True","False","True"], correct: ["False","False","True","False","True"], feedback: "estados" },
-        { id: 50, type: "relacionar", text: "Aprobado: (8,1)=False, (2,4)=False, (9,9)=True, (5,5)=True, (7,3)=True", left: ["(8,1)","(2,4)","(9,9)","(5,5)","(7,3)"], rightOptions: ["False","False","True","True","True"], correct: ["False","False","True","True","True"], feedback: "media>=5" },
-        { id: 51, type: "relacionar", text: "Libro True/False (repetido válido)", left: ["False sin métodos","True con devolver","False con prestar","prestar+devolver","True inicial"], rightOptions: ["False","False","True","False","True"], correct: ["False","False","True","False","True"], feedback: "estados" },
-        { id: 52, type: "relacionar", text: "Aprobado refuerzo: (8,1),(2,4),(9,9),(5,5),(7,3)", left: ["(8,1)","(2,4)","(9,9)","(5,5)","(7,3)"], rightOptions: ["False","False","True","True","True"], correct: ["False","False","True","True","True"], feedback: "media" },
+        // ==================== CUESTIONARIO 3 POO ====================
+        { id: 11, type: "exact", text: "¿Qué número exacto mostrará este código?\n\nclass Cuenta:\n    def __init__(self, saldo=0):\n        self.saldo = saldo\n\n    def ingresar(self, cantidad):\n        self.saldo += cantidad\n\nc = Cuenta(10)\nc.ingresar(5)\nprint(c.saldo)", correct: "15", feedback: "El saldo pasa de 10 a 15." },
+        
+        { id: 12, type: "exact", text: "¿Qué valor exacto mostrará este código?\n\nclass Bombilla:\n    def __init__(self):\n        self.encendida = False\n\n    def encender(self):\n        self.encendida = True\n\nb = Bombilla()\nb.encender()\nprint(b.encendida)", correct: "True", feedback: "Tras llamar a encender(), el valor es True." },
+        
+        { id: 13, type: "relacionar", text: "Relaciona cada hueco con la palabra que completa correctamente el código.", left: ["class Persona: print(p._____)", "class Libro: print(l._____)", "class Coche: print(c._____)", "class Alumno: print(a._____)", "class Cuenta: print(c._____)"], rightOptions: ["nombre", "prestado", "velocidad", "nota", "saldo"], correct: ["nombre", "prestado", "velocidad", "nota", "saldo"], feedback: "Cada objeto imprime su atributo correspondiente." },
+        
+        { id: 14, type: "relacionar", text: "Relaciona cada código con el nombre del método que se está llamando.", left: ["t.subir(2)", "c.ingresar(10)", "c.acelerar()", "b.encender()", "l.prestar()"], rightOptions: ["subir", "ingresar", "acelerar", "encender", "prestar"], correct: ["subir", "ingresar", "acelerar", "encender", "prestar"], feedback: "Se identifica el nombre del método llamado en cada caso." },
+        
+        { id: 15, type: "relacionar", text: "Relaciona cada fragmento de código con el valor que muestra (velocidad del coche).", left: ["Coche velocidad = 2", "Coche velocidad = 1", "Coche velocidad = 3", "Coche velocidad = 0", "Coche velocidad = 4"], rightOptions: ["2", "1", "3", "0", "4"], correct: ["2", "1", "3", "0", "4"], feedback: "Se imprime el valor del atributo velocidad." },
 
-        // COMPLETAR (12)
-        { id: 53, type: "completar", text: "Escribe la palabra exacta: print(a._____)  // para mostrar 9", correct: "nota", feedback: "atributo nota" },
-        { id: 54, type: "completar", text: "self._____ = nombre  y  print(p._____)", correct: "nombre", feedback: "atributo nombre" },
-        { id: 55, type: "completar", text: "self._____ = nota  y  print(a._____)", correct: "nota", feedback: "atributo nota" },
-        { id: 56, type: "completar", text: "t = Termometro(___); t.___(3); print(t.___)  (inicio 6, método subir, atributo temperatura)", correct: "6;subir;temperatura", feedback: "6, subir, temperatura" },
-        { id: 57, type: "completar", text: "l.___(); print(l.___)   // prestar y prestado", correct: "prestar;prestado", feedback: "método prestar, atributo prestado" },
-        { id: 58, type: "completar", text: "def ___(): return self.base * self.altura; print(r.___())", correct: "area;area", feedback: "método area" },
-        { id: 59, type: "completar", text: "c.___(20); print(c.___)  // acelerar, velocidad", correct: "acelerar;velocidad", feedback: "acelerar y velocidad" },
-        { id: 60, type: "completar", text: "c.___(2)  // método sumar", correct: "sumar", feedback: "sumar" },
-        { id: 61, type: "completar", text: "print(p._____ * p.stock)  // atributo que falta es precio", correct: "precio", feedback: "precio" },
-        { id: 62, type: "completar", text: "print(c._____())  // método total", correct: "total", feedback: "total" },
-        { id: 63, type: "completar", text: "devolver: self.prestado = ___; l.___(); l.___(); print(l.___)", correct: "False;prestar;devolver;prestado", feedback: "False, prestar, devolver, prestado" },
-        { id: 64, type: "completar", text: "t.___(2); t.___(1); print(t.___)  // bajar, subir, temperatura", correct: "bajar;subir;temperatura", feedback: "bajar, subir, temperatura" },
+        // ==================== CUESTIONARIO 4 POO ====================
+        { id: 16, type: "exact", text: "¿Qué número exacto devolverá el método area en este caso?\n\nclass Rectangulo:\n    def __init__(self, base, altura):\n        self.base = base\n        self.altura = altura\n\n    def area(self):\n        return self.base * self.altura\n\nr = Rectangulo(3, 6)\nprint(r.area())", correct: "18", feedback: "El área es 3 × 6 = 18." },
+        
+        { id: 17, type: "completar", text: "Escribe la palabra exacta que falta para que el código muestre 9.\n\nclass Alumno:\n    def __init__(self, nota):\n        self.nota = nota\n\na = Alumno(9)\nprint(a._____)", correct: "nota", feedback: "El atributo se llama nota." },
+        
+        { id: 18, type: "exact", text: "¿Qué número exacto mostrará este código?\n\nclass Termometro:\n    def __init__(self, temperatura=0):\n        self.temperatura = temperatura\n\n    def subir(self, grados):\n        self.temperatura += grados\n\nt = Termometro(7)\nt.subir(4)\nprint(t.temperatura)", correct: "11", feedback: "La temperatura pasa de 7 a 11." },
+        
+        { id: 19, type: "completar", text: "Completa los huecos para que el código muestre Luis.\n\nclass Persona:\n    def __init__(self, nombre):\n        self._____ = nombre\n\np = Persona(\"Luis\")\nprint(p._____)", correct: "nombre;nombre", feedback: "El atributo usado en ambos huecos es nombre." },
+        
+        { id: 20, type: "completar", text: "Completa los huecos para que el código muestre 8.\n\nclass Alumno:\n    def __init__(self, nota):\n        self._____ = nota\n\na = Alumno(8)\nprint(a._____)", correct: "nota;nota", feedback: "El atributo usado en ambos huecos es nota." },
 
-        // EXACTAS (4)
-        { id: 65, type: "exact", text: "Cuenta(10).ingresar(5) → ¿saldo final?", correct: "15", feedback: "10+5=15" },
-        { id: 66, type: "exact", text: "Rectangulo(3,6).area() → ¿número exacto?", correct: "18", feedback: "3*6=18" },
-        { id: 67, type: "exact", text: "Termometro(7).subir(4) → temperatura", correct: "11", feedback: "7+4=11" },
-        { id: 68, type: "exact", text: "Rectangulo(3,4).area()", correct: "12", feedback: "12" }
+        // ==================== CUESTIONARIO 5 POO ====================
+        { id: 21, type: "completar", text: "Completa los huecos para que el código muestre 12.\n\nclass Rectangulo:\n    def __init__(self, base, altura):\n        self.base = base\n        self.altura = altura\n\n    def _____(self):\n        return self.base * self.altura\n\nr = Rectangulo(3, 4)\nprint(r._____())", correct: "area;area", feedback: "El método se llama area." },
+        
+        { id: 22, type: "completar", text: "Completa los huecos para que el código muestre 20.\n\nclass Coche:\n    def __init__(self, velocidad=0):\n        self.velocidad = velocidad\n\n    def acelerar(self, cantidad):\n        self.velocidad += cantidad\n\nc = Coche()\nc._____(20)\nprint(c._____)", correct: "acelerar;velocidad", feedback: "Hay que llamar al método acelerar y después acceder al atributo velocidad." },
+        
+        { id: 23, type: "unique", text: "¿Qué muestra este código?\n\nclass Coche:\n    def __init__(self, marca, velocidad=0):\n        self.marca = marca\n        self.velocidad = velocidad\n\n    def acelerar(self, cantidad):\n        self.velocidad += cantidad\n\nc1 = Coche(\"Ford\")\nc1.acelerar(30)\nprint(c1.velocidad)", options: ["Da error porque falta modelo", "0", "\"Ford\"", "Da error porque velocidad no existe", "30"], correct: "30", feedback: "La velocidad inicial es 0 y, tras acelerar 30, se imprime 30." },
+        
+        { id: 24, type: "unique", text: "¿Qué muestra este código?\n\nclass Termometro:\n    def __init__(self, temperatura=0):\n        self.temperatura = temperatura\n\n    def subir(self, grados):\n        self.temperatura += grados\n\n    def bajar(self, grados):\n        self.temperatura -= grados\n\nt = Termometro(15)\nt.subir(5)\nt.bajar(2)\nprint(t.temperatura)", options: ["18", "17", "15", "Da error", "20"], correct: "18", feedback: "La temperatura pasa de 15 a 20 y después a 18." },
+        
+        { id: 25, type: "unique", text: "¿Qué muestra este código?\n\nclass Libro:\n    def __init__(self):\n        self.prestado = False\n\n    def prestar(self):\n        self.prestado = True\n\n    def devolver(self):\n        self.prestado = False\n\nl = Libro()\nl.prestar()\nl.devolver()\nprint(l.prestado)", options: ["0", "Error", "True", "False", "prestado"], correct: "False", feedback: "Se presta y luego se devuelve, así que el atributo queda en False." }
     ];
 
-    // Helper: barajar
+    // Helper: barajar (Fisher-Yates)
     function shuffleArray(arr) {
         for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -360,8 +317,7 @@
         return shuffledAll.slice(0, n);
     }
 
-    // Mezclar opciones para unique/multiple
-    function shuffleOptionsIfNeeded(question) {
+    function shuffleOptions(question) {
         if (question.type === "unique" || question.type === "multiple") {
             return shuffleArray([...question.options]);
         }
@@ -369,7 +325,7 @@
     }
 
     let currentQuestions = [];
-    let optionsMap = new Map(); // guarda opciones mezcladas
+    let optionsMap = new Map();
 
     function renderTest(questions) {
         const container = document.getElementById('questionsContainer');
@@ -385,7 +341,7 @@
 
             const titleSpan = document.createElement('div');
             titleSpan.className = 'question-title';
-            titleSpan.innerText = `Pregunta ${idx+1} · ${q.type === 'unique' ? 'Única' : q.type === 'multiple' ? 'Múltiple' : q.type === 'relacionar' ? 'Relacionar' : q.type === 'completar' ? 'Completar' : 'Valor exacto'}`;
+            titleSpan.innerText = `Pregunta ${idx+1} · ${q.type === 'unique' ? 'Selección única' : q.type === 'multiple' ? 'Selección múltiple' : q.type === 'relacionar' ? 'Relacionar' : q.type === 'completar' ? 'Completar' : 'Respuesta exacta'}`;
             
             const textDiv = document.createElement('div');
             textDiv.className = 'question-text';
@@ -398,7 +354,7 @@
             optionsDiv.className = 'options';
 
             if (q.type === 'unique') {
-                const shuffled = shuffleOptionsIfNeeded(q);
+                const shuffled = shuffleOptions(q);
                 optionsMap.set(q.id, shuffled);
                 shuffled.forEach(opt => {
                     const label = document.createElement('label');
@@ -413,7 +369,7 @@
                 });
             } 
             else if (q.type === 'multiple') {
-                const shuffled = shuffleOptionsIfNeeded(q);
+                const shuffled = shuffleOptions(q);
                 optionsMap.set(q.id, shuffled);
                 shuffled.forEach(opt => {
                     const label = document.createElement('label');
@@ -434,9 +390,16 @@
                 optionsMap.set(q.id, shuffledRight);
                 leftItems.forEach((item, i) => {
                     const row = document.createElement('div');
-                    row.className = 'rel-row';
-                    row.innerHTML = `<span class="rel-label">${item} → </span>
-                                     <select class="rel-select" data-qid="${q.id}" data-pos="${i}">
+                    row.style.display = 'flex';
+                    row.style.alignItems = 'center';
+                    row.style.gap = '1rem';
+                    row.style.flexWrap = 'wrap';
+                    row.style.marginBottom = '0.7rem';
+                    row.style.background = '#111827';
+                    row.style.padding = '0.5rem';
+                    row.style.borderRadius = '1rem';
+                    row.innerHTML = `<span style="min-width: 250px;">${item}</span>
+                                     <select class="rel-select" data-qid="${q.id}" data-pos="${i}" style="background:#0f172a; border:1px solid #334155; padding:0.5rem; border-radius:1rem; color:white; min-width:140px;">
                                         <option value="">-- Selecciona --</option>
                                         ${shuffledRight.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
                                      </select>`;
@@ -529,7 +492,7 @@
             const fbDiv = document.getElementById(`fb_${q.id}`);
             if (fbDiv) {
                 fbDiv.style.display = 'block';
-                fbDiv.innerHTML = `<strong>${isCorrect ? '✅ Correcto' : '❌ Incorrecto'}</strong><br>${q.feedback}<br>📌 Esperado: ${expected}`;
+                fbDiv.innerHTML = `<strong>${isCorrect ? '✅ Correcto' : '❌ Incorrecto'}</strong><br>${q.feedback}<br>📌 Respuesta esperada: ${expected}`;
                 fbDiv.style.borderLeftColor = isCorrect ? '#10b981' : '#ef4444';
             }
         }
@@ -537,7 +500,7 @@
         const resultDiv = document.getElementById('resultArea');
         resultDiv.style.display = 'block';
         resultDiv.innerHTML = `<div class="score">🎯 Puntuación: ${score} / ${total}</div>
-                               <button id="retryBtn" class="btn-secondary" style="margin-top:1rem">🔄 Nuevo test aleatorio</button>`;
+                               <button id="retryBtn" class="btn-secondary" style="margin-top:1rem; padding:0.6rem 1.5rem;">🔄 Nuevo test aleatorio</button>`;
         document.getElementById('retryBtn')?.addEventListener('click', () => generateNewTest());
     }
 
