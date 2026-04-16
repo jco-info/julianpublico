@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Test POO - Python</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0e1a;
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 2rem 1.5rem;
+            color: #eef2ff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header y controles */
+        .test-header {
+            background: #111827;
+            border-radius: 2rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1f2a3e;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            background: linear-gradient(135deg, #c084fc, #60a5fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .sub {
+            color: #9ca3af;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid #3b82f6;
+            padding-left: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .num-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .num-selector label {
+            font-weight: 600;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        select {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 1rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        select:hover {
+            border-color: #60a5fa;
+        }
+
+        button {
+            background: #3b82f6;
+            border: none;
+            padding: 0.6rem 1.8rem;
+            border-radius: 2rem;
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(59,130,246,0.3);
+        }
+
+        button:hover {
+            background: #2563eb;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: #334155;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        /* Tarjetas de preguntas */
+        .question-card {
+            background: #111827;
+            border: 1px solid #1f2a3e;
+            border-radius: 1.5rem;
+            padding: 1.6rem;
+            margin-bottom: 1.8rem;
+            transition: 0.1s;
+        }
+
+        .question-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #f0f9ff;
+            background: #0f172a;
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 2rem;
+        }
+
+        .question-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.8rem;
+            background: #1e293b;
+            border-radius: 1rem;
+            transition: 0.1s;
+        }
+
+        .option:hover {
+            background: #2d3a4f;
+        }
+
+        input[type="radio"], input[type="checkbox"] {
+            width: 1.1rem;
+            height: 1.1rem;
+            accent-color: #3b82f6;
+            cursor: pointer;
+        }
+
+        input[type="text"] {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            color: white;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .feedback {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            background: #0f172a;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .result-bar {
+            margin-top: 2rem;
+            background: #111827;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            text-align: center;
+            position: sticky;
+            bottom: 1rem;
+        }
+
+        .score {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #c084fc;
+        }
+
+        hr {
+            border-color: #1f2a3e;
+            margin: 1rem 0;
+        }
+
+        code {
+            background: #0f172a;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 1rem;
+            }
+            .question-card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="test-header">
+        <h1>📘 Test POO · Python</h1>
+        <div class="sub">Clases, objetos, métodos y atributos — aleatorio y adaptable</div>
+        <div class="controls">
+            <div class="num-selector">
+                <label>🎯 Número de preguntas por test:</label>
+                <select id="numQuestionsSelect">
+                    <option value="5">5 preguntas</option>
+                    <option value="10" selected>10 preguntas</option>
+                    <option value="15">15 preguntas</option>
+                    <option value="20">20 preguntas</option>
+                    <option value="30">30 preguntas</option>
+                </select>
+            </div>
+            <div>
+                <button id="newTestBtn">🔄 Generar test aleatorio</button>
+                <button id="submitBtn" style="background:#10b981; margin-left: 1rem;">✅ Corregir test</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="questionsContainer"></div>
+    <div id="resultArea" class="result-bar" style="display: none;"></div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // BASE DE DATOS DE PREGUNTAS (58 preguntas reales del historial)
+    // --------------------------------------------------------------
+    const MASTER_QUESTIONS = [
+        { id: 1, type: "unique", text: "¿Qué muestra este código?\n\nclass Bombilla:\n    def __init__(self):\n        self.encendida = False\n    def encender(self):\n        self.encendida = True\n\nb = Bombilla()\nb.encender()\nprint(b.encendida)", options: ["encendida", "Da error", "1", "False", "True"], correct: "True", feedback: "El método encender cambia el atributo encendida a True." },
+        { id: 2, type: "unique", text: "¿Qué muestra este código?\n\nclass Cuenta:\n    def __init__(self, saldo=0):\n        self.saldo = saldo\n    def ingresar(self, cantidad):\n        self.saldo += cantidad\n    def retirar(self, cantidad):\n        if cantidad <= self.saldo:\n            self.saldo -= cantidad\n\nc = Cuenta(50)\nc.ingresar(20)\nc.retirar(10)\nprint(c.saldo)", options: ["40", "60", "50", "70", "Da error"], correct: "60", feedback: "El saldo pasa de 50 a 70 con ingresar(20) y después a 60 con retirar(10)." },
+        { id: 3, type: "unique", text: "¿Qué muestra este código?\n\nclass Rectangulo:\n    def __init__(self, base, altura):\n        self.base = base\n        self.altura = altura\n    def area(self):\n        return self.base * self.altura\n\nr = Rectangulo(4, 5)\nprint(r.area())", options: ["base * altura", "Da error", "9", "20", "45"], correct: "20", feedback: "El método area devuelve 4 * 5 = 20." },
+        { id: 4, type: "multiple", text: "Observa el código y marca las afirmaciones correctas.\n\nclass Termometro:\n    def __init__(self, temperatura=0):\n        self.temperatura = temperatura\n    def subir(self, grados):\n        self.temperatura += grados\n\nt = Termometro()\nt.subir(3)", options: ["subir crea un objeto nuevo", "La temperatura inicial es 0", "temperatura=0 es un valor por defecto", "La temperatura final es -3", "Después de subir(3), la temperatura vale 3", "t es una función"], correct: ["La temperatura inicial es 0","temperatura=0 es un valor por defecto","Después de subir(3), la temperatura vale 3"], feedback: "El termómetro empieza en 0 por defecto y subir(3) añade 3." },
+        { id: 5, type: "multiple", text: "Observa el código y marca las afirmaciones correctas.\n\nclass Alumno:\n    def __init__(self, nombre, nota):\n        self.nombre = nombre\n        self.nota = nota\n\na = Alumno(\"Eva\", 8)", options: ["a es el constructor", "a.nombre vale \"Eva\"", "a.nota vale \"Eva\"", "a.nota vale 8", "El código da error porque faltan métodos", "nombre y nota son clases"], correct: ["a.nombre vale \"Eva\"","a.nota vale 8"], feedback: "El objeto a guarda nombre = Eva y nota = 8." },
+        { id: 6, type: "unique", text: "¿Qué muestra este código?\n\nclass Termometro:\n    def __init__(self, temperatura=0):\n        self.temperatura = temperatura\n    def subir(self, grados):\n        self.temperatura += grados\n    def bajar(self, grados):\n        self.temperatura -= grados\n\nt = Termometro(15)\nt.subir(5)\nt.bajar(2)\nprint(t.temperatura)", options: ["17","20","18","Da error","15"], correct: "18", feedback: "15→20→18." },
+        { id: 7, type: "unique", text: "¿Qué muestra este código?\n\nclass Libro:\n    def __init__(self, titulo):\n        self.titulo = titulo\n        self.prestado = False\n    def prestar(self):\n        self.prestado = True\n\nlibro = Libro(\"Dune\")\nlibro.prestar()\nprint(libro.prestado)", options: ["True","Da error","False","prestado","Dune"], correct: "True", feedback: "prestar() cambia prestado a True." },
+        { id: 8, type: "unique", text: "¿Qué muestra este código?\n\nclass Alumno:\n    def __init__(self, nota1, nota2):\n        self.nota1 = nota1\n        self.nota2 = nota2\n    def media(self):\n        return (self.nota1 + self.nota2) / 2\n\na = Alumno(6, 8)\nprint(a.media())", options: ["7.0","Da error","14","6.8","7"], correct: "7.0", feedback: "media de 6 y 8 es 7.0" },
+        { id: 9, type: "multiple", text: "Observa el código y marca las afirmaciones correctas.\n\nclass Rectangulo:\n    def __init__(self, base, altura):\n        self.base = base\n        self.altura = altura\n    def area(self):\n        return self.base * self.altura\n\nr = Rectangulo(3, 4)", options: ["r.altura vale 4", "r es un objeto de la clase Rectangulo", "El código da error al crear r", "Si se llama a r.area(), devolverá 12", "r.base vale 3", "El método area suma base y altura"], correct: ["r.altura vale 4","r es un objeto de la clase Rectangulo","r.base vale 3","Si se llama a r.area(), devolverá 12"], feedback: "Base 3, altura 4, area = 12" },
+        { id: 10, type: "multiple", text: "Observa el código y marca las afirmaciones correctas.\n\nclass Cuenta:\n    def __init__(self, saldo):\n        self.saldo = saldo\n    def retirar(self, cantidad):\n        if cantidad <= self.saldo:\n            self.saldo -= cantidad\n\nc = Cuenta(40)\nc.retirar(10)", options: ["c es un objeto de la clase Cuenta", "c.saldo vale 40 justo después de crear el objeto", "El código elimina el atributo saldo", "Después de retirar(10), c.saldo vale 30", "El método retirar suma la cantidad", "retirar solo resta si hay saldo suficiente"], correct: ["c es un objeto de la clase Cuenta","c.saldo vale 40 justo después de crear el objeto","Después de retirar(10), c.saldo vale 30","retirar solo resta si hay saldo suficiente"], feedback: "40 -> retirar 10 = 30" },
+        { id: 11, type: "multiple", text: "Observa el código y marca las afirmaciones correctas.\n\nclass Termometro:\n    def __init__(self, temperatura=0):\n        self.temperatura = temperatura\n    def subir(self, grados):\n        self.temperatura += grados\n\nt = Termometro()\nt.subir(3)", options: ["Después de subir(3), la temperatura vale 3", "temperatura=0 es un valor por defecto", "subir crea un objeto nuevo", "t es una función", "La temperatura inicial es 0", "La temperatura final es -3"], correct: ["Después de subir(3), la temperatura vale 3","temperatura=0 es un valor por defecto","La temperatura inicial es 0"], feedback: "Inicia 0, sube 3 -> 3" },
+        { id: 12, type: "multiple", text: "class Cuenta:\n    def __init__(self, saldo):\n        self.saldo = saldo\n    def retirar(self, cantidad):\n        if cantidad <= self.saldo:\n            self.saldo -= cantidad\nc = Cuenta(40)\nc.retirar(10)", options: ["c.saldo vale 40 justo después de crear", "retirar solo resta si hay saldo suficiente", "El código elimina el atributo saldo", "El método retirar suma la cantidad", "Después de retirar(10), c.saldo vale 30", "c es un objeto de la clase Cuenta"], correct: ["c.saldo vale 40 justo después de crear","retirar solo resta si hay saldo suficiente","Después de retirar(10), c.saldo vale 30","c es un objeto de la clase Cuenta"], feedback: "correcto" },
+        { id: 13, type: "multiple", text: "class Bombilla:\n    def __init__(self): self.encendida=False\n    def encender(self): self.encendida=True\nb = Bombilla()\nb.encender()", options: ["b es un método","El atributo encendida cambia de valor","El código no crea ningún objeto","Después de llamar a encender(), b.encendida vale True","encender devuelve True","Después de crear b, b.encendida vale False"], correct: ["El atributo encendida cambia de valor","Después de llamar a encender(), b.encendida vale True","Después de crear b, b.encendida vale False"], feedback: "Cambia de False a True" },
+        { id: 14, type: "relacionar", text: "Relaciona: imprime el atributo correcto. Casos: Libro(prestado), Persona(nombre), Cuenta(saldo), Alumno(nota), Coche(velocidad)", options: ["prestado","nombre","saldo","nota","velocidad"], correct: ["prestado","nombre","saldo","nota","velocidad"], feedback: "cada objeto muestra su atributo" },
+        { id: 15, type: "relacionar", text: "Áreas rectángulo: (2,3) (3,3) (2,2) (2,5) (1,2)", options: ["6","9","4","10","2"], correct: ["6","9","4","10","2"], feedback: "base * altura" },
+        { id: 16, type: "exact", text: "¿Qué número exacto mostrará?\nclass Cuenta:\n    def __init__(self, saldo=0): self.saldo = saldo\n    def ingresar(self, cantidad): self.saldo += cantidad\nc = Cuenta(10)\nc.ingresar(5)\nprint(c.saldo)", correct: "15", feedback: "10+5=15" },
+        { id: 17, type: "relacionar", text: "Relaciona cada hueco: Persona nombre / Libro prestado / Coche velocidad / Alumno nota / Cuenta saldo", options: ["nombre","prestado","velocidad","nota","saldo"], correct: ["nombre","prestado","velocidad","nota","saldo"], feedback: "son atributos" },
+        { id: 18, type: "relacionar", text: "Relaciona método llamado: t.subir(2) / c.ingresar(10) / c.acelerar() / b.encender() / l.prestar()", options: ["subir","ingresar","acelerar","encender","prestar"], correct: ["subir","ingresar","acelerar","encender","prestar"], feedback: "nombre del método" },
+        { id: 19, type: "relacionar", text: "Valores de velocidad (Coche): 2,1,3,0,4", options: ["2","1","3","0","4"], correct: ["2","1","3","0","4"], feedback: "atributo velocidad" },
+        { id: 20, type: "exact", text: "Rectangulo(3,6).area()", correct: "18", feedback: "3*6=18" },
+        { id: 21, type: "completar", text: "Escribe la palabra exacta: print(a._____)  // nota", correct: "nota", feedback: "atributo nota" },
+        { id: 22, type: "exact", text: "Termometro(7).subir(4).temperatura", correct: "11", feedback: "7+4=11" },
+        { id: 23, type: "completar", text: "self._____ = nombre // print(p._____) -> nombre", correct: "nombre", feedback: "atributo nombre" },
+        { id: 24, type: "completar", text: "self._____ = nota // print(a._____)", correct: "nota", feedback: "atributo nota" },
+        { id: 25, type: "completar", text: "t = Termometro(6); t.subir(3); print(t.temperatura) // huecos: 6, subir, temperatura", correct: "6;subir;temperatura", feedback: "inicio, método, atributo" },
+        { id: 26, type: "completar", text: "l.prestar(); print(l.prestado)", correct: "prestar;prestado", feedback: "método y atributo" },
+        { id: 27, type: "unique", text: "class Persona: def __init__(self,nombre): self.nombre=nombre\np=Persona('Luis')\nprint(p.nombre)", options: ["self.nombre","None","Luis","Da error","nombre"], correct: "Luis", feedback: "Atributo nombre vale Luis" },
+        { id: 28, type: "unique", text: "class Alumno: media ... a=Alumno(6,8); print(a.media())", options: ["6.8","14","Da error","7.0","7"], correct: "7.0", feedback: "(6+8)/2=7.0" },
+        { id: 29, type: "completar", text: "def area(self): ... print(r.area())", correct: "area;area", feedback: "nombre metodo area" },
+        { id: 30, type: "completar", text: "c.acelerar(20); print(c.velocidad)", correct: "acelerar;velocidad", feedback: "método y atributo" },
+        { id: 31, type: "unique", text: "class Coche: ... c1=Coche('Ford'); c1.acelerar(30); print(c1.velocidad)", options: ["Error falta modelo","0","Ford","Error no existe velocidad","30"], correct: "30", feedback: "velocidad=0+30" },
+        { id: 32, type: "unique", text: "Termometro(15).subir(5).bajar(2).temperatura", options: ["18","17","15","Error","20"], correct: "18", feedback: "15+5-2=18" },
+        { id: 33, type: "unique", text: "class Libro: prestar y devolver... l.prestar(); l.devolver(); print(l.prestado)", options: ["0","Error","True","False","prestado"], correct: "False", feedback: "devuelve false" },
+        { id: 34, type: "unique", text: "a = Coche(); b = Coche(10); a.acelerar(15); b.acelerar(5); print(a.velocidad, b.velocidad)", options: ["Error","0 15","15 15","15 5","10 15"], correct: "15 15", feedback: "ambos 15" },
+        { id: 35, type: "unique", text: "Bombilla interruptor dos veces", options: ["False","0","Error","1","True"], correct: "False", feedback: "vuelve al inicio" },
+        { id: 36, type: "multiple", text: "class Coche: a=Coche(); b=Coche(20); a.acelerar(5)", options: ["b se modifica","a.velocidad sigue 0","comparten velocidad","b.velocidad=5","acelerar crea objeto","a.velocidad=5"], correct: ["a.velocidad=5"], feedback: "solo a cambia" },
+        { id: 37, type: "multiple", text: "class Cuenta: retirar(15) desde 40", options: ["retirar deja 0","saldo inicial 0","c.saldo=25","retirar devuelve saldo","c es método","solo resta si alcanza"], correct: ["c.saldo=25","solo resta si alcanza"], feedback: "40-15=25" },
+        { id: 38, type: "relacionar", text: "Áreas: (2,3)=6, (4,2)=8, (3,3)=9, (2,4)=8, (5,2)=10", options: ["6","8","9","8","10"], correct: ["6","8","9","8","10"], feedback: "multiplicar" },
+        { id: 39, type: "relacionar", text: "Saldo final: ingresar5 desde10=15, retirar3 desde10=7, solo12=12, retirar10 desde8=8, ingresar5 desde7=12", options: ["15","7","12","8","12"], correct: ["15","7","12","8","12"], feedback: "operaciones" },
+        { id: 40, type: "multiple", text: "Coche a.acelerar(5) con b=20", options: ["b vale 5","b se modifica","a.velocidad=5","acelerar crea objeto","a sigue 0","comparten velocidad"], correct: ["a.velocidad=5"], feedback: "solo a" },
+        { id: 41, type: "multiple", text: "Cuenta(40).retirar(15)", options: ["retirar devuelve saldo","solo resta si alcanza","siempre deja 0","c.saldo=25","c es método","saldo inicial 0"], correct: ["c.saldo=25","solo resta si alcanza"], feedback: "40-15=25" },
+        { id: 42, type: "multiple", text: "Rectangulo(2,5); x=r.area()", options: ["imprime 10","area cambia base","r es objeto","x=10","area devuelve valor","base altura globales"], correct: ["r es objeto","x=10","area devuelve valor"], feedback: "no imprime pero devuelve 10" },
+        { id: 43, type: "relacionar", text: "Libro True/False: False, False, True, False, True", options: ["False","False","True","False","True"], correct: ["False","False","True","False","True"], feedback: "estados prestado" },
+        { id: 44, type: "relacionar", text: "Aprobado: (8,1)=False, (2,4)=False, (9,9)=True, (5,5)=True, (7,3)=True", options: ["False","False","True","True","True"], correct: ["False","False","True","True","True"], feedback: "media>=5" },
+        { id: 45, type: "completar", text: "c.sumar(2) // palabra exacta", correct: "sumar", feedback: "método sumar" },
+        { id: 46, type: "exact", text: "Rectangulo(3,4).area()", correct: "12", feedback: "3*4=12" },
+        { id: 47, type: "relacionar", text: "Libro valores: False, False, True, False, True", options: ["False","False","True","False","True"], correct: ["False","False","True","False","True"], feedback: "según prestado/devolver" },
+        { id: 48, type: "relacionar", text: "Aprobado: (8,1) F, (2,4) F, (9,9) T, (5,5) T, (7,3) T", options: ["False","False","True","True","True"], correct: ["False","False","True","True","True"], feedback: "media >=5" },
+        { id: 49, type: "completar", text: "print(p.precio * p.stock) // palabra que falta es precio", correct: "precio", feedback: "multiplica precio * stock" },
+        { id: 50, type: "completar", text: "c.total() // palabra exacta", correct: "total", feedback: "método total" },
+        { id: 51, type: "exact", text: "Alumno(9,1).aprobado()", correct: "True", feedback: "media=5 >=5" },
+        { id: 52, type: "completar", text: "devolver: self.prestado = False; l.prestar(); l.devolver(); print(l.prestado)", correct: "False;prestar;devolver;prestado", feedback: "prestar y devolver" },
+        { id: 53, type: "completar", text: "t.bajar(2); t.subir(1); print(t.temperatura)", correct: "bajar;subir;temperatura", feedback: "5-2+1=4" },
+        { id: 54, type: "completar", text: "def area(self): return self.base * self.altura; print(r.area())", correct: "area;altura;area", feedback: "método area y atributo altura" },
+        { id: 55, type: "completar", text: "p.vender(2); print(p.precio * p.stock)", correct: "vender;precio;stock", feedback: "vender y atributos" },
+        { id: 56, type: "completar", text: "self.saldo = saldo; c.ingresar(5); print(c.saldo)", correct: "saldo;ingresar;saldo", feedback: "atributo y método" },
+        { id: 57, type: "unique", text: "Rectangulo(4,3).area() + 2", options: ["Error","11","14","10","24"], correct: "14", feedback: "12+2=14" },
+        { id: 58, type: "unique", text: "Contador(2).restar(5); print(valor)", options: ["5","-3","Error","0","2"], correct: "2", feedback: "no alcanza" }
+    ];
+
+    // Helper: barajar (Fisher-Yates)
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // seleccionar N preguntas aleatorias de la master
+    function getRandomQuestions(n) {
+        let shuffledAll = shuffleArray([...MASTER_QUESTIONS]);
+        return shuffledAll.slice(0, n);
+    }
+
+    // mezclar opciones y guardar mapeo
+    function shuffleOptions(question) {
+        if (question.type === "unique" || question.type === "multiple") {
+            const originalOpts = [...question.options];
+            const shuffled = shuffleArray([...originalOpts]);
+            return { shuffledOptions: shuffled, originalOpts };
+        }
+        return null;
+    }
+
+    let currentQuestions = [];
+    let currentShuffledMap = new Map(); // id -> { shuffledOptions, originalOpts }
+
+    function renderTest(questions) {
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = '';
+        currentQuestions = questions;
+        currentShuffledMap.clear();
+
+        questions.forEach((q, idx) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.dataset.qid = q.id;
+            card.dataset.type = q.type;
+
+            const titleSpan = document.createElement('div');
+            titleSpan.className = 'question-title';
+            titleSpan.innerText = `Pregunta ${idx+1}`;
+
+            const textDiv = document.createElement('div');
+            textDiv.className = 'question-text';
+            textDiv.innerText = q.text;
+
+            card.appendChild(titleSpan);
+            card.appendChild(textDiv);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+
+            // Para los tipos especiales
+            if (q.type === 'unique') {
+                const { shuffledOptions } = shuffleOptions(q);
+                currentShuffledMap.set(q.id, { shuffledOptions, originalOpts: q.options });
+                shuffledOptions.forEach(opt => {
+                    const label = document.createElement('label');
+                    label.className = 'option';
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `q_${q.id}`;
+                    radio.value = opt;
+                    label.appendChild(radio);
+                    label.appendChild(document.createTextNode(' ' + opt));
+                    optionsDiv.appendChild(label);
+                });
+            } 
+            else if (q.type === 'multiple') {
+                const { shuffledOptions } = shuffleOptions(q);
+                currentShuffledMap.set(q.id, { shuffledOptions, originalOpts: q.options });
+                shuffledOptions.forEach(opt => {
+                    const label = document.createElement('label');
+                    label.className = 'option';
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.name = `q_${q.id}`;
+                    cb.value = opt;
+                    label.appendChild(cb);
+                    label.appendChild(document.createTextNode(' ' + opt));
+                    optionsDiv.appendChild(label);
+                });
+            }
+            else if (q.type === 'exact') {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = 'Escribe el número exacto o valor';
+                input.style.width = '100%';
+                input.style.maxWidth = '300px';
+                input.className = 'exact-input';
+                input.setAttribute('data-qid', q.id);
+                optionsDiv.appendChild(input);
+            }
+            else if (q.type === 'completar') {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = 'Escribe la palabra o palabras separadas por ; si son varias';
+                input.style.width = '100%';
+                input.className = 'completar-input';
+                input.setAttribute('data-qid', q.id);
+                optionsDiv.appendChild(input);
+                const help = document.createElement('div');
+                help.style.fontSize = '0.75rem';
+                help.style.color = '#94a3b8';
+                help.innerText = 'Ej: palabra1;palabra2';
+                optionsDiv.appendChild(help);
+            }
+            else if (q.type === 'relacionar') {
+                // Simulamos como un conjunto de inputs ordenados
+                const relDiv = document.createElement('div');
+                relDiv.style.display = 'flex';
+                relDiv.style.flexDirection = 'column';
+                relDiv.style.gap = '0.5rem';
+                const pairs = q.options.map((opt, i) => `Opción ${i+1}: ${opt}`);
+                pairs.forEach((pair, idx) => {
+                    const row = document.createElement('div');
+                    row.style.display = 'flex';
+                    row.style.alignItems = 'center';
+                    row.style.gap = '0.5rem';
+                    row.style.flexWrap = 'wrap';
+                    row.innerHTML = `<span style="min-width:120px">${pair}</span> → <input type="text" class="rel-input" data-qid="${q.id}" data-pos="${idx}" placeholder="Valor" style="background:#0f172a; border:1px solid #334155; padding:0.4rem; border-radius:0.8rem; color:white">`;
+                    relDiv.appendChild(row);
+                });
+                optionsDiv.appendChild(relDiv);
+            }
+
+            card.appendChild(optionsDiv);
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            feedbackDiv.style.display = 'none';
+            feedbackDiv.id = `fb_${q.id}`;
+            card.appendChild(feedbackDiv);
+            container.appendChild(card);
+        });
+        document.getElementById('resultArea').style.display = 'none';
+    }
+
+    function evaluateTest() {
+        let score = 0;
+        let total = currentQuestions.length;
+        const detailed = [];
+
+        for (let q of currentQuestions) {
+            let userAnswer = null;
+            let isCorrect = false;
+            let expected = q.correct;
+            if (q.type === 'unique') {
+                const selected = document.querySelector(`input[name="q_${q.id}"]:checked`);
+                userAnswer = selected ? selected.value : null;
+                isCorrect = (userAnswer === expected);
+                if (isCorrect) score++;
+            } 
+            else if (q.type === 'multiple') {
+                const checkboxes = document.querySelectorAll(`input[name="q_${q.id}"]:checked`);
+                userAnswer = Array.from(checkboxes).map(cb => cb.value);
+                const expectedArr = Array.isArray(expected) ? expected : [expected];
+                const normalizedUser = [...userAnswer].sort();
+                const normalizedExp = [...expectedArr].sort();
+                isCorrect = normalizedUser.length === normalizedExp.length && normalizedUser.every((v,i)=> v === normalizedExp[i]);
+                if (isCorrect) score++;
+            }
+            else if (q.type === 'exact') {
+                const input = document.querySelector(`.exact-input[data-qid="${q.id}"]`);
+                userAnswer = input ? input.value.trim() : '';
+                isCorrect = (userAnswer == expected);
+                if (isCorrect) score++;
+            }
+            else if (q.type === 'completar') {
+                const input = document.querySelector(`.completar-input[data-qid="${q.id}"]`);
+                let raw = input ? input.value.trim() : '';
+                let parts = raw.split(';').map(s => s.trim().toLowerCase());
+                let expectedParts = expected.split(';').map(s => s.trim().toLowerCase());
+                isCorrect = parts.length === expectedParts.length && parts.every((p,i)=> p === expectedParts[i]);
+                if (isCorrect) score++;
+            }
+            else if (q.type === 'relacionar') {
+                const inputs = document.querySelectorAll(`.rel-input[data-qid="${q.id}"]`);
+                let userMap = Array.from(inputs).map(inp => inp.value.trim().toLowerCase());
+                let expectedArr = Array.isArray(expected) ? expected.map(e=>e.toLowerCase()) : [];
+                isCorrect = userMap.length === expectedArr.length && userMap.every((val,i)=> val === expectedArr[i]);
+                if (isCorrect) score++;
+            }
+
+            detailed.push({ id: q.id, text: q.text, correct: isCorrect, feedback: q.feedback, expected: expected, userAnswer: userAnswer });
+            // mostrar feedback en su tarjeta
+            const fbDiv = document.getElementById(`fb_${q.id}`);
+            if (fbDiv) {
+                fbDiv.style.display = 'block';
+                fbDiv.innerHTML = `<strong>${isCorrect ? '✅ Correcto' : '❌ Incorrecto'}</strong><br>${q.feedback}<br>📌 Respuesta esperada: ${Array.isArray(expected) ? expected.join(', ') : expected}`;
+                fbDiv.style.borderLeftColor = isCorrect ? '#10b981' : '#ef4444';
+            }
+        }
+
+        const resultDiv = document.getElementById('resultArea');
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `<div class="score">🎯 Puntuación: ${score} / ${total}</div>
+                               <button id="retryBtn" class="btn-secondary" style="margin-top:1rem">🔄 Nuevo test aleatorio</button>`;
+        const retryBtn = document.getElementById('retryBtn');
+        if (retryBtn) retryBtn.onclick = () => generateNewTest();
+    }
+
+    function generateNewTest() {
+        const num = parseInt(document.getElementById('numQuestionsSelect').value);
+        const randomQs = getRandomQuestions(num);
+        renderTest(randomQs);
+    }
+
+    document.getElementById('newTestBtn').addEventListener('click', () => generateNewTest());
+    document.getElementById('submitBtn').addEventListener('click', () => evaluateTest());
+
+    // Inicializar con 10 preguntas aleatorias
+    generateNewTest();
+</script>
+</body>
+</html>
