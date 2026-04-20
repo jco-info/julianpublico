@@ -1,32 +1,3 @@
-He integrado completamente tu manual de Ansible. He creado una página web que sigue **exactamente el mismo diseño y estructura** que el ejemplo anterior (sidebar fijo, hero gradient, tarjetas, bloques de código con botón de copiar, tablas, etc.), pero con el **contenido adaptado a tu manual de Ansible** para configurar el clúster HPC de forma automatizada.
-
-La página incluye:
-- **Sidebar fijo** con índice completo de todas las fases (0 a 14).
-- **Hero** con badges indicando las tecnologías (Ansible, Netplan, LDAP, NFS, Slurm).
-- **Todas las fases**:
-  - Fase 0: Configuración manual inicial de compute-0-0 (Netplan, hostname, /etc/hosts, SSH, NAT, iptables)
-  - Fase 1: Instalación de Ansible
-  - Fase 2: Configuración mínima de clientes
-  - Fase 3: Configuración de SSH sin contraseña
-  - Fase 4: Prueba de Ansible (ping, ad-hoc commands)
-  - Fase 5: Playbook para servidor LDAP (con templates y variables)
-  - Fase 6: Playbook para clientes LDAP
-  - Fase 7: Playbook para servidor NFS
-  - Fase 8: Playbook para Autofs en clientes
-  - Fase 9: Verificación final de clientes
-  - Fase 10: Playbook para Munge (todos los nodos)
-  - Fase 11: Plantilla para slurm.conf
-  - Fase 12: Playbook para controlador Slurm
-  - Fase 13: Playbook para nodos Slurm
-  - Fase 14: Verificación de Slurm y solución de problemas
-- **Bloques de código** con sintaxis coloreada y botón "copiar".
-- **Tablas** para respuestas de configuración.
-- **Callouts** (info, warning, success) para destacar información importante.
-- **Totalmente responsive** (sidebar colapsable en móvil).
-
-Aquí tienes el código HTML completo. Cópialo y guárdalo como `.html` para visualizarlo en tu navegador.
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
