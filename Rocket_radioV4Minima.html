@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rocket Radio</title>
+    <meta name="description" content="Rocket Radio - Rock 24/7" />
+
+    <!-- CSS MINIMALISTA -->
+    <style>
+        /* RESET BÁSICO */
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --border: #2a2a2a;
+            --text: #eee;
+            --muted: #888;
+            --accent: #e62429;
+        }
+        
+        html[data-theme="light"] {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --border: #ddd;
+            --text: #111;
+            --muted: #666;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 16px;
+            transition: background 0.2s;
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .app {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* HEADER COMPACTO */
+        .header {
+            text-align: center;
+            padding: 12px 0 4px;
+        }
+        .header .logo {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            display: block;
+            margin: 0 auto 8px;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text);
+        }
+        .header h1 span { color: var(--accent); }
+        .header .live {
+            display: inline-block;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 2px 10px;
+            border-radius: 999px;
+            margin-top: 4px;
+        }
+        .header .slogan {
+            font-size: 0.7rem;
+            color: var(--muted);
+            font-style: italic;
+            margin-top: 2px;
+        }
+
+        /* TEMA TOGGLE - SIMPLE */
+        #theme-toggle {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.9rem;
+            z-index: 100;
+        }
+
+        /* PLAYER CARD */
+        .player {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            width: 100%;
+        }
+        .player-header {
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .player-header .title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .player-header .title .r { color: var(--accent); }
+        .player-header .listeners {
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+        .player-header .listeners span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .player-body {
+            padding: 12px 14px 0;
+        }
+
+        /* IFRAME DEL PLAYER */
+        .iframe-wrap {
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+            border: 1px solid var(--border);
+        }
+        .iframe-wrap iframe {
+            display: block;
+            width: 100%;
+            height: 60px;
+            border: none;
+        }
+
+        /* HISTORIAL DE CANCIONES */
+        .history-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--muted);
+            margin: 12px 0 6px;
+        }
+        ol[data-track-history] {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        ol[data-track-history] li {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 5px 8px !important;
+            background: var(--bg) !important;
+            border-radius: 6px !important;
+            border: 1px solid var(--border) !important;
+            font-size: 0.75rem !important;
+        }
+        ol[data-track-history] li:first-child {
+            border-color: var(--accent) !important;
+            background: rgba(230,36,41,0.06) !important;
+        }
+        ol[data-track-history] li:first-child::before {
+            content: "▶ ";
+            color: var(--accent);
+            font-size: 0.5rem;
+        }
+        ol[data-track-history] li img {
+            width: 28px !important;
+            height: 28px !important;
+            border-radius: 4px !important;
+            object-fit: cover !important;
+            border: 1px solid var(--border) !important;
+            flex-shrink: 0 !important;
+        }
+        ol[data-track-history] li div {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* FOOTER - REPRODUCTORES */
+        .player-footer {
+            padding: 10px 14px 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .player-footer .label {
+            font-size: 0.6rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .player-footer .icons {
+            display: flex;
+            gap: 3px;
+        }
+        .player-footer .icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .player-footer .icons a:hover { opacity: 1; }
+        .player-footer .icons a img {
+            width: 14px;
+            height: auto;
+        }
+
+        /* FOOTER FINAL */
+        .site-footer {
+            text-align: center;
+            padding: 12px 0 4px;
+            width: 100%;
+            border-top: 1px solid var(--border);
+        }
+        .site-footer .copy {
+            font-size: 0.6rem;
+            color: var(--muted);
+        }
+        .site-footer .social {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .site-footer .social a {
+            color: var(--muted);
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .site-footer .social a:hover { color: var(--accent); }
+
+        /* MOBILE */
+        @media (max-width: 420px) {
+            .header h1 { font-size: 1.4rem; }
+            .header .logo { width: 44px; height: 44px; }
+            .player-header .title { font-size: 0.75rem; }
+            ol[data-track-history] li { font-size: 0.65rem !important; padding: 4px 6px !important; }
+            ol[data-track-history] li img { width: 22px !important; height: 22px !important; }
+            .player-footer .icons a { width: 18px; height: 18px; }
+            .player-footer .icons a img { width: 12px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <button id="theme-toggle" aria-label="Tema">☀️</button>
+
+    <div class="app">
+
+        <!-- HEADER -->
+        <header class="header">
+            <img src="logo.jpeg" alt="Rocket Radio" class="logo" id="logo-img" />
+            <h1>ROCKET <span>RADIO</span></h1>
+            <span class="live">● EN VIVO</span>
+            <p class="slogan">"Rock sin fronteras"</p>
+        </header>
+
+        <!-- PLAYER -->
+        <div class="player">
+
+            <!-- HOOK CITRUS3 -->
+            <span data-base-url="https://s5.citrus3.com:2020/public/RocketRadio/" data-service-id="950" style="display:none;"></span>
+
+            <!-- HEADER PLAYER -->
+            <div class="player-header">
+                <span class="title"><span class="r">🚀</span> RocketRadio</span>
+                <span class="listeners">👥 <span data-connections="true">0</span> oyentes</span>
+            </div>
+
+            <!-- BODY PLAYER -->
+            <div class="player-body">
+
+                <!-- PLAYER IFRAME -->
+                <div class="iframe-wrap">
+                    <iframe
+                        src="https://s5.citrus3.com:2020/AudioPlayer/rocketradio?mount=/stream&"
+                        width="100%"
+                        height="60"
+                        frameborder="0"
+                        allow="autoplay">
+                    </iframe>
+                </div>
+
+                <!-- HISTORIAL -->
+                <div class="history-label">📻 Historial</div>
+                <ol data-track-history="true">
+                    <li>
+                        <img src="https://s5.citrus3.com:2020/covers//6a6dd2de284b5.jpeg" alt="" />
+                        <div>Stone Cold Crazy — Queen</div>
+                    </li>
+                    <li>
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/images/defaultCover/black-vinyl-record-playing-on-turntable-1389429.jpg" alt="" />
+                        <div>Rocket Radio Original</div>
+                    </li>
+                    <li>
+                        <img src="https://s5.citrus3.com:2020/covers//6a6dd2e243d9e.png" alt="" />
+                        <div>No One Knows — QOTSA</div>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- FOOTER PLAYER -->
+            <div class="player-footer">
+                <span class="label">🎧 Escuchar en</span>
+                <div class="icons">
+                    <a href="https://s5.citrus3.com:2020/tunein/rocketradio/stream/pls" title="Winamp">
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/img/players/winamp.gif" alt="Winamp" />
+                    </a>
+                    <a href="https://s5.citrus3.com:2020/tunein/rocketradio/stream/pls" title="VLC">
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/img/players/vlc.gif" alt="VLC" />
+                    </a>
+                    <a href="https://s5.citrus3.com:2020/tunein/rocketradio/stream/pls" title="iTunes">
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/img/players/itunes.gif" alt="iTunes" />
+                    </a>
+                    <a href="https://s5.citrus3.com:2020/tunein/rocketradio/stream/asx" title="MPlayer">
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/img/players/mplayer.gif" alt="MPlayer" />
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER FINAL -->
+        <footer class="site-footer">
+            <div class="social">
+                <a href="#" aria-label="Instagram">📷</a>
+                <a href="#" aria-label="Facebook">👍</a>
+                <a href="#" aria-label="X">🐦</a>
+            </div>
+            <span class="copy">&copy; <span id="year"></span> Rocket Radio</span>
+        </footer>
+
+    </div>
+
+    <!-- ═══════════════ SCRIPTS - SOLO LO ESENCIAL ═══════════════ -->
+    <!-- Solo public.js para actualizar canciones y oyentes -->
+    <script src="https://s5.citrus3.com:2020/system/theme/Material/js/public.js?20260415"></script>
+
+    <script>
+        // Año
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Tema oscuro/claro
+        const toggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        const savedTheme = localStorage.getItem('rocket-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+        html.setAttribute('data-theme', initialTheme);
+        toggle.textContent = initialTheme === 'dark' ? '☀️' : '🌙';
+
+        toggle.addEventListener('click', () => {
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('rocket-theme', next);
+            toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+        });
+
+        // Fallback logo
+        document.getElementById('logo-img').addEventListener('error', function() {
+            this.style.display = 'none';
+            const fallback = document.createElement('div');
+            fallback.textContent = '🚀';
+            fallback.style.cssText = 'font-size:2.5rem;text-align:center;line-height:1;';
+            this.parentNode.appendChild(fallback);
+        });
+
+        // Formatear número de oyentes (miles)
+        const listenerEl = document.querySelector('[data-connections="true"]');
+        if (listenerEl) {
+            const format = (n) => {
+                const num = parseInt(n);
+                if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+                return num;
+            };
+            const observer = new MutationObserver(() => {
+                const num = parseInt(listenerEl.textContent);
+                if (!isNaN(num)) listenerEl.textContent = format(num);
+            });
+            observer.observe(listenerEl, { childList: true, characterData: true, subtree: true });
+            const initial = parseInt(listenerEl.textContent);
+            if (!isNaN(initial)) listenerEl.textContent = format(initial);
+        }
+
+        console.log('🎸 Rocket Radio - Rock sin fronteras');
+    </script>
+
+</body>
+</html>
