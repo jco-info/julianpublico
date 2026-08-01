@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Rocket Radio — Rock sin fronteras</title>
+    <meta name="description" content="Rocket Radio - Emisora online especializada en Rock clásico y moderno" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;600&family=Inter:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <link href="https://s5.citrus3.com:2020/dist/material.css?v=20260415" rel="stylesheet" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+    <style>
+        /* ─── TOKENS ─────────────────────────────────────────────── */
+        :root {
+            --bg: #080808;
+            --surface: #111111;
+            --surface2: #181818;
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f0f0f0;
+            --muted: #888;
+            --accent: #e62429;
+            --accent2: #ff5f00;
+            --glow-r: rgba(230, 36, 41, 0.35);
+            --radius-card: 20px;
+            --radius-sm: 8px;
+            --transition: 0.25s ease;
+        }
+
+        html[data-theme="light"] {
+            --bg: #f0f0f0;
+            --surface: #ffffff;
+            --surface2: #f7f7f7;
+            --border: rgba(0, 0, 0, 0.10);
+            --text: #111111;
+            --muted: #666;
+            --accent: #c0000d;
+            --accent2: #e05000;
+            --glow-r: rgba(192, 0, 13, 0.12);
+        }
+
+        /* ─── RESET ──────────────────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', 'Oswald', sans-serif;
+            transition: background var(--transition), color var(--transition);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ─── BACKGROUND SUTIL ──────────────────────────────────── */
+        .bg-noise {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(230, 36, 41, 0.08) 0%, transparent 70%);
+        }
+
+        html[data-theme="light"] .bg-noise {
+            background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(192, 0, 13, 0.04) 0%, transparent 70%);
+        }
+
+        /* ─── LAYOUT ─────────────────────────────────────────────── */
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 16px 40px;
+        }
+
+        /* ─── THEME TOGGLE ───────────────────────────────────────── */
+        #theme-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1000;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            transition: transform var(--transition);
+        }
+
+        #theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        /* ─── HERO COMPACTO ──────────────────────────────────────── */
+        .hero {
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 0 28px;
+        }
+
+        .logo-wrap {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .logo-wrap img {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 2px solid var(--border);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(2rem, 6vw, 3.2rem);
+            letter-spacing: 4px;
+            line-height: 1;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .hero-title span {
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--glow-r);
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin: 10px 0 4px;
+            padding: 3px 12px 3px 8px;
+            border-radius: 999px;
+            background: rgba(230, 36, 41, 0.1);
+            border: 1px solid rgba(230, 36, 41, 0.25);
+            font-size: 0.65rem;
+            font-family: 'Oswald', sans-serif;
+            letter-spacing: 2px;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent);
+            animation: blink-dot 1.4s ease-in-out infinite;
+        }
+
+        @keyframes blink-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+        }
+
+        .hero-slogan {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            font-style: italic;
+            font-weight: 300;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        /* ─── PLAYER CARD ────────────────────────────────────────── */
+        .player-card {
+            width: 100%;
+            max-width: 560px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-card);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent));
+        }
+
+        /* card header */
+        .card-header-custom {
+            padding: 16px 20px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .card-header-left h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-header-left h2 .rocket {
+            color: var(--accent);
+        }
+
+        .card-header-left p {
+            font-size: 0.7rem;
+            color: var(--muted);
+            font-style: italic;
+            margin-top: 1px;
+        }
+
+        .card-header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        /* listeners badge - mejorado */
+        .listeners-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            font-size: 0.7rem;
+            color: var(--muted);
+            font-family: 'Oswald', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .listeners-badge .count-number {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .mount-select-wrap select {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: var(--radius-sm);
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-family: 'Oswald', sans-serif;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .mount-select-wrap select:focus {
+            border-color: var(--accent);
+        }
+
+        /* card body */
+        .card-body-custom {
+            padding: 16px 20px 0;
+        }
+
+        .iframe-wrap {
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+        }
+
+        .iframe-wrap iframe {
+            display: block;
+            width: 100%;
+            height: 72px;
+            border: none;
+        }
+
+        /* track history */
+        .history-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 16px 0 10px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .history-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .history-label .icon {
+            color: var(--accent);
+            font-size: 0.8rem;
+        }
+
+        ol[data-track-history] {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        ol[data-track-history] li {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            padding: 8px 10px !important;
+            border-radius: var(--radius-sm) !important;
+            background: var(--surface2) !important;
+            border: 1px solid var(--border) !important;
+            transition: border-color var(--transition) !important;
+            color: var(--text) !important;
+            cursor: default;
+        }
+
+        ol[data-track-history] li:first-child {
+            border-color: rgba(230, 36, 41, 0.3) !important;
+            background: linear-gradient(90deg, rgba(230, 36, 41, 0.06), var(--surface2)) !important;
+        }
+
+        ol[data-track-history] li img {
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 4px !important;
+            object-fit: cover !important;
+            flex-shrink: 0 !important;
+            border: 1px solid var(--border) !important;
+        }
+
+        ol[data-track-history] li div {
+            font-size: 0.78rem !important;
+            color: var(--text) !important;
+            font-family: 'Inter', sans-serif !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        ol[data-track-history] li:first-child div::before {
+            content: '▶ ';
+            color: var(--accent);
+            font-size: 0.6rem;
+        }
+
+        /* card footer - reproductores pequeños */
+        .card-footer-custom {
+            padding: 12px 20px 16px;
+            margin-top: 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tunein-label {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .tunein-icons {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tunein-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 4px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            transition: border-color var(--transition), transform var(--transition);
+            opacity: 0.7;
+        }
+
+        .tunein-icons a:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            opacity: 1;
+        }
+
+        .tunein-icons a img {
+            width: 16px;
+            height: auto;
+        }
+
+        html[data-theme="light"] .tunein-icons a img {
+            filter: brightness(0.5);
+        }
+
+        /* ─── FOOTER ─────────────────────────────────────────────── */
+        footer {
+            width: 100%;
+            max-width: 560px;
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-tagline {
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .social-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .social-row a {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            transition: all var(--transition);
+        }
+
+        .social-row a:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .social-row svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .copyright {
+            font-size: 0.65rem;
+            color: var(--muted);
+            letter-spacing: 0.3px;
+        }
+
+        /* ─── RESPONSIVE ─────────────────────────────────────────── */
+        @media (max-width: 600px) {
+            .hero {
+                padding: 16px 0 20px;
+            }
+
+            .logo-wrap,
+            .logo-wrap img {
+                width: 64px;
+                height: 64px;
+            }
+
+            .hero-title {
+                font-size: clamp(1.6rem, 7vw, 2.4rem);
+            }
+
+            .card-header-custom {
+                padding: 12px 16px 10px;
+            }
+
+            .card-body-custom {
+                padding: 12px 16px 0;
+            }
+
+            .card-footer-custom {
+                padding: 10px 16px 14px;
+            }
+
+            .iframe-wrap iframe {
+                height: 64px;
+            }
+
+            ol[data-track-history] li img {
+                width: 28px !important;
+                height: 28px !important;
+            }
+
+            ol[data-track-history] li div {
+                font-size: 0.72rem !important;
+            }
+
+            .tunein-icons a {
+                width: 22px;
+                height: 22px;
+            }
+
+            .tunein-icons a img {
+                width: 14px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .card-header-right {
+                flex-direction: row;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .card-header-left h2 {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-noise" aria-hidden="true"></div>
+    <button id="theme-toggle" aria-label="Cambiar tema">☀️</button>
+
+    <div class="page-wrapper">
+
+        <!-- ═══════════════ HERO COMPACTO ═══════════════ -->
+        <header class="hero">
+            <div class="logo-wrap">
+                <img src="logo.jpeg" alt="Rocket Radio" id="logo-img">
+            </div>
+
+            <h1 class="hero-title">ROCKET <span>RADIO</span></h1>
+
+            <div class="live-badge">
+                <span class="live-dot"></span> EN VIVO
+            </div>
+
+            <p class="hero-slogan">"Si lo que buscabas era Rock… este es tu sitio."</p>
+        </header>
+
+        <!-- ═══════════════ PLAYER CARD ═══════════════ -->
+        <div class="player-card">
+
+            <!-- Citrus3 hook -->
+            <span data-base-url="https://s5.citrus3.com:2020/public/RocketRadio/" data-service-id="950"
+                style="display:none;"></span>
+
+            <!-- Card header -->
+            <div class="card-header-custom">
+                <div class="card-header-left">
+                    <h2><span class="rocket">🚀</span> RocketRadio</h2>
+                    <p>Rock del pasado y del presente</p>
+                </div>
+                <div class="card-header-right">
+                    <div class="listeners-badge">
+                        👥 <span class="count-number" data-connections="true">0</span> oyentes
+                    </div>
+                    <div class="mount-select-wrap">
+                        <select name="mount" class="mount-selection form-control" style="display:none;">
+                            <option selected="selected">stream</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card body -->
+            <div class="card-body-custom">
+
+                <!-- Audio player -->
+                <div class="iframe-wrap">
+                    <iframe src="https://s5.citrus3.com:2020/AudioPlayer/rocketradio?mount=/stream&" width="100%"
+                        height="72" scrolling="no" frameborder="0" allow="autoplay">
+                    </iframe>
+                </div>
+
+                <!-- Track history -->
+                <div class="history-label">
+                    <span class="icon">📻</span> Historial
+                </div>
+
+                <ol data-track-history="true">
+                    <li>
+                        <img src="https://s5.citrus3.com:2020/covers//6a6dd2de284b5.jpeg" alt="cover" />
+                        <div>Stone Cold Crazy — Queen</div>
+                    </li>
+                    <li>
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/images/defaultCover/black-vinyl-record-playing-on-turntable-1389429.jpg"
+                            alt="cover" />
+                        <div>Rocket Radio Original</div>
+                    </li>
+                    <li>
+                        <img src="https://s5.citrus3.com:2020/covers//6a6dd2e243d9e.png" alt="cover" />
+                        <div>No One Knows — Queens Of The Stone Age</div>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- Card footer (tune-in links) -->
+            <div class="card-footer-custom">
+                <span class="tunein-label">🎧 Escuchar en</span>
+                <div class="tunein-icons">
+                    <a href="https://s5.citrus3.com:2020/tunein/rocketradio/stream/pls" title="Winamp">
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/img/players/winamp.gif"
+                            alt="Winamp" />
+                    </a>
+                    <a href="https://s5.citrus3.com:2020/tunein/rocketradio/stream/pls" title="VLC">
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/img/players/vlc.gif" alt="VLC" />
+                    </a>
+                    <a href="https://s5.citrus3.com:2020/tunein/rocketradio/stream/pls" title="iTunes">
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/img/players/itunes.gif"
+                            alt="iTunes" />
+                    </a>
+                    <a href="https://s5.citrus3.com:2020/tunein/rocketradio/stream/asx" title="MPlayer">
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/img/players/mplayer.gif"
+                            alt="MPlayer" />
+                    </a>
+                    <a href="https://s5.citrus3.com:2020/8556/stream" title="Stream directo">
+                        <img src="https://s5.citrus3.com:2020/system/theme/Material/img/players/vlc.gif" alt="Stream" />
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════ FOOTER ═══════════════ -->
+        <footer>
+            <p class="footer-tagline">Rocket Radio — Rock sin fronteras</p>
+            <div class="social-row">
+                <a href="#" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7zm10 2c1.66 0 3 1.34 3 3v10c0 1.66-1.34 3-3 3H7c-1.66 0-3-1.34-3-3V7c0-1.66 1.34-3 3-3h10zm-5 3a5 5 0 100 10 5 5 0 010-6zm5.5-.5a1 1 0 100 2 1 1 0 000-2z" />
+                    </svg>
+                </a>
+                <a href="#" aria-label="Facebook">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0022 12z" />
+                    </svg>
+                </a>
+                <a href="#" aria-label="X / Twitter">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M18.9 2H22l-7.6 8.7L23 22h-6.8l-5.3-6.9L4.8 22H1.6l8.1-9.3L1 2h7l4.8 6.3L18.9 2zm-1.2 18h1.9L7.4 4H5.3l12.4 16z" />
+                    </svg>
+                </a>
+            </div>
+            <p class="copyright">&copy; <span id="year"></span> Rocket Radio. Todos los derechos reservados.</p>
+        </footer>
+
+    </div><!-- /page-wrapper -->
+
+    <!-- ═══════════════ SCRIPTS CITRUS3 ═══════════════ -->
+    <script
+        src="https://s5.citrus3.com:2020/system/misc/jQuery/jquery.min.js?3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/theme/Material/assets/js/bootstrap.min.js?v=3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/theme/Material/assets/js/jquery.tagsinput.js?v=3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/theme/Material/assets/js/perfect-scrollbar.jquery.min.js?v=3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/theme/Material/assets/js/material.min.js?v=3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/theme/Material/assets/js/material-dashboard.js?v=3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/theme/Material/js/jquery.prettydropdowns.js?v=3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/misc/jquery-ui/jquery-ui.custom.min.js?3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/misc/moment/moment.min.js?3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/misc/moment/moment-timezone.min.js?3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/theme/Material/js/datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/theme/Material/js/main.js?3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script
+        src="https://s5.citrus3.com:2020/system/theme/Material/js/fluid.js?3517ccfe662206bc67ab5ff411745ad0"></script>
+    <script src="https://s5.citrus3.com:2020/system/theme/Material/js/public.js?20260415"></script>
+
+    <script>
+        /* ── Año ── */
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        /* ── Tema oscuro / claro ── */
+        const toggle = document.getElementById('theme-toggle');
+        const htmlEl = document.documentElement;
+
+        function aplicarIcono(tema) {
+            toggle.textContent = tema === 'dark' ? '☀️' : '🌙';
+        }
+
+        const saved = localStorage.getItem('rocketradio-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const temaInicial = saved || (prefersDark ? 'dark' : 'light');
+        htmlEl.setAttribute('data-theme', temaInicial);
+        aplicarIcono(temaInicial);
+
+        toggle.addEventListener('click', () => {
+            const actual = htmlEl.getAttribute('data-theme') || 'dark';
+            const nuevo = actual === 'dark' ? 'light' : 'dark';
+            htmlEl.setAttribute('data-theme', nuevo);
+            localStorage.setItem('rocketradio-theme', nuevo);
+            aplicarIcono(nuevo);
+        });
+
+        /* ── Fallback logo ── */
+        document.getElementById('logo-img').addEventListener('error', function () {
+            this.style.display = 'none';
+            const fb = document.createElement('div');
+            fb.style.cssText = `
+                font-family:'Bebas Neue',sans-serif;
+                font-size:2.8rem;
+                color:var(--text);
+                text-align:center;
+                line-height:1;
+            `;
+            fb.textContent = '🚀';
+            this.parentElement.appendChild(fb);
+        });
+
+        /* ── Formatear contador de oyentes ── */
+        function formatListeners(num) {
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'k';
+            return num;
+        }
+
+        const listenerSpan = document.querySelector('[data-connections="true"]');
+        if (listenerSpan) {
+            const observer = new MutationObserver(() => {
+                const num = parseInt(listenerSpan.textContent);
+                if (!isNaN(num)) {
+                    listenerSpan.textContent = formatListeners(num);
+                }
+            });
+            observer.observe(listenerSpan, {
+                childList: true,
+                characterData: true,
+                subtree: true
+            });
+            const initialNum = parseInt(listenerSpan.textContent);
+            if (!isNaN(initialNum)) {
+                listenerSpan.textContent = formatListeners(initialNum);
+            }
+        }
+
+        console.log('🎸 Rocket Radio — Rock sin fronteras');
+        console.log('📻 Disfruta del mejor Rock 24/7');
+    </script>
+
+</body>
+
+</html>
