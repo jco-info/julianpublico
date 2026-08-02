@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rocket Radio - Reproductor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Impact', 'Arial Black', 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        #app { width: 100%; max-width: 520px; }
+        .rocket-radio-wrapper {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border-radius: 24px;
+            padding: 30px 25px 25px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.9), inset 0 0 30px rgba(200, 50, 50, 0.05);
+            border: 2px solid #2a1a1a;
+            border-top: 2px solid #4a2a2a;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .rocket-radio-wrapper::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255, 50, 50, 0.02) 20px, rgba(255, 50, 50, 0.02) 21px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .logo-container {
+            position: relative; z-index: 1; margin-bottom: 10px;
+            display: flex; justify-content: center; align-items: center; gap: 0;
+        }
+        .logo-container img {
+            max-width: 130px; width: 100%; height: auto; object-fit: contain;
+            border-radius: 12px; border: 3px solid #4a2a2a;
+            box-shadow: 0 0 30px rgba(200, 50, 50, 0.15), inset 0 0 20px rgba(200, 50, 50, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: block; background: #111; padding: 5px;
+        }
+        .logo-container img:hover { transform: scale(1.04); box-shadow: 0 0 50px rgba(200, 50, 50, 0.3); }
+        .station-title {
+            position: relative; z-index: 1; font-size: 2.4rem; font-weight: 900;
+            font-family: 'Impact', 'Arial Black', sans-serif; letter-spacing: 4px;
+            text-transform: uppercase; color: #fff;
+            text-shadow: 0 0 20px rgba(200, 50, 50, 0.3), 0 2px 0 #4a1a1a, 0 4px 0 #2a0a0a;
+            margin-bottom: 2px;
+        }
+        .station-title span { color: #ff4444; text-shadow: 0 0 30px rgba(255, 50, 50, 0.5), 0 2px 0 #4a1a1a; }
+        .slogan {
+            position: relative; z-index: 1; font-family: 'Georgia', serif; font-style: italic;
+            font-size: 0.95rem; color: #aa8855; letter-spacing: 2px; margin-bottom: 18px;
+            border-bottom: 1px solid #2a1a1a; padding-bottom: 14px;
+            text-shadow: 0 0 20px rgba(170, 136, 85, 0.15);
+        }
+        .slogan::before, .slogan::after { content: '♫'; color: #4a2a2a; margin: 0 10px; font-size: 0.8rem; }
+        .iframe-container {
+            position: relative; z-index: 1; background: #0a0a0a; border-radius: 16px;
+            overflow: hidden; border: 2px solid #2a1a1a;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8), 0 0 40px rgba(200, 50, 50, 0.05);
+            width: 100%; height: 520px;
+        }
+        .iframe-container iframe { width: 100%; height: 100%; border: none; display: block; background: #0a0a0a; }
+        .credits-section { position: relative; z-index: 1; margin: 12px 0 5px; }
+        .credits-btn {
+            background: transparent; border: 1px solid #4a2a2a; color: #665544;
+            padding: 6px 18px; border-radius: 30px; font-size: 0.6rem; cursor: pointer;
+            transition: all 0.3s ease; letter-spacing: 2px; font-family: 'Arial', sans-serif; text-transform: uppercase;
+        }
+        .credits-btn:hover { border-color: #ff4444; color: #ff4444; box-shadow: 0 0 20px rgba(255, 50, 50, 0.1); }
+        .credits-btn.hidden { display: none; }
+        .credits-detail {
+            display: none; color: #665544; font-size: 0.75rem; margin-top: 8px;
+            font-family: 'Georgia', serif; font-style: italic; letter-spacing: 1px;
+            padding: 10px 15px; border-left: 2px solid #4a2a2a; border-right: 2px solid #4a2a2a;
+            background: rgba(26, 10, 10, 0.4); border-radius: 8px; animation: fadeIn 0.6s ease;
+        }
+        .credits-detail.visible { display: block; }
+        .credits-detail strong { color: #aa8855; }
+        .credits-detail .rock-emoji { color: #4a2a2a; margin: 0 4px; }
+        @keyframes fadeIn { 0% { opacity: 0; transform: translateY(-8px); } 100% { opacity: 1; transform: translateY(0); } }
+        .footer {
+            position: relative; z-index: 1; margin-top: 14px; color: #333;
+            font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; font-family: 'Arial', sans-serif;
+        }
+        .footer .rock-symbol { color: #4a2a2a; margin: 0 6px; }
+        .footer .powered { color: #222; font-size: 0.5rem; letter-spacing: 1px; }
+        .guitar-strings {
+            position: relative; z-index: 1; height: 2px;
+            background: linear-gradient(to right, transparent, #4a2a2a 20%, #4a2a2a 80%, transparent);
+            margin: 6px 0 12px 0; opacity: 0.3;
+        }
+        .guitar-strings::after {
+            content: ''; position: absolute; top: 2px; left: 10%; right: 10%; height: 1px;
+            background: linear-gradient(to right, transparent, #4a2a2a 30%, #4a2a2a 70%, transparent); opacity: 0.5;
+        }
+        @media (max-width: 768px) {
+            #app { max-width: 90%; }
+            .rocket-radio-wrapper { padding: 25px 20px 20px; }
+            .station-title { font-size: 2rem; letter-spacing: 3px; }
+            .logo-container img { max-width: 110px; }
+            .iframe-container { height: 460px; }
+        }
+        @media (max-width: 600px) {
+            #app { max-width: 100%; }
+            .rocket-radio-wrapper { padding: 20px 15px 18px; border-radius: 18px; }
+            .station-title { font-size: 1.7rem; letter-spacing: 2px; }
+            .logo-container img { max-width: 95px; padding: 4px; }
+            .slogan { font-size: 0.8rem; }
+            .slogan::before, .slogan::after { content: '•'; margin: 0 6px; }
+            .iframe-container { height: 420px; border-radius: 12px; }
+            .credits-btn { font-size: 0.5rem; padding: 5px 14px; }
+            .credits-detail { font-size: 0.65rem; padding: 8px 12px; }
+            .footer { font-size: 0.5rem; letter-spacing: 1px; }
+        }
+        @media (max-width: 450px) {
+            .rocket-radio-wrapper { padding: 15px 12px 15px; border-radius: 16px; }
+            .station-title { font-size: 1.4rem; letter-spacing: 1px; }
+            .logo-container img { max-width: 80px; padding: 3px; border-width: 2px; }
+            .slogan { font-size: 0.7rem; margin-bottom: 14px; padding-bottom: 10px; }
+            .guitar-strings { margin: 4px 0 8px 0; }
+            .iframe-container { height: 400px; border-radius: 10px; border-width: 1px; }
+            .credits-btn { font-size: 0.45rem; padding: 4px 12px; letter-spacing: 1px; }
+            .credits-detail { font-size: 0.6rem; padding: 6px 10px; }
+            .footer { font-size: 0.45rem; margin-top: 12px; }
+        }
+        @media (max-width: 380px) {
+            .station-title { font-size: 1.2rem; }
+            .logo-container img { max-width: 70px; }
+            .iframe-container { height: 380px; }
+            .slogan::before, .slogan::after { content: ''; margin: 0; }
+        }
+        @media (min-width: 1200px) {
+            #app { max-width: 580px; }
+            .logo-container img { max-width: 150px; }
+            .station-title { font-size: 2.8rem; }
+            .iframe-container { height: 580px; }
+        }
+
+        /* ================= VÚMETROS LED (versión ESCRITORIO, a los lados) ================= */
+        .vu-modern-box{
+            width: 74px; align-self: center; flex-shrink: 0;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .vu-modern-face{
+            width: 64px; height: 340px;
+            background: linear-gradient(160deg, #161616, #0a0a0a);
+            border-radius: 14px;
+            border: 2px solid #2a1a1a;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column-reverse;
+            padding: 8px; gap: 4px;
+        }
+        .vu-led{
+            width: 100%; height: 12px; border-radius: 3px;
+            background: #161616;
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.8);
+            transition: background-color 0.05s linear, box-shadow 0.05s linear;
+        }
+        .vu-led.on-green{ background:#2ee66b; box-shadow: 0 0 10px #2ee66b, 0 0 3px #fff inset; }
+        .vu-led.on-yellow{ background:#f4d13d; box-shadow: 0 0 10px #f4d13d, 0 0 3px #fff inset; }
+        .vu-led.on-red{ background:#ff3232; box-shadow: 0 0 14px #ff3232, 0 0 3px #fff inset; }
+        .vu-modern-label{
+            font-family: 'Arial', sans-serif; font-size: 0.55rem; letter-spacing: 2px;
+            color: #665544; text-transform: uppercase;
+        }
+        .rocket-layout{
+            display: flex; flex-direction: row; align-items: center; justify-content: center;
+            gap: 20px; flex-wrap: wrap; width: 100%;
+        }
+
+        /* ================= VÚMETROS LED (versión MÓVIL, junto al logo) =================
+           Ocultos por defecto (escritorio). Aparecen solo en pantallas estrechas,
+           a la vez que se ocultan las columnas grandes de los lados. */
+        .vu-modern-mini{
+            display: none;
+            width: 24px;
+            flex-shrink: 0;
+        }
+        .vu-modern-mini-face{
+            width: 24px; height: 100px;
+            background: linear-gradient(160deg, #161616, #0a0a0a);
+            border-radius: 6px;
+            border: 1.5px solid #2a1a1a;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.8), inset 0 0 8px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column-reverse;
+            padding: 4px; gap: 2px;
+        }
+        .vu-led-mini{
+            width: 100%; height: 6px; border-radius: 2px;
+            background: #161616;
+            box-shadow: inset 0 0 2px rgba(0,0,0,0.8);
+            transition: background-color 0.05s linear, box-shadow 0.05s linear;
+        }
+        .vu-led-mini.on-green{ background:#2ee66b; box-shadow: 0 0 6px #2ee66b; }
+        .vu-led-mini.on-yellow{ background:#f4d13d; box-shadow: 0 0 6px #f4d13d; }
+        .vu-led-mini.on-red{ background:#ff3232; box-shadow: 0 0 8px #ff3232; }
+
+        @media (max-width: 980px){
+            .vu-modern-box{ display: none; }
+            .vu-modern-mini{ display: block; }
+            .logo-container{ gap: 12px; }
+        }
+        @media (max-width: 600px){
+            .vu-modern-mini-face{ height: 85px; }
+            .logo-container{ gap: 8px; }
+        }
+        @media (max-width: 450px){
+            .vu-modern-mini{ width: 18px; }
+            .vu-modern-mini-face{ height: 70px; }
+            .logo-container{ gap: 6px; }
+        }
+        @media (max-width: 380px){
+            .vu-modern-mini{ width: 15px; }
+            .vu-modern-mini-face{ height: 60px; }
+            .logo-container{ gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="rocket-layout">
+
+        <div class="vu-modern-box">
+            <div class="vu-modern-face" id="vu-modern-left"></div>
+            <div class="vu-modern-label">Canal Izq.</div>
+        </div>
+
+        <div id="app">
+            <div class="rocket-radio-wrapper">
+                <!-- LOGO + MINI-VÚMETROS LED (solo visibles en móvil) -->
+                <div class="logo-container">
+                    <div class="vu-modern-mini">
+                        <div class="vu-modern-mini-face" id="vu-modern-left-mini"></div>
+                    </div>
+
+                    <img src="logo.jpeg" alt="Rocket Radio Logo" />
+
+                    <div class="vu-modern-mini">
+                        <div class="vu-modern-mini-face" id="vu-modern-right-mini"></div>
+                    </div>
+                </div>
+
+                <div class="station-title"><span>Rocket</span> Radio</div>
+                <div class="guitar-strings"></div>
+                <div class="slogan">Donde el Rock nunca muere</div>
+                <div class="iframe-container">
+                    <iframe
+                        src="https://s5.citrus3.com:2020/public/rocketradio"
+                        allow="autoplay"
+                        loading="lazy"
+                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+                    ></iframe>
+                </div>
+                <div class="credits-section">
+                    <button class="credits-btn" id="creditsBtn" onclick="toggleCredits()">
+                        🎸 Proyecto de Fernando de la Cuerda
+                    </button>
+                    <div class="credits-detail" id="creditsDetail">
+                        <span class="rock-emoji">🎸</span>
+                        <strong>Fernando de la Cuerda</strong> lleva años haciendo que el Rock suene más fuerte.
+                        <span class="rock-emoji">🤘</span>
+                        <br />
+                        <span style="font-size: 0.6rem; color: #444;">Gracias por hacer posible este proyecto.</span>
+                    </div>
+                </div>
+                <div class="footer">
+                    <span class="rock-symbol">⚡</span>
+                    <span>Streaming en vivo</span>
+                    <span class="rock-symbol">✦</span>
+                    <span>Rock sin límites</span>
+                    <span class="rock-symbol">⚡</span>
+                    <br />
+                    <span class="powered">🎸 Powered by Citrus3</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="vu-modern-box">
+            <div class="vu-modern-face" id="vu-modern-right"></div>
+            <div class="vu-modern-label">Canal Der.</div>
+        </div>
+
+    </div>
+
+    <script>
+        function toggleCredits() {
+            const btn = document.getElementById('creditsBtn');
+            const detail = document.getElementById('creditsDetail');
+            if (detail.classList.contains('visible')) {
+                detail.classList.remove('visible');
+                btn.classList.remove('hidden');
+            } else {
+                detail.classList.add('visible');
+                btn.classList.add('hidden');
+            }
+        }
+    </script>
+
+    <!-- ===================== LÓGICA DE LOS VÚMETROS LED (AUTOMÁTICA) =====================
+         Ahora crea y pinta CUATRO columnas: grande izq/der (escritorio) y
+         mini izq/der (móvil), todas alimentadas por el mismo nivel de audio,
+         cada una con su propio número de LEDs según su tamaño. -->
+    <script>
+    (function(){
+        const STREAM_URL = 'https://s5.citrus3.com:2020/8556/stream';
+
+        const faceLeftDesktop = document.getElementById('vu-modern-left');
+        const faceRightDesktop = document.getElementById('vu-modern-right');
+        const faceLeftMini = document.getElementById('vu-modern-left-mini');
+        const faceRightMini = document.getElementById('vu-modern-right-mini');
+
+        function crearLeds(contenedor, numLeds, claseLed){
+            const leds = [];
+            for(let i = 0; i < numLeds; i++){
+                const div = document.createElement('div');
+                div.className = claseLed;
+                contenedor.appendChild(div);
+                leds.push(div);
+            }
+            return leds;
+        }
+
+        // Columnas grandes (escritorio): 20 LEDs. Mini (móvil): 12 LEDs.
+        const columnaIzqDesktop = { leds: crearLeds(faceLeftDesktop, 20, 'vu-led'), num: 20 };
+        const columnaDerDesktop = { leds: crearLeds(faceRightDesktop, 20, 'vu-led'), num: 20 };
+        const columnaIzqMini = { leds: crearLeds(faceLeftMini, 12, 'vu-led-mini'), num: 12 };
+        const columnaDerMini = { leds: crearLeds(faceRightMini, 12, 'vu-led-mini'), num: 12 };
+
+        const columnasIzquierda = [columnaIzqDesktop, columnaIzqMini];
+        const columnasDerecha = [columnaDerDesktop, columnaDerMini];
+
+        function colorPorProporcion(p){
+            if(p < 0.6) return 'on-green';
+            if(p < 0.85) return 'on-yellow';
+            return 'on-red';
+        }
+
+        function pintarColumna(columna, nivel){
+            const encendidos = Math.round(nivel * columna.num);
+            columna.leds.forEach((led, i) => {
+                led.classList.remove('on-green','on-yellow','on-red');
+                if(i < encendidos){
+                    led.classList.add(colorPorProporcion(i / columna.num));
+                }
+            });
+        }
+
+        let audioCtx = null, hiddenAudio = null;
+        let analyserL = null, analyserR = null, dataL = null, dataR = null;
+        let modoAnalisisReal = true, segundosSinSenalReal = 0;
+        let nivelActualL = 0, nivelActualR = 0;
+
+        function calcularVolumenRMS(dataArray){
+            let suma = 0;
+            for(let i = 0; i < dataArray.length; i++){
+                const valor = (dataArray[i] - 128) / 128;
+                suma += valor * valor;
+            }
+            return Math.min(1, Math.sqrt(suma / dataArray.length) * 4);
+        }
+
+        let simFaseL = Math.random() * 10, simFaseR = Math.random() * 10;
+        function nivelSimulado(fase){
+            const t = Date.now() / 1000;
+            const base = 0.5 + 0.3 * Math.sin(t * 1.7 + fase) + 0.15 * Math.sin(t * 4.1 + fase * 2);
+            return Math.max(0, Math.min(1, base + (Math.random() - 0.5) * 0.15));
+        }
+
+        function loopAnimacion(){
+            let nivelL, nivelR;
+            if(modoAnalisisReal && analyserL && analyserR){
+                analyserL.getByteTimeDomainData(dataL);
+                analyserR.getByteTimeDomainData(dataR);
+                nivelL = calcularVolumenRMS(dataL);
+                nivelR = calcularVolumenRMS(dataR);
+                if(nivelL < 0.02 && nivelR < 0.02){
+                    segundosSinSenalReal += 1/60;
+                    if(segundosSinSenalReal > 4) modoAnalisisReal = false;
+                } else segundosSinSenalReal = 0;
+            } else {
+                nivelL = nivelSimulado(simFaseL);
+                nivelR = nivelSimulado(simFaseR);
+            }
+            nivelActualL += (nivelL - nivelActualL) * 0.25;
+            nivelActualR += (nivelR - nivelActualR) * 0.25;
+            columnasIzquierda.forEach(col => pintarColumna(col, nivelActualL));
+            columnasDerecha.forEach(col => pintarColumna(col, nivelActualR));
+            requestAnimationFrame(loopAnimacion);
+        }
+
+        async function iniciarVUMeters(){
+            try{
+                hiddenAudio = new Audio();
+                hiddenAudio.crossOrigin = 'anonymous';
+                hiddenAudio.src = STREAM_URL;
+                hiddenAudio.muted = true;
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioCtx.createMediaElementSource(hiddenAudio);
+                const splitter = audioCtx.createChannelSplitter(2);
+                analyserL = audioCtx.createAnalyser();
+                analyserR = audioCtx.createAnalyser();
+                analyserL.fftSize = 256; analyserR.fftSize = 256;
+                dataL = new Uint8Array(analyserL.frequencyBinCount);
+                dataR = new Uint8Array(analyserR.frequencyBinCount);
+                source.connect(splitter);
+                splitter.connect(analyserL, 0);
+                splitter.connect(analyserR, 1);
+                await hiddenAudio.play();
+            } catch(err){
+                console.warn('Vúmetros: análisis real no disponible, usando modo simulado.', err);
+                modoAnalisisReal = false;
+            }
+            loopAnimacion();
+        }
+
+        iniciarVUMeters();
+    })();
+    </script>
+</body>
+</html>
