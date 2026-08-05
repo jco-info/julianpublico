@@ -1,537 +1,793 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rocket Radio - Reproductor</title>
-
+    <title>Rocket Radio - Rock sin fronteras</title>
+    <meta name="description" content="Rocket Radio - La mejor emisora de Rock 24/7" />
+    
     <style>
-        /* --- Reset y estilos globales --- */
+        /* ============================================================
+                   RESET Y VARIABLES
+                ============================================================ */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        :root {
+            --bg: #0a0a0a;
+            --bg-card: #121212;
+            --bg-surface: #1a1a1a;
+            --border: #2a2a2a;
+            --text: #f0f0f0;
+            --text-muted: #999;
+            --accent: #cc2222;
+            --accent-hover: #ff3333;
+            --vu-bg: #1a1a1a;
+            --vu-border: #333;
+            --vu-needle: #cc2222;
+            --shadow: rgba(200, 50, 50, 0.15);
+            --transition: 0.3s ease;
+        }
+
+        /* Tema claro */
+        [data-theme="light"] {
+            --bg: #f0f0f0;
+            --bg-card: #ffffff;
+            --bg-surface: #e8e8e8;
+            --border: #cccccc;
+            --text: #111111;
+            --text-muted: #555;
+            --accent: #cc2222;
+            --accent-hover: #ff3333;
+            --vu-bg: #e8e8e8;
+            --vu-border: #aaaaaa;
+            --shadow: rgba(200, 50, 50, 0.1);
+        }
+
+        /* ============================================================
+                   BASE
+                ============================================================ */
+        html,
         body {
-            font-family: 'Impact', 'Arial Black', 'Segoe UI', sans-serif;
-            background: #0a0a0a;
             min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
-        }
-
-        /* --- Contenedor principal --- */
-        #app {
-            width: 100%;
-            max-width: 520px;
-        }
-
-        /* --- Tarjeta principal (estilo rock) --- */
-        .rocket-radio-wrapper {
-            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
-            border-radius: 24px;
-            padding: 30px 25px 25px;
-            box-shadow:
-                0 25px 80px rgba(0, 0, 0, 0.9),
-                inset 0 0 30px rgba(200, 50, 50, 0.05);
-            border: 2px solid #2a1a1a;
-            border-top: 2px solid #4a2a2a;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* --- Efecto de fondo rock (rayas sutiles) --- */
-        .rocket-radio-wrapper::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background:
+            background-image: 
+                radial-gradient(ellipse at 50% 0%, rgba(200, 50, 50, 0.06) 0%, transparent 60%),
                 repeating-linear-gradient(
                     45deg,
                     transparent,
-                    transparent 20px,
-                    rgba(255, 50, 50, 0.02) 20px,
-                    rgba(255, 50, 50, 0.02) 21px
+                    transparent 40px,
+                    rgba(255, 255, 255, 0.01) 40px,
+                    rgba(255, 255, 255, 0.01) 41px
                 );
-            pointer-events: none;
-            z-index: 0;
         }
 
-        /* --- Logo --- */
-        .logo-container {
-            position: relative;
-            z-index: 1;
-            margin-bottom: 10px;
+        /* ============================================================
+                   CONTENEDOR PRINCIPAL
+                ============================================================ */
+        .page-wrapper {
+            width: 100%;
+            max-width: 900px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            gap: 20px;
+            position: relative;
         }
 
-        .logo-container img {
-            max-width: 130px;
+        /* ============================================================
+                   BOTONES DE TEMA (ambos hacen lo mismo)
+                ============================================================ */
+        .theme-buttons {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .theme-btn {
+            pointer-events: auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all var(--transition);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+            min-width: 90px;
+            justify-content: center;
+        }
+        .theme-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+        .theme-btn .icon {
+            font-size: 1.1rem;
+        }
+
+        /* ============================================================
+                   CABECERA / HERO
+                ============================================================ */
+        .hero {
+            text-align: center;
+            padding: 20px 0 10px;
+            width: 100%;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .hero-title {
+            font-size: clamp(2.2rem, 7vw, 3.8rem);
+            font-weight: 900;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--text);
+            line-height: 1.1;
+        }
+        .hero-title span {
+            color: var(--accent);
+        }
+
+        .hero-slogan {
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            font-style: italic;
+            color: var(--text-muted);
+            margin-top: 6px;
+            letter-spacing: 1px;
+        }
+        .hero-slogan .highlight {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .hero-sub {
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: var(--text);
+            margin-top: 2px;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        /* ============================================================
+                   VÚMETROS MINI (SOLO EN MÓVIL, CENTRADOS)
+                ============================================================ */
+        .vu-mini-wrap {
+            display: none;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 4px;
+            width: 100%;
+        }
+        .vu-mini {
+            width: 80px;
+            flex-shrink: 0;
+        }
+        .vu-mini-face {
+            background: radial-gradient(ellipse at 50% 120%, #2a1a1a 0%, #1a0a0a 60%, #0a0a0a 100%);
+            border-radius: 8px;
+            border: 3px solid var(--vu-border);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+        .vu-mini-face svg {
             width: 100%;
             height: auto;
-            object-fit: contain;
-            border-radius: 12px;
-            border: 3px solid #4a2a2a;
-            box-shadow:
-                0 0 30px rgba(200, 50, 50, 0.15),
-                inset 0 0 20px rgba(200, 50, 50, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: block;
-            background: #111;
-            padding: 5px;
-        }
-
-        .logo-container img:hover {
-            transform: scale(1.04);
-            box-shadow: 0 0 50px rgba(200, 50, 50, 0.3);
-        }
-
-        /* --- Título de la emisora --- */
-        .station-title {
-            position: relative;
-            z-index: 1;
-            font-size: 2.4rem;
-            font-weight: 900;
-            font-family: 'Impact', 'Arial Black', sans-serif;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: #fff;
-            text-shadow:
-                0 0 20px rgba(200, 50, 50, 0.3),
-                0 2px 0 #4a1a1a,
-                0 4px 0 #2a0a0a;
-            margin-bottom: 2px;
-        }
-
-        .station-title span {
-            color: #ff4444;
-            text-shadow:
-                0 0 30px rgba(255, 50, 50, 0.5),
-                0 2px 0 #4a1a1a;
-        }
-
-        /* --- Eslogan --- */
-        .slogan {
-            position: relative;
-            z-index: 1;
-            font-family: 'Georgia', serif;
-            font-style: italic;
-            font-size: 0.95rem;
-            color: #aa8855;
-            letter-spacing: 2px;
-            margin-bottom: 18px;
-            border-bottom: 1px solid #2a1a1a;
-            padding-bottom: 14px;
-            text-shadow: 0 0 20px rgba(170, 136, 85, 0.15);
-        }
-
-        .slogan::before,
-        .slogan::after {
-            content: '♫';
-            color: #4a2a2a;
-            margin: 0 10px;
-            font-size: 0.8rem;
-        }
-
-        /* --- Iframe --- */
-        .iframe-container {
-            position: relative;
-            z-index: 1;
-            background: #0a0a0a;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid #2a1a1a;
-            box-shadow:
-                inset 0 0 30px rgba(0, 0, 0, 0.8),
-                0 0 40px rgba(200, 50, 50, 0.05);
-            width: 100%;
-            height: 520px;
-        }
-
-        .iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            background: #0a0a0a;
-        }
-
-        /* --- Botón de créditos (Opción 4) --- */
-        .credits-section {
-            position: relative;
-            z-index: 1;
-            margin: 12px 0 5px;
-        }
-
-        .credits-btn {
-            background: transparent;
-            border: 1px solid #4a2a2a;
-            color: #665544;
-            padding: 6px 18px;
-            border-radius: 30px;
-            font-size: 0.6rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            letter-spacing: 2px;
-            font-family: 'Arial', sans-serif;
-            text-transform: uppercase;
-        }
-
-        .credits-btn:hover {
-            border-color: #ff4444;
-            color: #ff4444;
-            box-shadow: 0 0 20px rgba(255, 50, 50, 0.1);
-        }
-
-        .credits-btn.hidden {
-            display: none;
-        }
-
-        .credits-detail {
-            display: none;
-            color: #665544;
-            font-size: 0.75rem;
-            margin-top: 8px;
-            font-family: 'Georgia', serif;
-            font-style: italic;
-            letter-spacing: 1px;
-            padding: 10px 15px;
-            border-left: 2px solid #4a2a2a;
-            border-right: 2px solid #4a2a2a;
-            background: rgba(26, 10, 10, 0.4);
-            border-radius: 8px;
-            animation: fadeIn 0.6s ease;
-        }
-
-        .credits-detail.visible {
             display: block;
         }
-
-        .credits-detail strong {
-            color: #aa8855;
-        }
-
-        .credits-detail .rock-emoji {
-            color: #4a2a2a;
-            margin: 0 4px;
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(-8px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- Pie de página (sin enlace) --- */
-        .footer {
-            position: relative;
-            z-index: 1;
-            margin-top: 14px;
-            color: #333;
-            font-size: 0.6rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .footer .rock-symbol {
-            color: #4a2a2a;
-            margin: 0 6px;
-        }
-
-        .footer .powered {
-            color: #222;
+        .vu-mini-label {
+            font-family: 'Courier New', monospace;
             font-size: 0.5rem;
             letter-spacing: 1px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            text-align: center;
+            margin-top: 2px;
         }
 
-        /* --- Efecto de guitarra --- */
-        .guitar-strings {
+        /* ============================================================
+                   VÚMETROS GRANDES + REPRODUCTOR (layout)
+                ============================================================ */
+        .player-section {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================================
+                   VÚMETROS GRANDES (escritorio/tablet)
+                ============================================================ */
+        .vu-meter-box {
+            width: 165px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .vu-meter-face {
+            width: 165px;
+            height: 143px;
+            background: radial-gradient(ellipse at 50% 120%, #2a1a1a 0%, #1a0a0a 60%, #0a0a0a 100%);
+            border-radius: 10px;
+            border: 5px solid var(--vu-border);
+            box-shadow: 
+                0 8px 30px rgba(0, 0, 0, 0.7),
+                inset 0 0 20px rgba(0, 0, 0, 0.5),
+                0 0 20px var(--shadow);
             position: relative;
-            z-index: 1;
-            height: 2px;
-            background: linear-gradient(to right, transparent, #4a2a2a 20%, #4a2a2a 80%, transparent);
-            margin: 6px 0 12px 0;
-            opacity: 0.3;
+            overflow: hidden;
         }
-
-        .guitar-strings::after {
-            content: '';
+        .vu-meter-face .vu-brand {
             position: absolute;
-            top: 2px;
-            left: 10%;
-            right: 10%;
-            height: 1px;
-            background: linear-gradient(to right, transparent, #4a2a2a 30%, #4a2a2a 70%, transparent);
+            top: 6px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 0.55rem;
+            letter-spacing: 4px;
+            color: #665544;
+            opacity: 0.6;
+            font-weight: bold;
+        }
+        .vu-meter-face svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .vu-needle {
+            transform-box: view-box;
+        }
+        .vu-label {
+            font-family: 'Courier New', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* ============================================================
+                   TARJETA DEL REPRODUCTOR (con iframe centrado)
+                ============================================================ */
+        .player-card {
+            flex: 1;
+            min-width: 280px;
+            max-width: 520px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            transition: background var(--transition), border var(--transition);
+        }
+        .player-card .iframe-container {
+            background: #000;
+            width: 100%;
+            height: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .player-card .iframe-container iframe {
+            width: 125%;
+            height: 125%;
+            border: none;
+            display: block;
+            background: #000;
+            transform: scale(0.8);
+            transform-origin: center center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+
+        /* ============================================================
+                   FOOTER
+                ============================================================ */
+        .footer {
+            width: 100%;
+            text-align: center;
+            padding: 20px 0 10px;
+            border-top: 1px solid var(--border);
+            margin-top: 10px;
+        }
+        .footer .contact {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+        .footer .contact a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color var(--transition);
+        }
+        .footer .contact a:hover {
+            color: var(--accent-hover);
+        }
+        .footer .copy {
+            font-size: 0.6rem;
+            color: var(--text-muted);
             opacity: 0.5;
+            margin-top: 8px;
         }
 
-        /* --- Responsive --- */
-        @media (max-width: 768px) {
-            #app {
-                max-width: 90%;
-            }
+        /* ============================================================
+                   RESPONSIVE
+                ============================================================ */
 
-            .rocket-radio-wrapper {
-                padding: 25px 20px 20px;
+        /* Tablet y escritorio pequeño: Vúmetros grandes a los lados */
+        @media (max-width: 820px) {
+            .vu-meter-box {
+                width: 140px;
             }
-
-            .station-title {
-                font-size: 2rem;
-                letter-spacing: 3px;
+            .vu-meter-face {
+                width: 140px;
+                height: 121px;
             }
-
-            .logo-container img {
-                max-width: 110px;
+            .player-card .iframe-container {
+                height: 420px;
             }
-
-            .iframe-container {
-                height: 460px;
+            .theme-buttons {
+                padding: 0 12px;
+            }
+            .theme-btn {
+                font-size: 0.65rem;
+                padding: 6px 12px;
+                min-width: 70px;
             }
         }
 
-        @media (max-width: 600px) {
-            #app {
+        /* Móvil grande: Ocultamos Vúmetros grandes, mostramos mini centrados */
+        @media (max-width: 700px) {
+            .player-section {
+                flex-direction: column;
+                gap: 14px;
+            }
+            
+            /* Ocultar Vúmetros grandes */
+            .vu-meter-box {
+                display: none;
+            }
+            
+            /* Mostrar mini Vúmetros centrados */
+            .vu-mini-wrap {
+                display: flex;
+            }
+            
+            .player-card {
+                width: 100%;
                 max-width: 100%;
             }
-
-            .rocket-radio-wrapper {
-                padding: 20px 15px 18px;
-                border-radius: 18px;
-            }
-
-            .station-title {
-                font-size: 1.7rem;
-                letter-spacing: 2px;
-            }
-
-            .logo-container img {
-                max-width: 95px;
-                padding: 4px;
-            }
-
-            .slogan {
-                font-size: 0.8rem;
-            }
-
-            .slogan::before,
-            .slogan::after {
-                content: '•';
-                margin: 0 6px;
-            }
-
-            .iframe-container {
-                height: 420px;
-                border-radius: 12px;
-            }
-
-            .credits-btn {
-                font-size: 0.5rem;
-                padding: 5px 14px;
-            }
-
-            .credits-detail {
-                font-size: 0.65rem;
-                padding: 8px 12px;
-            }
-
-            .footer {
-                font-size: 0.5rem;
-                letter-spacing: 1px;
-            }
-        }
-
-        @media (max-width: 450px) {
-            .rocket-radio-wrapper {
-                padding: 15px 12px 15px;
-                border-radius: 16px;
-            }
-
-            .station-title {
-                font-size: 1.4rem;
-                letter-spacing: 1px;
-            }
-
-            .logo-container img {
-                max-width: 80px;
-                padding: 3px;
-                border-width: 2px;
-            }
-
-            .slogan {
-                font-size: 0.7rem;
-                margin-bottom: 14px;
-                padding-bottom: 10px;
-            }
-
-            .guitar-strings {
-                margin: 4px 0 8px 0;
-            }
-
-            .iframe-container {
-                height: 400px;
-                border-radius: 10px;
-                border-width: 1px;
-            }
-
-            .credits-btn {
-                font-size: 0.45rem;
-                padding: 4px 12px;
-                letter-spacing: 1px;
-            }
-
-            .credits-detail {
-                font-size: 0.6rem;
-                padding: 6px 10px;
-            }
-
-            .footer {
-                font-size: 0.45rem;
-                margin-top: 12px;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .station-title {
-                font-size: 1.2rem;
-            }
-
-            .logo-container img {
-                max-width: 70px;
-            }
-
-            .iframe-container {
+            .player-card .iframe-container {
                 height: 380px;
             }
+        }
 
-            .slogan::before,
-            .slogan::after {
-                content: '';
-                margin: 0;
+        /* Móvil pequeño */
+        @media (max-width: 480px) {
+            .vu-mini {
+                width: 60px;
+            }
+            .vu-mini-face {
+                border-width: 2px;
+                border-radius: 6px;
+            }
+            .player-card .iframe-container {
+                height: 340px;
+            }
+            .theme-btn {
+                font-size: 0.55rem;
+                padding: 4px 10px;
+                min-width: 60px;
+            }
+            .theme-btn .icon {
+                font-size: 0.8rem;
+            }
+            .logo {
+                width: 72px;
+                height: 72px;
+            }
+            .hero-title {
+                letter-spacing: 3px;
+            }
+            .vu-mini-label {
+                font-size: 0.4rem;
             }
         }
 
-        @media (min-width: 1200px) {
-            #app {
-                max-width: 580px;
+        @media (max-width: 360px) {
+            .vu-mini {
+                width: 48px;
             }
-
-            .logo-container img {
-                max-width: 150px;
+            .player-card .iframe-container {
+                height: 300px;
             }
-
-            .station-title {
-                font-size: 2.8rem;
+            .theme-btn {
+                font-size: 0.45rem;
+                padding: 3px 8px;
+                min-width: 50px;
             }
-
-            .iframe-container {
-                height: 580px;
+            .theme-btn .icon {
+                font-size: 0.6rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <div id="app">
-        <div class="rocket-radio-wrapper">
+    <!-- ============================================================
+    BOTONES DE TEMA (ambos hacen lo mismo)
+    ============================================================ -->
+    <div class="theme-buttons">
+        <button class="theme-btn" id="themeToggleLeft" title="Cambiar tema">
+            <span class="icon">🌙</span> <span class="label">Oscuro</span>
+        </button>
+        <button class="theme-btn" id="themeToggleRight" title="Cambiar tema">
+            <span class="icon">🌙</span> <span class="label">Oscuro</span>
+        </button>
+    </div>
 
-            <!-- ========================================= -->
-            <!-- LOGO                                       -->
-            <!-- ========================================= -->
-            <div class="logo-container">
-                <img src="logo.jpeg" alt="Rocket Radio Logo" />
+    <!-- ============================================================
+    CONTENIDO PRINCIPAL
+    ============================================================ -->
+    <div class="page-wrapper">
+
+        <!-- ============================================================
+        HERO / CABECERA
+        ============================================================ -->
+        <header class="hero">
+            <img src="logo.jpeg" alt="Rocket Radio" class="logo" id="logoImg" />
+            <h1 class="hero-title">ROCKET <span>RADIO</span></h1>
+            <p class="hero-slogan">
+                "Si lo que buscas es oir Rock... <span class="highlight">⚡</span>"
+            </p>
+            <p class="hero-sub">Esta es tu radio</p>
+        </header>
+
+        <!-- ============================================================
+        VÚMETROS MINI (se muestran SOLO en móvil, centrados)
+        ============================================================ -->
+        <div class="vu-mini-wrap" id="vuMiniWrap">
+            <div class="vu-mini">
+                <div class="vu-mini-face">
+                    <svg viewBox="0 0 100 80">
+                        <path d="M 10 66 A 40 40 0 0 1 90 66" fill="none" stroke="#444" stroke-width="1.5"/>
+                        <path d="M 72 38 A 40 40 0 0 1 90 66" fill="none" stroke="#cc2222" stroke-width="2"/>
+                        <line class="vu-needle vu-needle-left" x1="50" y1="66" x2="50" y2="30" stroke="#cc2222" stroke-width="2" stroke-linecap="round" style="transform-origin:50px 66px;"/>
+                        <circle cx="50" cy="66" r="3.5" fill="#2a1a10"/>
+                    </svg>
+                </div>
+                <div class="vu-mini-label">L</div>
+            </div>
+            <div class="vu-mini">
+                <div class="vu-mini-face">
+                    <svg viewBox="0 0 100 80">
+                        <path d="M 10 66 A 40 40 0 0 1 90 66" fill="none" stroke="#444" stroke-width="1.5"/>
+                        <path d="M 72 38 A 40 40 0 0 1 90 66" fill="none" stroke="#cc2222" stroke-width="2"/>
+                        <line class="vu-needle vu-needle-right" x1="50" y1="66" x2="50" y2="30" stroke="#cc2222" stroke-width="2" stroke-linecap="round" style="transform-origin:50px 66px;"/>
+                        <circle cx="50" cy="66" r="3.5" fill="#2a1a10"/>
+                    </svg>
+                </div>
+                <div class="vu-mini-label">R</div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        VÚMETROS GRANDES + REPRODUCTOR
+        ============================================================ -->
+        <div class="player-section">
+
+            <!-- VÚMETRO GRANDE IZQUIERDO (solo escritorio/tablet) -->
+            <div class="vu-meter-box">
+                <div class="vu-meter-face">
+                    <span class="vu-brand">ROCKET · L</span>
+                    <svg viewBox="0 0 165 143">
+                        <path d="M 20 118 A 62 62 0 0 1 145 118" fill="none" stroke="#444" stroke-width="2"/>
+                        <g stroke="#444" stroke-width="1.5">
+                            <line x1="22" y1="114" x2="28" y2="104"/>
+                            <line x1="34" y1="88" x2="40" y2="80"/>
+                            <line x1="54" y1="68" x2="60" y2="63"/>
+                            <line x1="82" y1="58" x2="82" y2="50"/>
+                            <line x1="110" y1="68" x2="104" y2="63"/>
+                            <line x1="130" y1="88" x2="124" y2="80"/>
+                            <line x1="142" y1="114" x2="136" y2="104"/>
+                        </g>
+                        <g stroke="#444" stroke-width="0.8">
+                            <line x1="28" y1="98" x2="33" y2="90"/>
+                            <line x1="44" y1="78" x2="49" y2="72"/>
+                            <line x1="68" y1="63" x2="72" y2="57"/>
+                            <line x1="96" y1="63" x2="92" y2="57"/>
+                            <line x1="120" y1="78" x2="115" y2="72"/>
+                            <line x1="136" y1="98" x2="131" y2="90"/>
+                        </g>
+                        <path d="M 120 72 A 62 62 0 0 1 145 118" fill="none" stroke="#cc2222" stroke-width="3.5"/>
+                        <text x="82" y="44" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#aaa" font-weight="bold">VU</text>
+                        <text x="28" y="130" font-family="Arial" font-size="8" fill="#666">-20</text>
+                        <text x="76" y="48" font-family="Arial" font-size="8" fill="#888">0</text>
+                        <text x="128" y="130" font-family="Arial" font-size="8" fill="#cc2222">+3</text>
+                        <line class="vu-needle vu-needle-left" x1="82" y1="118" x2="82" y2="58" stroke="#cc2222" stroke-width="2.5" stroke-linecap="round" style="transform-origin:82px 118px;"/>
+                        <circle cx="82" cy="118" r="5.5" fill="#2a1a10"/>
+                        <circle cx="82" cy="118" r="2.5" fill="#555"/>
+                    </svg>
+                </div>
+                <span class="vu-label">Canal Izq.</span>
             </div>
 
-            <!-- ========================================= -->
-            <!-- TÍTULO                                     -->
-            <!-- ========================================= -->
-            <div class="station-title">
-                <span>Rocket</span> Radio
-            </div>
-
-            <!-- ========================================= -->
-            <!-- LÍNEAS DE GUITARRA                         -->
-            <!-- ========================================= -->
-            <div class="guitar-strings"></div>
-
-            <!-- ========================================= -->
-            <!-- ESLÓGAN                                    -->
-            <!-- ========================================= -->
-            <div class="slogan">
-                Donde el Rock nunca muere
-            </div>
-
-            <!-- ========================================= -->
-            <!-- IFRAME                                     -->
-            <!-- ========================================= -->
-            <div class="iframe-container">
-                <iframe
-                    src="https://s5.citrus3.com:2020/public/rocketradio"
-                    allow="autoplay"
-                    loading="lazy"
-                    sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
-                ></iframe>
-            </div>
-
-            <!-- ========================================= -->
-            <!-- BOTÓN DE CRÉDITOS (Opción 4)              -->
-            <!-- ========================================= -->
-            <div class="credits-section">
-                <button class="credits-btn" id="creditsBtn" onclick="toggleCredits()">
-                    🎸 Proyecto de Fernando de la Cuerda
-                </button>
-
-                <div class="credits-detail" id="creditsDetail">
-                    <span class="rock-emoji">🎸</span>
-                    <strong>Fernando de la Cuerda</strong> lleva años haciendo que el Rock suene más fuerte.
-                    <span class="rock-emoji">🤘</span>
-                    <br />
-                    <span style="font-size: 0.6rem; color: #444;">
-                        Gracias por hacer posible este proyecto.
-                    </span>
+            <!-- TARJETA DEL REPRODUCTOR -->
+            <div class="player-card">
+                <div class="iframe-container">
+                    <iframe
+                        src="https://s5.citrus3.com:2020/public/rocketradio"
+                        allow="autoplay"
+                        loading="lazy"
+                        sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+                    ></iframe>
                 </div>
             </div>
 
-            <!-- ========================================= -->
-            <!-- PIE DE PÁGINA (sin enlace)                -->
-            <!-- ========================================= -->
-            <div class="footer">
-                <span class="rock-symbol">⚡</span>
-                <span>Streaming en vivo</span>
-                <span class="rock-symbol">✦</span>
-                <span>Rock sin límites</span>
-                <span class="rock-symbol">⚡</span>
-                <br />
-                <span class="powered">🎸 Powered by Citrus3</span>
+            <!-- VÚMETRO GRANDE DERECHO (solo escritorio/tablet) -->
+            <div class="vu-meter-box">
+                <div class="vu-meter-face">
+                    <span class="vu-brand">ROCKET · R</span>
+                    <svg viewBox="0 0 165 143">
+                        <path d="M 20 118 A 62 62 0 0 1 145 118" fill="none" stroke="#444" stroke-width="2"/>
+                        <g stroke="#444" stroke-width="1.5">
+                            <line x1="22" y1="114" x2="28" y2="104"/>
+                            <line x1="34" y1="88" x2="40" y2="80"/>
+                            <line x1="54" y1="68" x2="60" y2="63"/>
+                            <line x1="82" y1="58" x2="82" y2="50"/>
+                            <line x1="110" y1="68" x2="104" y2="63"/>
+                            <line x1="130" y1="88" x2="124" y2="80"/>
+                            <line x1="142" y1="114" x2="136" y2="104"/>
+                        </g>
+                        <g stroke="#444" stroke-width="0.8">
+                            <line x1="28" y1="98" x2="33" y2="90"/>
+                            <line x1="44" y1="78" x2="49" y2="72"/>
+                            <line x1="68" y1="63" x2="72" y2="57"/>
+                            <line x1="96" y1="63" x2="92" y2="57"/>
+                            <line x1="120" y1="78" x2="115" y2="72"/>
+                            <line x1="136" y1="98" x2="131" y2="90"/>
+                        </g>
+                        <path d="M 120 72 A 62 62 0 0 1 145 118" fill="none" stroke="#cc2222" stroke-width="3.5"/>
+                        <text x="82" y="44" text-anchor="middle" font-family="Georgia, serif" font-size="10" fill="#aaa" font-weight="bold">VU</text>
+                        <text x="28" y="130" font-family="Arial" font-size="8" fill="#666">-20</text>
+                        <text x="76" y="48" font-family="Arial" font-size="8" fill="#888">0</text>
+                        <text x="128" y="130" font-family="Arial" font-size="8" fill="#cc2222">+3</text>
+                        <line class="vu-needle vu-needle-right" x1="82" y1="118" x2="82" y2="58" stroke="#cc2222" stroke-width="2.5" stroke-linecap="round" style="transform-origin:82px 118px;"/>
+                        <circle cx="82" cy="118" r="5.5" fill="#2a1a10"/>
+                        <circle cx="82" cy="118" r="2.5" fill="#555"/>
+                    </svg>
+                </div>
+                <span class="vu-label">Canal Der.</span>
             </div>
 
         </div>
+
+        <!-- ============================================================
+        FOOTER
+        ============================================================ -->
+        <footer class="footer">
+            <p class="contact">
+                📧 <a href="mailto:rockradio@rockradio.es">rockradio@rockradio.es</a>
+            </p>
+            <p class="copy">&copy; <span id="year"></span> Rocket Radio · Rock sin fronteras</p>
+        </footer>
+
     </div>
 
-    <!-- ========================================= -->
-    <!-- JAVASCRIPT                                -->
-    <!-- ========================================= -->
+    <!-- ============================================================
+    JAVASCRIPT
+    ============================================================ -->
     <script>
-        function toggleCredits() {
-            const btn = document.getElementById('creditsBtn');
-            const detail = document.getElementById('creditsDetail');
+        // ============================================================
+        // 1. CAMBIO DE TEMA (ambos botones hacen lo mismo)
+        // ============================================================
+        (function() {
+            const html = document.documentElement;
+            const btnLeft = document.getElementById('themeToggleLeft');
+            const btnRight = document.getElementById('themeToggleRight');
+            const iconLeft = btnLeft.querySelector('.icon');
+            const labelLeft = btnLeft.querySelector('.label');
+            const iconRight = btnRight.querySelector('.icon');
+            const labelRight = btnRight.querySelector('.label');
 
-            if (detail.classList.contains('visible')) {
-                detail.classList.remove('visible');
-                btn.classList.remove('hidden');
-            } else {
-                detail.classList.add('visible');
-                btn.classList.add('hidden');
+            // Cargar tema guardado
+            const saved = localStorage.getItem('rocket-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const initial = saved || (prefersDark ? 'dark' : 'light');
+            html.setAttribute('data-theme', initial);
+            actualizarBotones(initial);
+
+            function actualizarBotones(tema) {
+                const esOscuro = tema === 'dark';
+                const icono = esOscuro ? '🌙' : '☀️';
+                const texto = esOscuro ? 'Oscuro' : 'Claro';
+                
+                iconLeft.textContent = icono;
+                labelLeft.textContent = texto;
+                iconRight.textContent = icono;
+                labelRight.textContent = texto;
             }
-        }
+
+            function toggleTheme() {
+                const actual = html.getAttribute('data-theme');
+                const nuevo = actual === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', nuevo);
+                localStorage.setItem('rocket-theme', nuevo);
+                actualizarBotones(nuevo);
+            }
+
+            btnLeft.addEventListener('click', toggleTheme);
+            btnRight.addEventListener('click', toggleTheme);
+        })();
+
+        // ============================================================
+        // 2. AÑO EN EL FOOTER
+        // ============================================================
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // ============================================================
+        // 3. FALLBACK DEL LOGO
+        // ============================================================
+        document.getElementById('logoImg')?.addEventListener('error', function() {
+            this.style.display = 'none';
+            const fallback = document.createElement('div');
+            fallback.textContent = '🚀';
+            fallback.style.cssText = 'font-size:4rem; text-align:center; color:var(--accent);';
+            this.parentNode.insertBefore(fallback, this);
+        });
+
+        // ============================================================
+        // 4. VÚMETROS - LÓGICA DE MOVIMIENTO (AUTOMÁTICA)
+        // ============================================================
+        (function() {
+            const ANGULO_REPOSO = -58;
+            const ANGULO_MAXIMO = 58;
+            const STREAM_URL = 'https://s5.citrus3.com:2020/8556/stream';
+
+            // Todas las agujas de cada canal (grandes + mini)
+            const needlesLeft = document.querySelectorAll('.vu-needle-left');
+            const needlesRight = document.querySelectorAll('.vu-needle-right');
+
+            let audioCtx = null,
+                hiddenAudio = null;
+            let analyserL = null,
+                analyserR = null,
+                dataL = null,
+                dataR = null;
+            let modoAnalisisReal = true;
+            let segundosSinSenalReal = 0;
+            let anguloActualL = ANGULO_REPOSO;
+            let anguloActualR = ANGULO_REPOSO;
+
+            function moverAgujas(elementos, angulo) {
+                elementos.forEach(el => {
+                    el.style.transform = 'rotate(' + angulo + 'deg)';
+                });
+            }
+
+            function calcularVolumenRMS(dataArray) {
+                let suma = 0;
+                for (let i = 0; i < dataArray.length; i++) {
+                    const valor = (dataArray[i] - 128) / 128;
+                    suma += valor * valor;
+                }
+                return Math.min(1, Math.sqrt(suma / dataArray.length) * 4);
+            }
+
+            let simFaseL = Math.random() * 10,
+                simFaseR = Math.random() * 10;
+
+            function nivelSimulado(fase) {
+                const t = Date.now() / 1000;
+                const base = 0.5 + 0.3 * Math.sin(t * 1.7 + fase) + 0.15 * Math.sin(t * 4.1 + fase * 2);
+                return Math.max(0, Math.min(1, base + (Math.random() - 0.5) * 0.15));
+            }
+
+            function loopAnimacion() {
+                let nivelL, nivelR;
+                if (modoAnalisisReal && analyserL && analyserR) {
+                    analyserL.getByteTimeDomainData(dataL);
+                    analyserR.getByteTimeDomainData(dataR);
+                    nivelL = calcularVolumenRMS(dataL);
+                    nivelR = calcularVolumenRMS(dataR);
+                    if (nivelL < 0.02 && nivelR < 0.02) {
+                        segundosSinSenalReal += 1 / 60;
+                        if (segundosSinSenalReal > 4) modoAnalisisReal = false;
+                    } else {
+                        segundosSinSenalReal = 0;
+                    }
+                } else {
+                    nivelL = nivelSimulado(simFaseL);
+                    nivelR = nivelSimulado(simFaseR);
+                }
+
+                const objetivoL = ANGULO_REPOSO + nivelL * (ANGULO_MAXIMO - ANGULO_REPOSO);
+                const objetivoR = ANGULO_REPOSO + nivelR * (ANGULO_MAXIMO - ANGULO_REPOSO);
+
+                // Inercia (respuesta tipo VU)
+                anguloActualL += (objetivoL - anguloActualL) * 0.18;
+                anguloActualR += (objetivoR - anguloActualR) * 0.18;
+
+                moverAgujas(needlesLeft, anguloActualL);
+                moverAgujas(needlesRight, anguloActualR);
+
+                requestAnimationFrame(loopAnimacion);
+            }
+
+            async function iniciarVUMeters() {
+                try {
+                    hiddenAudio = new Audio();
+                    hiddenAudio.crossOrigin = 'anonymous';
+                    hiddenAudio.src = STREAM_URL;
+                    hiddenAudio.muted = true;
+                    audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                    const source = audioCtx.createMediaElementSource(hiddenAudio);
+                    const splitter = audioCtx.createChannelSplitter(2);
+                    analyserL = audioCtx.createAnalyser();
+                    analyserR = audioCtx.createAnalyser();
+                    analyserL.fftSize = 256;
+                    analyserR.fftSize = 256;
+                    dataL = new Uint8Array(analyserL.frequencyBinCount);
+                    dataR = new Uint8Array(analyserR.frequencyBinCount);
+                    source.connect(splitter);
+                    splitter.connect(analyserL, 0);
+                    splitter.connect(analyserR, 1);
+                    await hiddenAudio.play();
+                } catch (err) {
+                    console.warn('Vúmetros: análisis real no disponible, usando modo simulado.', err);
+                    modoAnalisisReal = false;
+                }
+                loopAnimacion();
+            }
+
+            // Iniciar en reposo
+            moverAgujas(needlesLeft, ANGULO_REPOSO);
+            moverAgujas(needlesRight, ANGULO_REPOSO);
+
+            // Iniciar los Vúmetros automáticamente
+            iniciarVUMeters();
+        })();
     </script>
 
 </body>
