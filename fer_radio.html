@@ -182,17 +182,17 @@
         }
 
         /* ============================================================
-                   VÚMETROS MINI (SOLO EN MÓVIL, CENTRADOS)
+                   VÚMETROS MINI (SOLO EN MÓVIL, CENTRADOS) - MÁS GRANDES
                 ============================================================ */
         .vu-mini-wrap {
             display: none;
-            gap: 16px;
+            gap: 20px;              /* Aumentado de 16px a 20px */
             justify-content: center;
             margin-top: 4px;
             width: 100%;
         }
         .vu-mini {
-            width: 80px;
+            width: 100px;           /* Aumentado de 80px a 100px (base) */
             flex-shrink: 0;
         }
         .vu-mini-face {
@@ -209,12 +209,12 @@
         }
         .vu-mini-label {
             font-family: 'Courier New', monospace;
-            font-size: 0.5rem;
+            font-size: 0.6rem;      /* Aumentado de 0.5rem a 0.6rem */
             letter-spacing: 1px;
             color: var(--text-muted);
             text-transform: uppercase;
             text-align: center;
-            margin-top: 2px;
+            margin-top: 4px;        /* Aumentado de 2px a 4px */
         }
 
         /* ============================================================
@@ -352,7 +352,7 @@
         }
 
         /* ============================================================
-                   RESPONSIVE
+                   RESPONSIVE - VÚMETROS MÁS GRANDES EN MÓVIL
                 ============================================================ */
 
         /* Tablet y escritorio pequeño: Vúmetros grandes a los lados */
@@ -377,7 +377,7 @@
             }
         }
 
-        /* Móvil grande: Ocultamos Vúmetros grandes, mostramos mini centrados */
+        /* Móvil grande: Ocultamos Vúmetros grandes, mostramos mini centrados (más grandes) */
         @media (max-width: 700px) {
             .player-section {
                 flex-direction: column;
@@ -394,6 +394,14 @@
                 display: flex;
             }
             
+            /* Vúmetros mini más grandes en móvil mediano */
+            .vu-mini {
+                width: 110px;          /* Aumentado de 80px a 110px */
+            }
+            .vu-mini-label {
+                font-size: 0.65rem;    /* Aumentado */
+            }
+            
             .player-card {
                 width: 100%;
                 max-width: 100%;
@@ -403,14 +411,20 @@
             }
         }
 
-        /* Móvil pequeño */
+        /* Móvil pequeño (ajustes específicos) */
         @media (max-width: 480px) {
             .vu-mini {
-                width: 60px;
+                width: 85px;           /* Aumentado de 60px a 85px */
             }
             .vu-mini-face {
                 border-width: 2px;
                 border-radius: 6px;
+            }
+            .vu-mini-label {
+                font-size: 0.55rem;    /* Aumentado */
+            }
+            .vu-mini-wrap {
+                gap: 16px;             /* Aumentado */
             }
             .player-card .iframe-container {
                 height: 340px;
@@ -430,14 +444,18 @@
             .hero-title {
                 letter-spacing: 3px;
             }
-            .vu-mini-label {
-                font-size: 0.4rem;
-            }
         }
 
+        /* Móvil muy pequeño */
         @media (max-width: 360px) {
             .vu-mini {
-                width: 48px;
+                width: 65px;           /* Aumentado de 48px a 65px */
+            }
+            .vu-mini-label {
+                font-size: 0.45rem;    /* Aumentado */
+            }
+            .vu-mini-wrap {
+                gap: 12px;             /* Aumentado */
             }
             .player-card .iframe-container {
                 height: 300px;
@@ -485,7 +503,7 @@
         </header>
 
         <!-- ============================================================
-        VÚMETROS MINI (se muestran SOLO en móvil, centrados)
+        VÚMETROS MINI (se muestran SOLO en móvil, centrados) - MÁS GRANDES
         ============================================================ -->
         <div class="vu-mini-wrap" id="vuMiniWrap">
             <div class="vu-mini">
