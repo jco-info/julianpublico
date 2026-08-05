@@ -138,9 +138,10 @@
             width: 100%;
         }
 
+        /* LOGO 25% MÁS GRANDE */
         .logo {
-            width: 100px;
-            height: 100px;
+            width: 125px;        /* Antes: 100px */
+            height: 125px;       /* Antes: 100px */
             border-radius: 16px;
             object-fit: cover;
             border: 2px solid var(--border);
@@ -186,13 +187,13 @@
                 ============================================================ */
         .vu-mini-wrap {
             display: none;
-            gap: 20px;              /* Aumentado de 16px a 20px */
+            gap: 20px;
             justify-content: center;
             margin-top: 4px;
             width: 100%;
         }
         .vu-mini {
-            width: 100px;           /* Aumentado de 80px a 100px (base) */
+            width: 100px;
             flex-shrink: 0;
         }
         .vu-mini-face {
@@ -209,12 +210,12 @@
         }
         .vu-mini-label {
             font-family: 'Courier New', monospace;
-            font-size: 0.6rem;      /* Aumentado de 0.5rem a 0.6rem */
+            font-size: 0.6rem;
             letter-spacing: 1px;
             color: var(--text-muted);
             text-transform: uppercase;
             text-align: center;
-            margin-top: 4px;        /* Aumentado de 2px a 4px */
+            margin-top: 4px;
         }
 
         /* ============================================================
@@ -283,7 +284,7 @@
         }
 
         /* ============================================================
-                   TARJETA DEL REPRODUCTOR (con iframe centrado)
+                   TARJETA DEL REPRODUCTOR (con iframe centrado y MÁS ALTO)
                 ============================================================ */
         .player-card {
             flex: 1;
@@ -299,7 +300,7 @@
         .player-card .iframe-container {
             background: #000;
             width: 100%;
-            height: 480px;
+            height: 520px;        /* Antes: 480px */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -365,7 +366,7 @@
                 height: 121px;
             }
             .player-card .iframe-container {
-                height: 420px;
+                height: 460px;    /* Antes: 420px */
             }
             .theme-buttons {
                 padding: 0 12px;
@@ -377,29 +378,26 @@
             }
         }
 
-        /* Móvil grande: Ocultamos Vúmetros grandes, mostramos mini centrados (más grandes) */
+        /* Móvil grande: Ocultamos Vúmetros grandes, mostramos mini centrados */
         @media (max-width: 700px) {
             .player-section {
                 flex-direction: column;
                 gap: 14px;
             }
             
-            /* Ocultar Vúmetros grandes */
             .vu-meter-box {
                 display: none;
             }
             
-            /* Mostrar mini Vúmetros centrados */
             .vu-mini-wrap {
                 display: flex;
             }
             
-            /* Vúmetros mini más grandes en móvil mediano */
             .vu-mini {
-                width: 110px;          /* Aumentado de 80px a 110px */
+                width: 110px;
             }
             .vu-mini-label {
-                font-size: 0.65rem;    /* Aumentado */
+                font-size: 0.65rem;
             }
             
             .player-card {
@@ -407,27 +405,27 @@
                 max-width: 100%;
             }
             .player-card .iframe-container {
-                height: 380px;
+                height: 420px;    /* Antes: 380px */
             }
         }
 
-        /* Móvil pequeño (ajustes específicos) */
+        /* Móvil pequeño */
         @media (max-width: 480px) {
             .vu-mini {
-                width: 85px;           /* Aumentado de 60px a 85px */
+                width: 85px;
             }
             .vu-mini-face {
                 border-width: 2px;
                 border-radius: 6px;
             }
             .vu-mini-label {
-                font-size: 0.55rem;    /* Aumentado */
+                font-size: 0.55rem;
             }
             .vu-mini-wrap {
-                gap: 16px;             /* Aumentado */
+                gap: 16px;
             }
             .player-card .iframe-container {
-                height: 340px;
+                height: 380px;    /* Antes: 340px */
             }
             .theme-btn {
                 font-size: 0.55rem;
@@ -438,8 +436,8 @@
                 font-size: 0.8rem;
             }
             .logo {
-                width: 72px;
-                height: 72px;
+                width: 90px;      /* 25% más grande que antes (72px) */
+                height: 90px;
             }
             .hero-title {
                 letter-spacing: 3px;
@@ -449,16 +447,16 @@
         /* Móvil muy pequeño */
         @media (max-width: 360px) {
             .vu-mini {
-                width: 65px;           /* Aumentado de 48px a 65px */
+                width: 65px;
             }
             .vu-mini-label {
-                font-size: 0.45rem;    /* Aumentado */
+                font-size: 0.45rem;
             }
             .vu-mini-wrap {
-                gap: 12px;             /* Aumentado */
+                gap: 12px;
             }
             .player-card .iframe-container {
-                height: 300px;
+                height: 340px;    /* Antes: 300px */
             }
             .theme-btn {
                 font-size: 0.45rem;
@@ -467,6 +465,10 @@
             }
             .theme-btn .icon {
                 font-size: 0.6rem;
+            }
+            .logo {
+                width: 75px;      /* 25% más grande que antes (60px) */
+                height: 75px;
             }
         }
     </style>
@@ -478,10 +480,10 @@
     ============================================================ -->
     <div class="theme-buttons">
         <button class="theme-btn" id="themeToggleLeft" title="Cambiar tema">
-            <span class="icon">🌙</span> <span class="label">Oscuro</span>
+            <span class="icon">☀️</span> <span class="label">Claro</span>
         </button>
         <button class="theme-btn" id="themeToggleRight" title="Cambiar tema">
-            <span class="icon">🌙</span> <span class="label">Oscuro</span>
+            <span class="icon">☀️</span> <span class="label">Claro</span>
         </button>
     </div>
 
@@ -503,7 +505,7 @@
         </header>
 
         <!-- ============================================================
-        VÚMETROS MINI (se muestran SOLO en móvil, centrados) - MÁS GRANDES
+        VÚMETROS MINI (se muestran SOLO en móvil, centrados)
         ============================================================ -->
         <div class="vu-mini-wrap" id="vuMiniWrap">
             <div class="vu-mini">
@@ -658,8 +660,10 @@
 
             function actualizarBotones(tema) {
                 const esOscuro = tema === 'dark';
-                const icono = esOscuro ? '🌙' : '☀️';
-                const texto = esOscuro ? 'Oscuro' : 'Claro';
+                // CORREGIDO: Si es oscuro → mostramos SOL (para cambiar a claro)
+                //           Si es claro → mostramos LUNA (para cambiar a oscuro)
+                const icono = esOscuro ? '☀️' : '🌙';
+                const texto = esOscuro ? 'Claro' : 'Oscuro';
                 
                 iconLeft.textContent = icono;
                 labelLeft.textContent = texto;
