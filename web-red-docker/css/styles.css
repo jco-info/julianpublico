@@ -1,0 +1,614 @@
+/* ============================================================
+   PRÁCTICA REDES DOCKER — JulianCO
+   Estilos: modo oscuro futurista / informático
+   ============================================================ */
+
+/* ============ RESET Y BASE ============ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-dark: #0a0e14;
+    --bg-panel: #0f1620;
+    --bg-code: #060a10;
+    --neon-green: #00ff9c;
+    --neon-cyan: #00e5ff;
+    --neon-purple: #b967ff;
+    --neon-red: #ff4d6d;
+    --text-main: #d6e2eb;
+    --text-dim: #7a8b9c;
+    --border: #1c2a3a;
+    --accent: #00ff9c;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', 'Consolas', monospace;
+    background: var(--bg-dark);
+    color: var(--text-main);
+    line-height: 1.65;
+    background-image:
+        radial-gradient(circle at 20% 10%, rgba(0, 229, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(185, 103, 255, 0.05) 0%, transparent 40%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+/* ============ TOPBAR ============ */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: rgba(10, 14, 20, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 0 20px rgba(0, 255, 156, 0.1);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-family: 'Consolas', monospace;
+}
+
+.prompt {
+    color: var(--neon-green);
+    font-weight: bold;
+    font-size: 1.4rem;
+    text-shadow: 0 0 8px var(--neon-green);
+}
+
+.title {
+    font-weight: bold;
+    letter-spacing: 3px;
+    color: var(--neon-cyan);
+    font-size: 1.1rem;
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+}
+
+.cursor {
+    color: var(--neon-green);
+    animation: blink 1s infinite;
+    font-weight: bold;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.author {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.neon {
+    color: var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-green);
+    font-weight: bold;
+}
+
+/* ============ LAYOUT ============ */
+.container {
+    display: grid;
+    grid-template-columns: 290px 1fr;
+    max-width: 1450px;
+    margin: 0 auto;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+/* ============ SIDEBAR ============ */
+.sidebar {
+    position: sticky;
+    top: 90px;
+    align-self: start;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+    padding: 1.5rem 1.2rem;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.sidebar h3 {
+    color: var(--neon-cyan);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    text-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.nav-link {
+    display: block;
+    color: var(--text-main);
+    text-decoration: none;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+    border-left: 2px solid transparent;
+    font-size: 0.85rem;
+}
+
+.nav-link:hover {
+    background: rgba(0, 255, 156, 0.08);
+    color: var(--neon-green);
+    border-left-color: var(--neon-green);
+}
+
+.nav-link.active {
+    background: rgba(0, 255, 156, 0.12);
+    color: var(--neon-green);
+    border-left-color: var(--neon-green);
+    font-weight: bold;
+}
+
+.sub {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0.8rem;
+    margin-bottom: 0.5rem;
+    border-left: 1px dashed var(--border);
+}
+
+.sub .nav-link {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    padding: 0.3rem 0.6rem;
+}
+
+.sub .nav-link:hover {
+    color: var(--neon-cyan);
+    border-left-color: var(--neon-cyan);
+    background: rgba(0, 229, 255, 0.06);
+}
+
+.sub .nav-link.active {
+    color: var(--neon-cyan);
+    background: rgba(0, 229, 255, 0.1);
+    border-left-color: var(--neon-cyan);
+}
+
+/* ============ CONTENIDO ============ */
+.content {
+    min-width: 0;
+}
+
+.hero {
+    text-align: center;
+    padding: 3rem 1rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 3rem;
+}
+
+.hero h1 {
+    font-size: 2.6rem;
+    background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan), var(--neon-purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+    margin-bottom: 0.6rem;
+    font-weight: bold;
+}
+
+.subtitle {
+    color: var(--text-dim);
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+}
+
+.author-line {
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+/* ============ BLOQUES ============ */
+.block {
+    margin-bottom: 3.5rem;
+}
+
+.block > h2 {
+    font-size: 1.8rem;
+    color: var(--neon-cyan);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+.block > h3 {
+    font-size: 1.2rem;
+    color: var(--neon-green);
+    margin-top: 1.8rem;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.intro {
+    color: var(--text-dim);
+    margin-bottom: 2rem;
+    font-size: 0.98rem;
+}
+
+/* ============ EJERCICIOS ============ */
+.exercise {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.8rem;
+    margin-bottom: 2rem;
+    scroll-margin-top: 100px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.exercise:hover {
+    border-color: rgba(0, 255, 156, 0.35);
+    box-shadow: 0 0 20px rgba(0, 255, 156, 0.06);
+}
+
+.exercise h3 {
+    color: var(--neon-green);
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.5px;
+}
+
+.exercise h4 {
+    color: var(--neon-cyan);
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.3px;
+}
+
+.exercise h5 {
+    color: var(--neon-purple);
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.exercise p {
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+}
+
+.exercise ul,
+.exercise ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.exercise li {
+    margin-bottom: 0.4rem;
+}
+
+.exercise code {
+    background: var(--bg-code);
+    color: var(--neon-green);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.88em;
+    border: 1px solid var(--border);
+}
+
+/* ============ TERMINAL ============ */
+.terminal {
+    position: relative;
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--neon-green);
+    border-radius: 6px;
+    margin: 0.9rem 0;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.terminal:hover {
+    border-left-color: var(--neon-cyan);
+}
+
+.terminal pre {
+    padding: 1rem 5.5rem 1rem 1rem;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.88rem;
+    color: var(--neon-green);
+    line-height: 1.55;
+    white-space: pre;
+}
+
+.terminal pre::before {
+    content: "$ ";
+    color: var(--neon-cyan);
+    font-weight: bold;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.6rem;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Consolas', monospace;
+    z-index: 2;
+}
+
+.copy-btn:hover {
+    border-color: var(--neon-green);
+    color: var(--neon-green);
+    background: rgba(0, 255, 156, 0.05);
+}
+
+.copy-btn.copied {
+    background: var(--neon-green);
+    color: var(--bg-dark);
+    border-color: var(--neon-green);
+    font-weight: bold;
+}
+
+/* ============ OUTPUT ============ */
+.output {
+    background: #050810;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    margin: 0.9rem 0;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    overflow-x: auto;
+}
+
+.output pre {
+    white-space: pre;
+    font-family: 'Consolas', monospace;
+    line-height: 1.5;
+}
+
+/* ============ NOTE ============ */
+.note {
+    background: rgba(0, 229, 255, 0.06);
+    border-left: 3px solid var(--neon-cyan);
+    padding: 0.9rem 1.1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.note strong {
+    color: var(--neon-cyan);
+}
+
+.note code {
+    background: var(--bg-code);
+    color: var(--neon-green);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.88em;
+    border: 1px solid var(--border);
+}
+
+/* ============ CONCLUSION ============ */
+.conclusion {
+    background: rgba(185, 103, 255, 0.07);
+    border-left: 3px solid var(--neon-purple);
+    border-radius: 4px;
+    padding: 1rem 1.2rem;
+    margin-top: 1.5rem;
+}
+
+.conclusion h5 {
+    color: var(--neon-purple);
+    margin-bottom: 0.6rem;
+    font-size: 1rem;
+}
+
+.conclusion ul {
+    margin-left: 1.2rem;
+}
+
+/* ============ OK ============ */
+.ok {
+    color: var(--neon-green) !important;
+    font-weight: bold;
+    padding: 0.5rem 0;
+    text-shadow: 0 0 6px rgba(0, 255, 156, 0.4);
+}
+
+/* ============ DIAGRAMA ASCII ============ */
+.diagram {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--neon-cyan);
+    border-radius: 6px;
+    margin: 1.2rem 0;
+    overflow-x: auto;
+}
+
+.diagram pre {
+    padding: 1.2rem;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: var(--neon-cyan);
+    line-height: 1.4;
+    white-space: pre;
+    text-shadow: 0 0 4px rgba(0, 229, 255, 0.3);
+}
+
+/* ============ TABLA ============ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.2rem 0;
+    font-size: 0.9rem;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+}
+
+th {
+    color: var(--neon-cyan);
+    background: rgba(0, 229, 255, 0.05);
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+td code {
+    background: var(--bg-code);
+    color: var(--neon-green);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'Consolas', monospace;
+    font-size: 0.88em;
+    border: 1px solid var(--border);
+}
+
+tr:hover td {
+    background: rgba(0, 255, 156, 0.03);
+}
+
+/* ============ KBD ============ */
+kbd {
+    background: var(--bg-code);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1rem 0.4rem;
+    font-family: 'Consolas', monospace;
+    font-size: 0.85em;
+    color: var(--neon-green);
+}
+
+/* ============ FOOTER ============ */
+footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+}
+
+footer .small {
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+    color: var(--text-dim);
+    opacity: 0.7;
+}
+
+/* ============ SCROLLBAR ============ */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 156, 0.35);
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .sidebar {
+        position: relative;
+        top: 0;
+        max-height: none;
+    }
+
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+
+    .topbar {
+        padding: 0.8rem 1rem;
+    }
+
+    .logo .title {
+        font-size: 0.95rem;
+        letter-spacing: 2px;
+    }
+
+    .terminal pre {
+        font-size: 0.78rem;
+        padding: 0.9rem 4.8rem 0.9rem 0.9rem;
+    }
+
+    .diagram pre {
+        font-size: 0.7rem;
+    }
+
+    table {
+        font-size: 0.8rem;
+    }
+
+    th, td {
+        padding: 0.5rem 0.6rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+
+    .block > h2 {
+        font-size: 1.4rem;
+    }
+
+    .exercise {
+        padding: 1.2rem;
+    }
+
+    .exercise h3 {
+        font-size: 1.1rem;
+    }
+}

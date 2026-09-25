@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica Redes Docker - JulianCO</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- Barra superior -->
+<header class="topbar">
+    <div class="logo">
+        <span class="prompt">&gt;_</span>
+        <span class="title">REDES DOCKER</span>
+        <span class="cursor">▊</span>
+    </div>
+    <div class="author">by <span class="neon">JulianCO</span></div>
+</header>
+
+<div class="container">
+
+    <!-- Sidebar con índice -->
+    <aside class="sidebar">
+        <h3>📚 Índice</h3>
+        <nav>
+            <a href="#intro" class="nav-link">🎯 Introducción</a>
+            <a href="#preparacion" class="nav-link">⚙️ Preparación</a>
+            <div class="sub">
+                <a href="#prep-1" class="nav-link">1. Actualizar Ubuntu</a>
+                <a href="#prep-2" class="nav-link">2. Instalar Docker</a>
+                <a href="#prep-3" class="nav-link">3. Grupo docker</a>
+                <a href="#prep-4" class="nav-link">4. IP forwarding</a>
+                <a href="#prep-5" class="nav-link">5. Verificar</a>
+            </div>
+            <a href="#imagen" class="nav-link">📦 Imagen ubuntu-ssh</a>
+            <a href="#paso1" class="nav-link">1️⃣ Crear redes</a>
+            <a href="#paso2" class="nav-link">2️⃣ Lanzar contenedores</a>
+            <a href="#paso3" class="nav-link">3️⃣ Verificar</a>
+            <div class="sub">
+                <a href="#paso3-1" class="nav-link">3.1 Interfaces</a>
+                <a href="#paso3-2" class="nav-link">3.2 Rutas</a>
+                <a href="#paso3-3" class="nav-link">3.3 Forwarding</a>
+                <a href="#paso3-4" class="nav-link">3.4 Pings locales</a>
+            </div>
+            <a href="#paso4" class="nav-link">4️⃣ Configurar rutas</a>
+            <div class="sub">
+                <a href="#paso4-1" class="nav-link">4.1 Activar forwarding</a>
+                <a href="#paso4-2" class="nav-link">4.2 Rutas por defecto</a>
+                <a href="#paso4-3" class="nav-link">4.3 Verificar</a>
+                <a href="#paso4-4" class="nav-link">4.4 Ping final</a>
+                <a href="#paso4-5" class="nav-link">4.5 Traceroute</a>
+            </div>
+            <a href="#resumen" class="nav-link">📊 Resumen</a>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="content">
+
+        <section class="hero">
+            <h1>Práctica de Redes en Docker</h1>
+            <p class="subtitle">Enrutamiento entre dos LANs con routers Linux en contenedores</p>
+            <p class="author-line">Realizado por <span class="neon">JulianCO</span> · SEGURIDAD ASIR</p>
+        </section>
+
+        <!-- ============ INTRODUCCIÓN ============ -->
+        <section id="intro" class="block">
+            <h2>🎯 Introducción y objetivo</h2>
+            <p>En esta práctica vamos a montar una <strong>red completa con 4 contenedores Docker</strong>: dos PCs (clientes) y dos routers Linux. El objetivo es que los dos PCs se comuniquen entre sí a través de los dos routers, simulando una topología clásica de dos LANs unidas por un backbone.</p>
+
+           <h3>Topología</h3>
+<div class="diagram">
+    <img src="img/imagen01.jpg" alt="Topología de la red" width="600" style="display: block; margin: 0 auto;">
+</div>
+
+            <h3>Contenedores y direcciones</h3>
+            <table>
+                <thead>
+                    <tr><th>Contenedor</th><th>red-201</th><th>red-202</th><th>red-200</th><th>Ruta por defecto</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>ord-201</code></td><td>192.168.201.2</td><td>—</td><td>—</td><td>via 192.168.201.1</td></tr>
+                    <tr><td><code>ord-202</code></td><td>—</td><td>192.168.202.2</td><td>—</td><td>via 192.168.202.1</td></tr>
+                    <tr><td><code>router1</code></td><td>192.168.201.1</td><td>—</td><td>192.168.200.1</td><td>via 192.168.200.2</td></tr>
+                    <tr><td><code>router2</code></td><td>—</td><td>192.168.202.1</td><td>192.168.200.2</td><td>via 192.168.200.1</td></tr>
+                </tbody>
+            </table>
+
+            <div class="note">
+                <strong>¿Por qué usamos Docker?</strong> Docker crea <strong>bridges Linux reales</strong>, no simulaciones. Los contenedores usan la pila TCP/IP del kernel, así que el enrutamiento es real. Es mucho más ligero y rápido que montar 4 máquinas virtuales.
+            </div>
+        </section>
+
+        <!-- ============ PREPARACIÓN ============ -->
+        <section id="preparacion" class="block">
+            <h2>⚙️ Preparación del sistema</h2>
+            <p class="intro">Toda esta preparación se hace en un <strong>Ubuntu Server</strong> recién instalado. Se hace <strong>una sola vez</strong>.</p>
+
+            <!-- 1 -->
+            <article id="prep-1" class="exercise">
+                <h3>1. Actualizar el sistema e instalar dependencias</h3>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="sudo apt update && sudo apt upgrade -y">Copiar</button>
+                    <pre><code>sudo apt update && sudo apt upgrade -y</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="sudo apt install -y ca-certificates curl gnupg lsb-release">Copiar</button>
+                    <pre><code>sudo apt install -y ca-certificates curl gnupg lsb-release</code></pre>
+                </div>
+                <p><strong>Qué esperar:</strong> el sistema se actualiza y se instalan las dependencias básicas. Al final vuelve al prompt sin errores.</p>
+            </article>
+
+            <!-- 2 -->
+            <article id="prep-2" class="exercise">
+                <h3>2. Instalar Docker (método oficial)</h3>
+
+                <h4>2.1 — Añadir la clave GPG</h4>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="sudo install -m 0755 -d /etc/apt/keyrings">Copiar</button>
+                    <pre><code>sudo install -m 0755 -d /etc/apt/keyrings</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg">Copiar</button>
+                    <pre><code>curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg</code></pre>
+                </div>
+
+                <h4>2.2 — Añadir el repositorio</h4>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy='echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null'>Copiar</button>
+                    <pre><code>echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null</code></pre>
+                </div>
+
+                <h4>2.3 — Instalar Docker</h4>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin">Copiar</button>
+                    <pre><code>sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</code></pre>
+                </div>
+
+                <div class="note">
+                    <strong>Nota:</strong> si Ubuntu 26 aún no tiene repositorio <code>stable</code> para su nombre en clave (p. ej. <code>plucky</code>), usa <code>$(lsb_release -cs)</code> y, si falla, prueba con <code>noble</code>.
+                </div>
+            </article>
+
+            <!-- 3 -->
+            <article id="prep-3" class="exercise">
+                <h3>3. Añadir tu usuario al grupo docker</h3>
+                <p>Así podrás usar <code>docker</code> sin <code>sudo</code>.</p>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="sudo usermod -aG docker $USER">Copiar</button>
+                    <pre><code>sudo usermod -aG docker $USER</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="newgrp docker">Copiar</button>
+                    <pre><code>newgrp docker</code></pre>
+                </div>
+            </article>
+
+            <!-- 4 -->
+            <article id="prep-4" class="exercise">
+                <h3>4. Habilitar IP forwarding en el host</h3>
+                <p>Es recomendable que el host también tenga el forwarding activo.</p>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="sudo sysctl -w net.ipv4.ip_forward=1">Copiar</button>
+                    <pre><code>sudo sysctl -w net.ipv4.ip_forward=1</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy='echo "net.ipv4.ip_forward=1" | sudo tee /etc/sysctl.d/99-docker-forward.conf'>Copiar</button>
+                    <pre><code>echo "net.ipv4.ip_forward=1" | sudo tee /etc/sysctl.d/99-docker-forward.conf</code></pre>
+                </div>
+                <p><strong>Qué esperar:</strong> el comando devuelve <code>net.ipv4.ip_forward = 1</code>.</p>
+            </article>
+
+            <!-- 5 -->
+            <article id="prep-5" class="exercise">
+                <h3>5. Verificar que todo funciona</h3>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker run --rm hello-world">Copiar</button>
+                    <pre><code>docker run --rm hello-world</code></pre>
+                </div>
+                <p><strong>Qué esperar:</strong></p>
+                <div class="output">
+                    <pre>Hello from Docker!
+This message shows that your installation appears to be working correctly.</pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker network ls">Copiar</button>
+                    <pre><code>docker network ls</code></pre>
+                </div>
+                <p><strong>Qué esperar:</strong> las 3 redes por defecto: <code>bridge</code>, <code>host</code>, <code>none</code>.</p>
+                <p class="ok">✅ Si ves el mensaje de hello-world, ya puedes empezar la práctica.</p>
+            </article>
+        </section>
+
+        <!-- ============ IMAGEN ============ -->
+        <section id="imagen" class="block">
+            <h2>📦 Descargar la imagen onovillo/ubuntu-ssh</h2>
+            <p>Antes de nada, comprobamos que la imagen existe y la descargamos.</p>
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker pull onovillo/ubuntu-ssh">Copiar</button>
+                <pre><code>docker pull onovillo/ubuntu-ssh</code></pre>
+            </div>
+            <p><strong>Qué esperar:</strong></p>
+            <div class="output">
+<pre>Using default tag: latest
+latest: Pulling from onovillo/ubuntu-ssh
+...
+Status: Downloaded newer image for onovillo/ubuntu-ssh:latest
+docker.io/onovillo/ubuntu-ssh:latest</pre>
+            </div>
+            <p class="ok">✅ Imagen descargada.</p>
+        </section>
+
+        <!-- ============ PASO 1 ============ -->
+        <section id="paso1" class="block">
+            <h2>1️⃣ Paso 1 — Crear las 3 redes</h2>
+            <p>Vamos a crear 3 redes bridge con IPs fijas (sin DHCP).</p>
+
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker network create --driver=bridge --subnet=192.168.200.0/24 --ip-range=192.168.200.200/32 --gateway=192.168.200.254 red-200">Copiar</button>
+                <pre><code>docker network create \
+  --driver=bridge \
+  --subnet=192.168.200.0/24 \
+  --ip-range=192.168.200.200/32 \
+  --gateway=192.168.200.254 \
+  red-200</code></pre>
+            </div>
+
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker network create --driver=bridge --subnet=192.168.201.0/24 --ip-range=192.168.201.200/32 --gateway=192.168.201.254 red-201">Copiar</button>
+                <pre><code>docker network create \
+  --driver=bridge \
+  --subnet=192.168.201.0/24 \
+  --ip-range=192.168.201.200/32 \
+  --gateway=192.168.201.254 \
+  red-201</code></pre>
+            </div>
+
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker network create --driver=bridge --subnet=192.168.202.0/24 --ip-range=192.168.202.200/32 --gateway=192.168.202.254 red-202">Copiar</button>
+                <pre><code>docker network create \
+  --driver=bridge \
+  --subnet=192.168.202.0/24 \
+  --ip-range=192.168.202.200/32 \
+  --gateway=192.168.202.254 \
+  red-202</code></pre>
+            </div>
+
+            <h3>Verificar que están creadas</h3>
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker network ls">Copiar</button>
+                <pre><code>docker network ls</code></pre>
+            </div>
+            <p><strong>Qué esperar:</strong></p>
+            <div class="output">
+<pre>NETWORK ID     NAME      DRIVER    SCOPE
+xxxxx          bridge    bridge    local
+xxxxx          host      host      local
+xxxxx          none      null      local
+xxxxx          red-200   bridge    local
+xxxxx          red-201   bridge    local
+xxxxx          red-202   bridge    local</pre>
+            </div>
+
+            <div class="note">
+                <strong>Detalle importante:</strong><br>
+                • El <strong>gateway</strong> que pone Docker es <code>.254</code>, pero nadie lo usará (el router tiene <code>.1</code>). En el Paso 4 lo sobreescribiremos.<br>
+                • El <code>--ip-range=.../32</code> hace que Docker no asigne IPs automáticamente (solo reserva la <code>.200</code>). Así podemos poner IPs fijas sin conflictos.
+            </div>
+        </section>
+
+        <!-- ============ PASO 2 ============ -->
+        <section id="paso2" class="block">
+            <h2>2️⃣ Paso 2 — Lanzar los 4 contenedores</h2>
+
+            <h3>2.1 — Cliente ord-201 (red-201)</h3>
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker run -d --name ord-201 --network red-201 --ip 192.168.201.2 --privileged onovillo/ubuntu-ssh">Copiar</button>
+                <pre><code>docker run -d --name ord-201 --network red-201 --ip 192.168.201.2 --privileged onovillo/ubuntu-ssh</code></pre>
+            </div>
+
+            <h3>2.2 — Cliente ord-202 (red-202)</h3>
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker run -d --name ord-202 --network red-202 --ip 192.168.202.2 --privileged onovillo/ubuntu-ssh">Copiar</button>
+                <pre><code>docker run -d --name ord-202 --network red-202 --ip 192.168.202.2 --privileged onovillo/ubuntu-ssh</code></pre>
+            </div>
+
+            <h3>2.3 — Router 1 (red-201 + red-200)</h3>
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker run -d --name router1 --network red-201 --ip 192.168.201.1 --privileged onovillo/ubuntu-ssh">Copiar</button>
+                <pre><code>docker run -d --name router1 --network red-201 --ip 192.168.201.1 --privileged onovillo/ubuntu-ssh</code></pre>
+            </div>
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker network connect --ip 192.168.200.1 red-200 router1">Copiar</button>
+                <pre><code>docker network connect --ip 192.168.200.1 red-200 router1</code></pre>
+            </div>
+
+            <h3>2.4 — Router 2 (red-202 + red-200)</h3>
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker run -d --name router2 --network red-202 --ip 192.168.202.1 --privileged onovillo/ubuntu-ssh">Copiar</button>
+                <pre><code>docker run -d --name router2 --network red-202 --ip 192.168.202.1 --privileged onovillo/ubuntu-ssh</code></pre>
+            </div>
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker network connect --ip 192.168.200.2 red-200 router2">Copiar</button>
+                <pre><code>docker network connect --ip 192.168.200.2 red-200 router2</code></pre>
+            </div>
+
+            <h3>2.5 — Verificación</h3>
+            <div class="terminal">
+                <button class="copy-btn" data-copy="docker ps">Copiar</button>
+                <pre><code>docker ps</code></pre>
+            </div>
+            <p><strong>Qué esperar:</strong> los 4 contenedores en <code>Up</code>, con la imagen <code>onovillo/ubuntu-ssh</code> y comando <code>/usr/sbin/sshd -D</code>.</p>
+        </section>
+
+        <!-- ============ PASO 3 ============ -->
+        <section id="paso3" class="block">
+            <h2>3️⃣ Paso 3 — Verificar interfaces, rutas y forwarding</h2>
+
+            <article id="paso3-1" class="exercise">
+                <h3>3.1 — Ver interfaces de cada contenedor</h3>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec ord-201 ip -br a">Copiar</button>
+                    <pre><code>docker exec ord-201 ip -br a</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec ord-202 ip -br a">Copiar</button>
+                    <pre><code>docker exec ord-202 ip -br a</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec router1 ip -br a">Copiar</button>
+                    <pre><code>docker exec router1 ip -br a</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec router2 ip -br a">Copiar</button>
+                    <pre><code>docker exec router2 ip -br a</code></pre>
+                </div>
+
+                <p><strong>Qué esperar:</strong> cada PC con 1 interfaz, cada router con 2 interfaces.</p>
+                <div class="output">
+<pre>ord-201:  eth0  192.168.201.2/24
+ord-202:  eth0  192.168.202.2/24
+router1:  eth0  192.168.201.1/24   eth1  192.168.200.1/24
+router2:  eth0  192.168.202.1/24   eth1  192.168.200.2/24</pre>
+                </div>
+            </article>
+
+            <article id="paso3-2" class="exercise">
+                <h3>3.2 — Ver rutas por defecto</h3>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec ord-201 ip route">Copiar</button>
+                    <pre><code>docker exec ord-201 ip route</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec router1 ip route">Copiar</button>
+                    <pre><code>docker exec router1 ip route</code></pre>
+                </div>
+                <p><strong>Qué esperar:</strong> verás <code>default via ...254</code> — una IP que no existe. Lo arreglaremos en el Paso 4.</p>
+            </article>
+
+            <article id="paso3-3" class="exercise">
+                <h3>3.3 — Verificar forwarding en los routers</h3>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec router1 sysctl net.ipv4.ip_forward">Copiar</button>
+                    <pre><code>docker exec router1 sysctl net.ipv4.ip_forward</code></pre>
+                </div>
+                <p><strong>Qué esperar:</strong> <code>net.ipv4.ip_forward = 1</code> (o 0 según la imagen).</p>
+            </article>
+
+            <article id="paso3-4" class="exercise">
+                <h3>3.4 — Pings locales (deben funcionar)</h3>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec ord-201 ping -c 2 192.168.201.1">Copiar</button>
+                    <pre><code>docker exec ord-201 ping -c 2 192.168.201.1</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec router1 ping -c 2 192.168.200.2">Copiar</button>
+                    <pre><code>docker exec router1 ping -c 2 192.168.200.2</code></pre>
+                </div>
+                <p class="ok">✅ Deben dar 0% packet loss.</p>
+
+                <h4>Ping entre LANs (debe fallar todavía)</h4>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec ord-201 ping -c 2 192.168.202.2">Copiar</button>
+                    <pre><code>docker exec ord-201 ping -c 2 192.168.202.2</code></pre>
+                </div>
+                <p>❌ 100% packet loss. Todavía no hay enrutamiento entre LANs.</p>
+            </article>
+        </section>
+
+        <!-- ============ PASO 4 ============ -->
+        <section id="paso4" class="block">
+            <h2>4️⃣ Paso 4 — Configurar rutas + IP forwarding</h2>
+
+            <article id="paso4-1" class="exercise">
+                <h3>4.1 — Activar IP forwarding en los routers</h3>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec router1 sysctl -w net.ipv4.ip_forward=1">Copiar</button>
+                    <pre><code>docker exec router1 sysctl -w net.ipv4.ip_forward=1</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec router2 sysctl -w net.ipv4.ip_forward=1">Copiar</button>
+                    <pre><code>docker exec router2 sysctl -w net.ipv4.ip_forward=1</code></pre>
+                </div>
+                <p><strong>Qué esperar:</strong> <code>net.ipv4.ip_forward = 1</code> en cada uno.</p>
+            </article>
+
+            <article id="paso4-2" class="exercise">
+                <h3>4.2 — Corregir la ruta por defecto</h3>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec ord-201 ip route replace default via 192.168.201.1">Copiar</button>
+                    <pre><code>docker exec ord-201 ip route replace default via 192.168.201.1</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec ord-202 ip route replace default via 192.168.202.1">Copiar</button>
+                    <pre><code>docker exec ord-202 ip route replace default via 192.168.202.1</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec router1 ip route replace default via 192.168.200.2">Copiar</button>
+                    <pre><code>docker exec router1 ip route replace default via 192.168.200.2</code></pre>
+                </div>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec router2 ip route replace default via 192.168.200.1">Copiar</button>
+                    <pre><code>docker exec router2 ip route replace default via 192.168.200.1</code></pre>
+                </div>
+                <p><strong>Qué esperar:</strong> silencio. Sin errores = éxito.</p>
+            </article>
+
+            <article id="paso4-3" class="exercise">
+                <h3>4.3 — Verificar las rutas</h3>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec ord-201 ip route">Copiar</button>
+                    <pre><code>docker exec ord-201 ip route</code></pre>
+                </div>
+                <p><strong>Qué esperar en ord-201:</strong></p>
+                <div class="output">
+<pre>default via 192.168.201.1 dev eth0
+192.168.201.0/24 dev eth0 proto kernel scope link src 192.168.201.2</pre>
+                </div>
+            </article>
+
+            <article id="paso4-4" class="exercise">
+                <h3>4.4 — Ping final: ord-201 → ord-202</h3>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec ord-201 ping -c 4 192.168.202.2">Copiar</button>
+                    <pre><code>docker exec ord-201 ping -c 4 192.168.202.2</code></pre>
+                </div>
+                <p><strong>Qué esperar:</strong></p>
+                <div class="output">
+<pre>PING 192.168.202.2 (192.168.202.2) 56(84) bytes of data.
+64 bytes from 192.168.202.2: icmp_seq=1 ttl=62 time=0.123 ms
+64 bytes from 192.168.202.2: icmp_seq=2 ttl=62 time=0.098 ms
+64 bytes from 192.168.202.2: icmp_seq=3 ttl=62 time=0.105 ms
+64 bytes from 192.168.202.2: icmp_seq=4 ttl=62 time=0.101 ms
+
+--- 192.168.202.2 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss</pre>
+                </div>
+
+                <div class="note">
+                    <strong>Detalle clave: el <code>ttl=62</code></strong><br>
+                    Linux arranca el TTL en 64. Cada router que reenvía el paquete lo decrementa en 1. Si el TTL fuera <strong>64</strong>, significaría que <strong>no</strong> ha atravesado routers (algo falla).<br><br>
+                    • TTL = 64 → 0 routers (misma red).<br>
+                    • TTL = 63 → 1 router.<br>
+                    • TTL = 62 → 2 routers (ida y vuelta pueden verse como 62 o 63 según cómo se cuente).
+                </div>
+            </article>
+
+            <article id="paso4-5" class="exercise">
+                <h3>4.5 — Traceroute: ver el camino</h3>
+                <p>Si <code>traceroute</code> no está instalado, lo instalamos con:</p>
+                <div class="terminal">
+                    <button class="copy-btn" data-copy='docker exec ord-201 sh -c "apt-get update && apt-get install -y traceroute"'>Copiar</button>
+                    <pre><code>docker exec ord-201 sh -c "apt-get update && apt-get install -y traceroute"</code></pre>
+                </div>
+                <div class="note">
+                    <strong>Sintaxis correcta</strong>: usar <code>sh -c "..."</code> para que el <code>&&</code> se ejecute <strong>dentro</strong> del contenedor.
+                </div>
+
+                <div class="terminal">
+                    <button class="copy-btn" data-copy="docker exec ord-201 traceroute 192.168.202.2">Copiar</button>
+                    <pre><code>docker exec ord-201 traceroute 192.168.202.2</code></pre>
+                </div>
+                <p><strong>Qué esperar:</strong></p>
+                <div class="output">
+<pre>traceroute to 192.168.202.2 (192.168.202.2), 30 hops max, 60 byte packets
+ 1  router1.red-201 (192.168.201.1)  0.099 ms  0.015 ms  0.007 ms
+ 2  192.168.200.2 (192.168.200.2)    0.032 ms  0.011 ms  0.011 ms
+ 3  192.168.202.2 (192.168.202.2)    0.060 ms  0.014 ms  0.015 ms</pre>
+                </div>
+                <p>Camino: <strong>ord-201 → router1 → router2 → ord-202</strong>. ✅</p>
+            </article>
+        </section>
+
+        <!-- ============ RESUMEN ============ -->
+        <section id="resumen" class="block">
+            <h2>📊 Resumen final</h2>
+
+            <h3>Direccionamiento</h3>
+            <table>
+                <thead>
+                    <tr><th>Contenedor</th><th>red-201</th><th>red-202</th><th>red-200</th><th>Default via</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>ord-201</code></td><td>192.168.201.2</td><td>—</td><td>—</td><td>192.168.201.1</td></tr>
+                    <tr><td><code>ord-202</code></td><td>—</td><td>192.168.202.2</td><td>—</td><td>192.168.202.1</td></tr>
+                    <tr><td><code>router1</code></td><td>192.168.201.1</td><td>—</td><td>192.168.200.1</td><td>192.168.200.2</td></tr>
+                    <tr><td><code>router2</code></td><td>—</td><td>192.168.202.1</td><td>192.168.200.2</td><td>192.168.200.1</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Conceptos dominados</h3>
+            <ul>
+                <li><strong>Redes bridge en Docker</strong> → interfaces virtuales en el host.</li>
+                <li><strong>IP fija sin DHCP</strong> → con <code>--ip-range=/32</code>.</li>
+                <li><strong>Router Linux</strong> → contenedor con 2 interfaces.</li>
+                <li><strong>IP forwarding</strong> → <code>net.ipv4.ip_forward=1</code>, imprescindible.</li>
+                <li><strong>Ruta por defecto</strong> → <code>ip route replace default via ...</code>.</li>
+                <li><strong>TTL</strong> → cada router resta 1. Sirve para saber cuántos ha atravesado.</li>
+                <li><strong>Traceroute</strong> → muestra el camino salto a salto.</li>
+            </ul>
+
+            <div class="conclusion">
+                <h5>🏁 Fin de la práctica</h5>
+                <p>Has montado una red completa con 2 LANs, 2 routers y enrutamiento real entre extremos. Todos los conceptos que has aplicado (direccionamiento IP, tablas de rutas, forwarding, TTL) son exactamente los mismos que se usan en redes físicas reales.</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>Práctica Redes Docker — Realizado por <span class="neon">JulianCO</span> · SEGURIDAD ASIR · 2026</p>
+            <p class="small">Sistema: Ubuntu Server + Docker · Imagen: onovillo/ubuntu-ssh</p>
+        </footer>
+
+    </main>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
