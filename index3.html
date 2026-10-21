@@ -42,6 +42,28 @@
   button.primary{background:var(--accent); color:#04263a; border-color:var(--accent)}
   button.primary:hover{background:#7dd3fc}
   main{max-width:980px; margin:0 auto}
+
+  /* ---- Pantalla de inicio ---- */
+  .start{
+    max-width:640px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--border); border-radius:18px; padding:2rem 1.6rem;
+    text-align:center;
+  }
+  .start h2{margin:.2rem 0 .4rem; font-size:1.25rem}
+  .start p{color:var(--muted); margin:.2rem 0 1.4rem; font-size:.95rem}
+  .start .grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:.9rem; margin-bottom:1.2rem;
+  }
+  .start .grid button{
+    padding:1.1rem .8rem; font-size:1.05rem; border-radius:14px;
+    display:flex; flex-direction:column; gap:.15rem; align-items:center;
+  }
+  .start .grid button small{font-weight:400; color:var(--muted); font-size:.8rem}
+  .start .grid button.primary small{color:#04263a}
+  .start .info{font-size:.82rem; color:var(--muted); margin-top:.8rem}
+  @media(max-width:480px){ .start .grid{grid-template-columns:1fr} }
+
+  /* ---- Tarjetas de pregunta ---- */
   section.q{
     background:var(--card); border:1px solid var(--border); border-radius:14px;
     padding:1rem 1.1rem; margin-bottom:.9rem;
@@ -84,7 +106,6 @@
   .fb.ok{background:#052e1a; border:1px solid var(--ok); color:#bbf7d0}
   .fb.err{background:#3b0a0a; border:1px solid var(--bad); color:#fecaca}
   .fb small{display:block; margin-top:.25rem; color:#e2e8f0}
-  .multi-note{font-size:.8rem; color:var(--warn); margin-top:.2rem}
   .match{display:grid; gap:.55rem; margin-top:.5rem}
   .match-row{display:grid; grid-template-columns:1fr 1fr; gap:.5rem; align-items:center}
   .match-row span{font-size:.92rem}
@@ -106,10 +127,26 @@
   <p>Cuestionarios 1.1, 1.2 y Repaso — práctica con corrección automática</p>
 </header>
 
-<div class="bar">
+<!-- Pantalla de inicio: elegir número de preguntas -->
+<main id="startScreen">
+  <div class="start">
+    <h2>¿Cuántas preguntas quieres hacer?</h2>
+    <p>Cada partida baraja las preguntas y las opciones al azar.</p>
+    <div class="grid">
+      <button class="primary" onclick="empezar(20)">20 preguntas<small>Partida rápida</small></button>
+      <button onclick="empezar(40)">40 preguntas<small>Partida media</small></button>
+      <button onclick="empezar(50)">50 preguntas<small>Partida larga</small></button>
+      <button onclick="empezar(80)">80 preguntas<small>Test completo (todas)</small></button>
+    </div>
+    <div class="info">Las preguntas y sus opciones se mezclan en cada intento para que no memorices posiciones.</div>
+  </div>
+</main>
+
+<!-- Barra de acciones (solo durante la partida) -->
+<div class="bar hidden" id="topBar">
   <span class="score" id="score">Puntuación: 0 / 0</span>
   <button class="primary" onclick="corregirTodo()">Corregir todo</button>
-  <button onclick="reiniciar()">Reiniciar</button>
+  <button onclick="volverInicio()">Elegir otra partida</button>
 </div>
 
 <main id="quiz"></main>
@@ -649,21 +686,106 @@ const PREGUNTAS = [
 ];
 
 /* ============================================================
-   RENDERIZADO
+   UTILIDADES
    ============================================================ */
-const quizEl = document.getElementById('quiz');
-const scoreEl = document.getElementById('score');
-let respuestas = new Array(PREGUNTAS.length).fill(null);
-let corregidas = new Array(PREGUNTAS.length).fill(false);
-
 function normalizar(s){
   return (s||'').toString().trim().toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 }
 
+// Fisher–Yates
+function barajar(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Devuelve una copia de la pregunta con opciones/pares barajados y
+// los índices de "correct" remapeados a la nueva posición.
+function barajarPregunta(p){
+  const q = JSON.parse(JSON.stringify(p));
+
+  if(q.type === 'single'){
+    const indices = barajar(q.opts.map((_, i) => i));
+    q.opts = indices.map(i => p.opts[i]);
+    q.correct = indices.indexOf(p.correct);
+  }
+  else if(q.type === 'multi'){
+    const indices = barajar(q.opts.map((_, i) => i));
+    q.opts = indices.map(i => p.opts[i]);
+    q.correct = q.correct.map(c => indices.indexOf(c));
+  }
+  else if(q.type === 'match'){
+    // Barajar el orden de las opciones de cada par (el "left" se mantiene)
+    q.pairs = q.pairs.map(par => {
+      const indices = barajar(par.options.map((_, i) => i));
+      return {
+        left: par.left,
+        options: indices.map(i => par.options[i]),
+        correct: indices.indexOf(par.correct)
+      };
+    });
+    // Barajar también el orden de las filas (izquierda)
+    q.pairs = barajar(q.pairs);
+  }
+  // 'fill' no se baraja: el orden de los huecos importa.
+  return q;
+}
+
+/* ============================================================
+   ESTADO DE LA PARTIDA
+   ============================================================ */
+let PREGUNTAS_PARTIDA = [];
+let respuestas = [];
+let corregidas = [];
+
+const startScreen = document.getElementById('startScreen');
+const topBar = document.getElementById('topBar');
+const quizEl = document.getElementById('quiz');
+const scoreEl = document.getElementById('score');
+
+function empezar(n){
+  // Si piden más de las disponibles, usamos todas
+  const total = Math.min(n, PREGUNTAS.length);
+
+  // 1) Barajar orden de preguntas y elegir las primeras "total"
+  const seleccionadas = barajar(PREGUNTAS).slice(0, total);
+
+  // 2) Barajar opciones/pares de cada pregunta
+  PREGUNTAS_PARTIDA = seleccionadas.map(barajarPregunta);
+
+  respuestas = new Array(PREGUNTAS_PARTIDA.length).fill(null);
+  corregidas = new Array(PREGUNTAS_PARTIDA.length).fill(false);
+
+  startScreen.classList.add('hidden');
+  topBar.classList.remove('hidden');
+  quizEl.classList.remove('hidden');
+
+  render();
+  actualizarScore();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function volverInicio(){
+  PREGUNTAS_PARTIDA = [];
+  respuestas = [];
+  corregidas = [];
+  quizEl.innerHTML = '';
+  quizEl.classList.add('hidden');
+  topBar.classList.add('hidden');
+  startScreen.classList.remove('hidden');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ============================================================
+   RENDERIZADO
+   ============================================================ */
 function render(){
   quizEl.innerHTML = '';
-  PREGUNTAS.forEach((p, i) => {
+  PREGUNTAS_PARTIDA.forEach((p, i) => {
     const sec = document.createElement('section');
     sec.className = 'q';
     sec.dataset.i = i;
@@ -760,7 +882,8 @@ function limpiarFB(sec){
 }
 
 function actualizarScore(){
-  scoreEl.textContent = `Puntuación: 0 / ${PREGUNTAS.length}`;
+  if(!PREGUNTAS_PARTIDA.length){ scoreEl.textContent = 'Puntuación: 0 / 0'; return; }
+  scoreEl.textContent = `Puntuación: 0 / ${PREGUNTAS_PARTIDA.length}`;
 }
 
 /* ============================================================
@@ -789,14 +912,13 @@ function esCorrecta(p, r){
 }
 
 function corregirUna(i){
-  const p = PREGUNTAS[i];
+  const p = PREGUNTAS_PARTIDA[i];
   const sec = quizEl.querySelector(`section[data-i="${i}"]`);
   const fb = sec.querySelector('.fb');
   limpiarFB(sec);
   const r = respuestas[i];
   const ok = esCorrecta(p, r);
 
-  // Feedback visual
   if(p.type === 'single'){
     sec.querySelectorAll('input[type=radio]').forEach(inp => {
       const j = parseInt(inp.value);
@@ -828,7 +950,6 @@ function corregirUna(i){
     });
   }
 
-  // Mensaje
   fb.className = 'fb show ' + (ok ? 'ok' : 'err');
   if(ok){
     fb.innerHTML = '✅ ¡Correcto!';
@@ -844,27 +965,22 @@ function corregirUna(i){
 }
 
 function corregirTodo(){
+  if(!PREGUNTAS_PARTIDA.length) return;
   let aciertos = 0;
-  PREGUNTAS.forEach((p, i) => {
+  PREGUNTAS_PARTIDA.forEach((p, i) => {
     corregirUna(i);
     if(esCorrecta(p, respuestas[i])) aciertos++;
   });
-  scoreEl.textContent = `Puntuación: ${aciertos} / ${PREGUNTAS.length}`;
-  window.scrollTo({top:0, behavior:'smooth'});
-}
-
-function reiniciar(){
-  respuestas = new Array(PREGUNTAS.length).fill(null);
-  corregidas = new Array(PREGUNTAS.length).fill(false);
-  render();
-  actualizarScore();
+  scoreEl.textContent = `Puntuación: ${aciertos} / ${PREGUNTAS_PARTIDA.length}`;
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
 /* ============================================================
    INICIO
    ============================================================ */
-render();
+// Mostramos la pantalla de inicio. La partida comienza al pulsar un botón.
+quizEl.classList.add('hidden');
+topBar.classList.add('hidden');
 </script>
 </body>
 </html>
