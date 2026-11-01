@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica UT1 - Arquitectura Web (Completa)</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --primary-color: #4da6ff;
+            --primary-hover: #3388dd;
+            --border-color: #333;
+            --option-bg: #2a2a2a;
+            --option-hover: #383838;
+            --correct-bg: #1e4620;
+            --correct-text: #81c784;
+            --incorrect-bg: #4a1c1c;
+            --incorrect-text: #e57373;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--container-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        #start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .select-container {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: var(--option-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--option-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            border: 1px solid var(--border-color);
+        }
+
+        .pregunta {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: var(--bg-color);
+        }
+
+        .enunciado {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        code {
+            background-color: #000;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #f8c555;
+        }
+
+        .opcion {
+            display: block;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: var(--option-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s, border 0.2s;
+        }
+
+        .opcion:hover {
+            background: var(--option-hover);
+        }
+
+        .opcion input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .correcto {
+            background-color: var(--correct-bg);
+            color: var(--correct-text);
+            border: 1px solid #388e3c;
+        }
+
+        .incorrecto {
+            background-color: var(--incorrect-bg);
+            color: var(--incorrect-text);
+            border: 1px solid #d32f2f;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        #resultado-final {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Práctica UT1 Completa</h1>
+
+    <div id="start-screen">
+        <p>Selecciona cuántas preguntas quieres realizar en este test:</p>
+        <div class="select-container">
+            <select id="num-preguntas">
+                <option value="10">10 preguntas</option>
+                <option value="15">15 preguntas</option>
+                <option value="20">20 preguntas</option>
+                <option value="999">Todas las preguntas</option>
+            </select>
+        </div>
+        <button class="btn" onclick="iniciarTest()">Comenzar Test</button>
+    </div>
+
+    <div id="quiz-screen" class="hidden">
+        <div class="header-info">
+            <span>Preguntas: <span id="total-preguntas">0</span></span>
+            <span>Aciertos: <span id="puntuacion">0</span></span>
+        </div>
+
+        <div id="quiz-container"></div>
+
+        <button class="btn" id="btn-corregir" onclick="corregirTest()">Corregir Test</button>
+        <button class="btn hidden" id="btn-reiniciar" onclick="reiniciar()">Hacer otro Test</button>
+
+        <div id="resultado-final"></div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // BANCO DE PREGUNTAS COMPLETO
+    // Las preguntas de "Completar texto" se han adaptado a opción múltiple
+    // eligiendo la opción correcta del texto original.
+    // ==========================================
+    const bancoPreguntas = [
+        // --- BLOQUE 1: TEST DE SELECCIÓN ÚNICA ---
+        {
+            tipo: "unica",
+            enunciado: "Una aplicación oculta mediante código del cliente el botón Eliminar producto a los usuarios que no son administradores. Sin embargo, el servidor realiza la eliminación siempre que recibe la solicitud correspondiente, sin comprobar quién la ha enviado. ¿Cuál es el problema principal?",
+            opciones: [
+                "La única solución es ejecutar toda la aplicación en el navegador.",
+                "El servidor debe comprobar los permisos antes de realizar la operación, aunque el botón esté oculto en el cliente.",
+                "El problema es que los administradores nunca deben poder eliminar productos.",
+                "No existe ningún problema porque un botón oculto no puede utilizarse de cualquier otra forma."
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Un usuario pulsa Ver productos. El navegador solicita la información al servidor. La aplicación procesa la solicitud, obtiene los datos necesarios y genera una respuesta. Finalmente, el navegador muestra el resultado. ¿Cuál de las siguientes afirmaciones describe correctamente la situación?",
+            opciones: [
+                "Todo el procesamiento descrito se ha realizado exclusivamente en el navegador.",
+                "Todo el proceso se ha realizado exclusivamente en el servidor y el navegador no ha intervenido.",
+                "Han participado tanto el cliente como el servidor en el proceso.",
+                "Para que funcione, el navegador debe ejecutar necesariamente el código Python del servidor."
+            ],
+            correctas: [2]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Un formulario utiliza JavaScript para comprobar que la edad introducida sea mayor que 0. El programador decide que, como ya se ha comprobado en el navegador, el servidor aceptará siempre el valor recibido. ¿Cuál es la valoración correcta?",
+            opciones: [
+                "Es incorrecto: puede realizarse una comprobación inicial en cliente, pero el servidor debe validar definitivamente los datos recibidos.",
+                "Es correcto siempre que el formulario se muestre correctamente en pantalla.",
+                "Es correcto: cualquier dato validado mediante JavaScript puede considerarse seguro.",
+                "Es incorrecto únicamente porque JavaScript no puede realizar ninguna comprobación de formularios."
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Una aplicación utiliza Python en el servidor para calcular una tabla de multiplicar. ¿Qué recibe normalmente el navegador?",
+            opciones: [
+                "El resultado generado por el servidor.",
+                "El código Python completo que ha realizado el cálculo.",
+                "El intérprete de Python utilizado por el servidor.",
+                "El entorno virtual del proyecto."
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Observa el siguiente fragmento: <br><code>&lt;button onclick=\"mostrar()\"&gt;Mostrar&lt;/button&gt;</code><br>En el modelo estudiado, ¿dónde se interpreta este elemento HTML?",
+            opciones: [
+                "En el navegador del cliente.",
+                "Únicamente en el servidor Python.",
+                "En la base de datos.",
+                "En el sistema operativo del servidor antes de enviar la página."
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Observa el siguiente fragmento: <br><code>for producto in productos:<br>&nbsp;&nbsp;&nbsp;&nbsp;resultado += producto.nombre</code><br>En el modelo utilizado durante el curso, ¿dónde se ejecutaría normalmente este código?",
+            opciones: [
+                "En el archivo HTML una vez descargado.",
+                "Directamente en el navegador del usuario.",
+                "En el servidor.",
+                "En la hoja de estilos CSS."
+            ],
+            correctas: [2]
+        },
+        {
+            tipo: "unica",
+            enunciado: "¿Cuál de las siguientes afirmaciones sobre cliente y servidor es incorrecta?",
+            opciones: [
+                "El servidor puede procesar una petición y generar una respuesta.",
+                "Cliente y servidor pueden estar muy alejados físicamente cuando se comunican a través de una red.",
+                "Cliente y servidor deben encontrarse siempre en máquinas físicas diferentes.",
+                "El cliente solicita información o servicios."
+            ],
+            correctas: [2]
+        },
+        {
+            tipo: "unica",
+            enunciado: "¿Cuál de las siguientes descripciones representa mejor una aplicación web?",
+            opciones: [
+                "Un documento que siempre contiene únicamente información estática.",
+                "Un programa que necesariamente se instala y ejecuta por completo en el equipo del usuario.",
+                "Una aplicación a la que normalmente se accede mediante un navegador y que puede comunicarse con uno o varios servidores.",
+                "Un programa que no puede comunicarse con otros equipos."
+            ],
+            correctas: [2]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Un alumno explica el funcionamiento de una tienda web de esta forma: \"El navegador consulta directamente la base de datos para obtener los productos y, después, comunica al servidor lo que ha encontrado.\" ¿Cuál es el error principal de esta explicación?",
+            opciones: [
+                "El navegador no debería acceder directamente a la base de datos; la aplicación del servidor debe realizar ese acceso.",
+                "El error es utilizar un navegador como cliente.",
+                "El servidor nunca puede utilizar una base de datos.",
+                "Una tienda web no puede almacenar productos en una base de datos."
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Una empresa modifica su aplicación en el servidor. Al volver a entrar desde el navegador, todos los usuarios utilizan la nueva versión sin instalarla manualmente en sus equipos. ¿Qué característica de las aplicaciones web se refleja principalmente en esta situación?",
+            opciones: [
+                "La aplicación puede actualizarse centralmente en el servidor.",
+                "La aplicación deja de utilizar una arquitectura cliente-servidor.",
+                "El navegador pasa a almacenar toda la aplicación de forma permanente.",
+                "Cada usuario debe instalar localmente la nueva versión."
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Una página contiene un título y una lista de productos. El título tiene un estilo personalizado. Al pulsar un botón se modifica inmediatamente una parte de la interfaz. El contenido inicial de la lista ha sido generado por una aplicación escrita en Python. ¿Qué descripción representa mejor el papel de las tecnologías utilizadas?",
+            opciones: [
+                "Flask es el lenguaje de marcas que define la estructura y CSS ejecuta el código Python.",
+                "HTML define la estructura, CSS la apariencia, JavaScript la interacción en el navegador y Python/Flask genera contenido y lógica en el servidor.",
+                "CSS genera los productos, Python modifica exclusivamente el aspecto y HTML ejecuta la lógica del servidor.",
+                "JavaScript sustituye a todas las demás tecnologías y realiza por sí solo estructura, estilo y lógica del servidor."
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Dos usuarios solicitan la misma dirección /perfil, pero cada uno recibe una página con su propio nombre e información. ¿Qué describe mejor esta situación?",
+            opciones: [
+                "Es necesariamente un único archivo HTML estático idéntico para todos los usuarios.",
+                "Significa que CSS está generando los datos del usuario.",
+                "Es contenido dinámico generado por la aplicación.",
+                "Significa que el navegador está sustituyendo completamente al servidor."
+            ],
+            correctas: [2]
+        },
+        {
+            tipo: "unica",
+            enunciado: "¿Cuál de las siguientes descripciones define mejor Flask?",
+            opciones: [
+                "Una hoja de estilos utilizada para modificar la apariencia de una página.",
+                "Un framework web que permite desarrollar aplicaciones utilizando Python.",
+                "Un navegador web diseñado para ejecutar páginas HTML.",
+                "Un lenguaje de programación que sustituye a Python."
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Observa el siguiente fragmento:<br><code>h1 {<br>&nbsp;&nbsp;&nbsp;&nbsp;font-size: 30px;<br>&nbsp;&nbsp;&nbsp;&nbsp;margin-bottom: 15px;<br>}</code><br>¿Qué tecnología aparece principalmente en este fragmento?",
+            opciones: [
+                "Python",
+                "CSS",
+                "HTML",
+                "Flask"
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Observa el siguiente fragmento:<br><code>&lt;h1&gt;Productos&lt;/h1&gt;<br>&lt;ul&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;Teclado&lt;/li&gt;<br>&lt;/ul&gt;</code><br>¿Qué tecnología aparece principalmente en este fragmento?",
+            opciones: [
+                "Python",
+                "Flask",
+                "CSS",
+                "HTML"
+            ],
+            correctas: [3]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Observa el siguiente fragmento:<br><code>total = 0<br>for precio in precios:<br>&nbsp;&nbsp;&nbsp;&nbsp;total += precio</code><br>¿Qué tecnología aparece principalmente en este fragmento?",
+            opciones: [
+                "CSS",
+                "Python",
+                "JavaScript",
+                "HTML"
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Observa el siguiente mensaje:<br><code>HTTP/1.1 200 OK<br>Content-Type: text/html</code><br>¿Qué representa?",
+            opciones: [
+                "Una respuesta HTTP generada por el servidor.",
+                "Una petición HTTP enviada por el cliente.",
+                "Una consulta SQL.",
+                "Una orden para instalar Flask."
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "El servidor acaba de recibir:<br><code>GET /productos HTTP/1.1</code><br>¿Cuál es el siguiente paso lógico en el flujo estudiado?",
+            opciones: [
+                "Enviar una respuesta antes de procesar la petición.",
+                "Procesar la petición y determinar qué respuesta debe generar.",
+                "Convertir GET en un archivo CSS.",
+                "Cerrar automáticamente el navegador."
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Un formulario envía al servidor los datos de un nuevo alumno para que sean procesados. ¿Qué método utilizaríamos habitualmente?",
+            opciones: [
+                "GET",
+                "PATCH",
+                "DELETE",
+                "POST"
+            ],
+            correctas: [3]
+        },
+        {
+            tipo: "unica",
+            enunciado: "¿Cuál de las siguientes direcciones utiliza HTTPS?",
+            opciones: [
+                "https://www.ejemplo.com",
+                "http://www.ejemplo.com",
+                "ftp://www.ejemplo.com",
+                "file://www.ejemplo.com"
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Un formulario envía datos para crear un nuevo recurso. El servidor lo crea correctamente. ¿Qué combinación resulta coherente?",
+            opciones: [
+                "PATCH + 301 Moved Permanently",
+                "DELETE + 500 Internal Server Error",
+                "GET + 404 Not Found",
+                "POST + 201 Created"
+            ],
+            correctas: [3]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Una aplicación solicita al servidor que elimine un recurso existente. ¿Qué método expresa mejor esa operación?",
+            opciones: [
+                "GET",
+                "DELETE",
+                "PATCH",
+                "POST"
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "En la dirección <code>https://www.ejemplo.com/productos</code>, ¿qué parte permite identificar que se está utilizando HTTPS?",
+            opciones: [
+                "/productos",
+                "https",
+                "www.ejemplo.com",
+                ".com"
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Una aplicación utiliza HTTPS. ¿Significa esto que cualquier dato introducido por el usuario puede aceptarse sin validarlo?",
+            opciones: [
+                "Sí. HTTPS sustituye cualquier control de seguridad del servidor.",
+                "Sí. HTTPS garantiza que todos los datos enviados por el usuario sean correctos.",
+                "No, porque HTTPS solo puede utilizarse para descargar imágenes.",
+                "No. HTTPS protege la comunicación, pero la aplicación debe seguir validando los datos y aplicando medidas de seguridad."
+            ],
+            correctas: [3]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Durante la ejecución de una aplicación aparece:<br><code>\"GET /noexiste HTTP/1.1\" 404</code><br>¿Qué podemos deducir?",
+            opciones: [
+                "Se ha solicitado /noexiste y el servidor no ha encontrado el recurso.",
+                "El servidor ha realizado una redirección permanente.",
+                "El recurso se ha creado correctamente.",
+                "La petición se ha procesado correctamente con código 200."
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Observa el siguiente mensaje:<br><code>GET /productos HTTP/1.1<br>Host: www.ejemplo.com</code><br>¿Qué recurso está solicitando el cliente?",
+            opciones: [
+                "/productos",
+                "www.ejemplo.com",
+                "HTTP/1.1",
+                "GET"
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "El usuario solicita /productos/999, pero ese recurso no existe. ¿Qué respuesta resulta más coherente?",
+            opciones: [
+                "404 Not Found",
+                "201 Created",
+                "500 Internal Server Error",
+                "200 OK"
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "El servidor procesa correctamente la solicitud y devuelve el recurso solicitado. ¿Qué código es el más representativo?",
+            opciones: [
+                "403 Forbidden",
+                "200 OK",
+                "500 Internal Server Error",
+                "404 Not Found"
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "El servidor procesa una operación y crea correctamente un nuevo recurso. ¿Qué código resulta apropiado?",
+            opciones: [
+                "500 OK",
+                "404 Created",
+                "201 Created",
+                "200 Not Found"
+            ],
+            correctas: [2]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Un usuario pulsa un enlace en una página y el navegador solicita un nuevo recurso al servidor. ¿Qué se inicia?",
+            opciones: [
+                "Una compilación del navegador.",
+                "Una instalación de Python.",
+                "Una consulta directa a una base de datos.",
+                "Una petición HTTP."
+            ],
+            correctas: [3]
+        },
+        {
+            tipo: "unica",
+            enunciado: "¿Cuál de las siguientes opciones describe mejor HTTP?",
+            opciones: [
+                "Un sistema operativo especializado en servidores.",
+                "Un lenguaje de programación utilizado para crear páginas web.",
+                "Un protocolo utilizado para intercambiar información entre clientes y servidores web.",
+                "Una base de datos utilizada por los navegadores."
+            ],
+            correctas: [2]
+        },
+        {
+            tipo: "unica",
+            enunciado: "El usuario quiere consultar un listado de alumnos sin modificarlo. ¿Qué método HTTP representa mejor esta operación?",
+            opciones: [
+                "POST",
+                "GET",
+                "DELETE",
+                "PATCH"
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Observa el siguiente mensaje:<br><code>GET /productos HTTP/1.1<br>Host: www.ejemplo.com</code><br>¿Qué representa?",
+            opciones: [
+                "Una instrucción de Python.",
+                "Una petición HTTP enviada por un cliente.",
+                "Una hoja de estilos.",
+                "Una respuesta HTTP generada por el servidor."
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "El servidor conoce al usuario, pero este no tiene permiso para acceder al recurso solicitado. ¿Qué código encaja mejor?",
+            opciones: [
+                "401 Unauthorized",
+                "200 OK",
+                "403 Forbidden",
+                "404 Not Found"
+            ],
+            correctas: [2]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Se produce el siguiente intercambio:<br><code>GET /productos HTTP/1.1<br><br>HTTP/1.1 200 OK<br>Content-Type: text/html<br><br>&lt;h1&gt;Productos&lt;/h1&gt;</code><br>¿Qué descripción es correcta?",
+            opciones: [
+                "El navegador ha solicitado /productos y el servidor ha respondido correctamente con contenido HTML.",
+                "El servidor ha solicitado /productos al navegador y este ha respondido con un error.",
+                "La petición ha fallado porque 200 representa un error.",
+                "El navegador ha recibido código Python para ejecutarlo directamente."
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "Observa:<br><code>POST /alumnos HTTP/1.1<br><br>nombre=Laura&curso=2ASIR</code><br>¿Qué describe mejor esta petición?",
+            opciones: [
+                "Se está solicitando eliminar el recurso /alumnos.",
+                "Se está produciendo una redirección.",
+                "Se están enviando datos al servidor para que sean procesados.",
+                "El servidor está devolviendo una página HTML."
+            ],
+            correctas: [2]
+        },
+        {
+            tipo: "unica",
+            enunciado: "¿Cuál de las siguientes afirmaciones sobre HTTP es falsa?",
+            opciones: [
+                "HTTP permite la comunicación entre clientes y servidores web.",
+                "Un navegador puede actuar como cliente HTTP.",
+                "HTTP utiliza un modelo de peticiones y respuestas.",
+                "HTTP es un lenguaje de programación."
+            ],
+            correctas: [3]
+        },
+
+        // --- BLOQUE 2: TEST DE SELECCIÓN MÚLTIPLE ---
+        {
+            tipo: "multiple",
+            enunciado: "Selecciona todas las afirmaciones correctas sobre una aplicación web.",
+            opciones: [
+                "El servidor puede generar una respuesta para el cliente.",
+                "Puede utilizar un navegador como cliente.",
+                "Siempre debe instalarse como programa local en cada equipo cliente.",
+                "El navegador debe acceder directamente a la base de datos.",
+                "Todo su funcionamiento debe encontrarse obligatoriamente en el equipo del usuario.",
+                "Puede repartir sus componentes entre distintos equipos."
+            ],
+            correctas: [0, 1, 5]
+        },
+        {
+            tipo: "multiple",
+            enunciado: "Selecciona los tres ejemplos que representan mejor aplicaciones web según el modelo estudiado.",
+            opciones: [
+                "Un programa de escritorio que funciona íntegramente en el equipo y sin conexión a otros servicios.",
+                "Un aula virtual a la que los alumnos acceden mediante el navegador.",
+                "Una tienda en línea utilizada desde el navegador.",
+                "Una aplicación de banca electrónica utilizada desde el navegador.",
+                "Un reproductor multimedia instalado localmente que solo reproduce archivos del equipo.",
+                "Un editor de imágenes instalado localmente que no utiliza ningún servicio remoto."
+            ],
+            correctas: [1, 2, 3]
+        },
+        {
+            tipo: "multiple",
+            enunciado: "Selecciona los tres elementos que puede recibir normalmente el navegador como parte de una aplicación web.",
+            opciones: [
+                "Las credenciales privadas utilizadas por el servidor para acceder a sus servicios.",
+                "El código Python interno del servidor.",
+                "El código interno de la aplicación Flask que no forma parte de la respuesta.",
+                "CSS.",
+                "JavaScript.",
+                "HTML."
+            ],
+            correctas: [3, 4, 5]
+        },
+        {
+            tipo: "multiple",
+            enunciado: "Selecciona las tres tareas que corresponden habitualmente al procesamiento del lado servidor.",
+            opciones: [
+                "Ejecutar necesariamente el JavaScript recibido por el navegador.",
+                "Consultar o modificar información almacenada.",
+                "Mostrar directamente los elementos gráficos en la pantalla del usuario.",
+                "Interpretar obligatoriamente las reglas CSS de la página.",
+                "Aplicar la lógica principal de la aplicación.",
+                "Comprobar permisos antes de realizar una operación protegida."
+            ],
+            correctas: [1, 4, 5]
+        },
+        {
+            tipo: "multiple",
+            enunciado: "Selecciona las tres tareas que pueden corresponder a Python y Flask en una aplicación web.",
+            opciones: [
+                "Aplicar la lógica de funcionamiento de la aplicación.",
+                "Definir exclusivamente el color y el tamaño de los títulos.",
+                "Procesar una solicitud recibida por la aplicación.",
+                "Ser obligatoriamente el lenguaje utilizado para describir la estructura de una página HTML.",
+                "Sustituir al navegador del usuario.",
+                "Generar contenido dinámico que será enviado al cliente."
+            ],
+            correctas: [0, 2, 5]
+        },
+        {
+            tipo: "multiple",
+            enunciado: "Selecciona los tres objetivos relacionados con el uso de HTTPS.",
+            opciones: [
+                "Confidencialidad.",
+                "Autenticación del servidor.",
+                "Aumentar obligatoriamente la velocidad de la aplicación.",
+                "Integridad.",
+                "Eliminar todos los errores de programación.",
+                "Sustituir HTML por otro lenguaje."
+            ],
+            correctas: [0, 1, 3]
+        },
+        {
+            tipo: "multiple",
+            enunciado: "Selecciona los tres elementos que son métodos HTTP.",
+            opciones: [
+                "SELECT",
+                "GET",
+                "OPEN",
+                "POST",
+                "EXECUTE",
+                "DELETE"
+            ],
+            correctas: [1, 3, 5]
+        },
+
+        // --- BLOQUE 3: COMPLETAR TEXTO (ADAPTADO A MÚLTIPLE) ---
+        {
+            tipo: "unica",
+            enunciado: "<strong>Completar texto:</strong> En una aplicación web, el ______ envía una _______ al _____. Este la procesa y devuelve una ______. ¿Cuál es la secuencia correcta?",
+            opciones: [
+                "Servidor, petición, cliente, respuesta.",
+                "Cliente, petición, servidor, respuesta.",
+                "Navegador, respuesta, servidor, petición.",
+                "Cliente, respuesta, servidor, petición."
+            ],
+            correctas: [1]
+        },
+        {
+            tipo: "unica",
+            enunciado: "<strong>Completar texto:</strong> En una aplicación web, el código _____ puede ejecutarse en el ______, mientras que durante este curso el código ______ se ejecutará principalmente en el _______. El cliente recibe normalmente el _______ generado. ¿Qué opciones completan correctamente el texto?",
+            opciones: [
+                "JavaScript, cliente, Python, servidor, resultado",
+                "Python, cliente, JavaScript, servidor, código",
+                "JavaScript, servidor, Python, cliente, resultado",
+                "Python, servidor, JavaScript, cliente, código"
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "<strong>Completar texto:</strong> ________ define principalmente la estructura y el contenido del documento, mientras que ______ se utiliza para su presentación. Para añadir comportamiento en el navegador podemos utilizar ________. En el servidor utilizaremos _________ como lenguaje de programación junto con el framework _______. ¿Cuál es la secuencia correcta?",
+            opciones: [
+                "HTML, CSS, JavaScript, Python, Flask",
+                "CSS, HTML, Python, JavaScript, Flask",
+                "HTML, Python, CSS, JavaScript, Flask",
+                "Python, HTML, CSS, JavaScript, Flask"
+            ],
+            correctas: [0]
+        },
+        {
+            tipo: "unica",
+            enunciado: "<strong>Completar texto:</strong> El _______ envía una ______ al ______. Este la procesa y genera una _______. ¿Cuál es la secuencia correcta?",
+            opciones: [
+                "Servidor, petición, cliente, respuesta.",
+                "Cliente, petición, servidor, respuesta.",
+                "Navegador, respuesta, servidor, petición.",
+                "Cliente, respuesta, servidor, petición."
+            ],
+            correctas: [1]
+        }
+    ];
+
+    let preguntasTest = [];
+    let puntuacion = 0;
+
+    function mezclarArray(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    function iniciarTest() {
+        let cantidad = parseInt(document.getElementById('num-preguntas').value);
+        if (cantidad > bancoPreguntas.length) cantidad = bancoPreguntas.length;
+
+        // Barajar preguntas
+        let preguntasBarajadas = mezclarArray([...bancoPreguntas]);
+        preguntasTest = preguntasBarajadas.slice(0, cantidad);
+
+        // Barajar opciones y recalcular índices correctos
+        preguntasTest = preguntasTest.map(p => {
+            // Creamos un array de objetos con el texto original y si era correcta o no
+            let opcionesConEstado = p.opciones.map((texto, index) => ({
+                texto: texto,
+                esCorrecta: p.correctas.includes(index)
+            }));
+
+            // Barajamos las opciones
+            let opcionesBarajadas = mezclarArray(opcionesConEstado);
+            
+            // Buscamos cuáles son los nuevos índices correctos
+            let nuevasCorrectas = [];
+            opcionesBarajadas.forEach((opt, index) => {
+                if (opt.esCorrecta) nuevasCorrectas.push(index);
+            });
+
+            return {
+                tipo: p.tipo,
+                enunciado: p.enunciado,
+                opciones: opcionesBarajadas.map(opt => opt.texto),
+                correctas: nuevasCorrectas
+            };
+        });
+
+        // UI
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        document.getElementById('btn-reiniciar').classList.add('hidden');
+        document.getElementById('btn-corregir').classList.remove('hidden');
+        document.getElementById('resultado-final').style.display = 'none';
+        
+        puntuacion = 0;
+        document.getElementById('puntuacion').textContent = puntuacion;
+        document.getElementById('total-preguntas').textContent = preguntasTest.length;
+
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = '';
+
+        preguntasTest.forEach((p, index) => {
+            const divPregunta
