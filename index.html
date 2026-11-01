@@ -5,129 +5,226 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Práctica UT1 - Arquitectura Web</title>
     <style>
+        :root {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --primary-color: #4da6ff;
+            --primary-hover: #3388dd;
+            --border-color: #333;
+            --option-bg: #2a2a2a;
+            --option-hover: #383838;
+            --correct-bg: #1e4620;
+            --correct-text: #81c784;
+            --incorrect-bg: #4a1c1c;
+            --incorrect-text: #e57373;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
+            transition: background-color 0.3s;
         }
+
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
+            background: var(--container-bg);
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
+
         h1 {
             text-align: center;
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
             padding-bottom: 10px;
+            margin-top: 0;
         }
+
+        /* Pantalla de Inicio */
+        #start-screen {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .select-container {
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: var(--option-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        /* Cabecera del Test */
         .header-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #ecf0f1;
+            background: var(--option-bg);
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-weight: bold;
+            border: 1px solid var(--border-color);
         }
+
+        /* Preguntas */
         .pregunta {
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 8px;
-            background: #fafafa;
+            background: var(--bg-color);
         }
+
         .enunciado {
             font-weight: 600;
             margin-bottom: 15px;
             font-size: 16px;
+            line-height: 1.5;
         }
+
+        code {
+            background-color: #000;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #f8c555;
+        }
+
         .opcion {
             display: block;
-            padding: 10px 15px;
+            padding: 12px 15px;
             margin-bottom: 8px;
-            background: white;
-            border: 1px solid #ccc;
+            background: var(--option-bg);
+            border: 1px solid var(--border-color);
             border-radius: 5px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, border 0.2s;
         }
+
         .opcion:hover {
-            background: #e8f4f8;
+            background: var(--option-hover);
         }
+
         .opcion input {
             margin-right: 10px;
+            cursor: pointer;
         }
+
         .feedback {
             margin-top: 15px;
-            padding: 10px;
+            padding: 12px;
             border-radius: 5px;
-            font-weight: bold;
+            font-size: 14px;
             display: none;
+            line-height: 1.4;
         }
+
         .correcto {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background-color: var(--correct-bg);
+            color: var(--correct-text);
+            border: 1px solid #388e3c;
         }
+
         .incorrecto {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: var(--incorrect-bg);
+            color: var(--incorrect-text);
+            border: 1px solid #d32f2f;
         }
+
+        /* Botones */
         .btn {
             display: block;
             width: 100%;
             padding: 15px;
-            background: #3498db;
-            color: white;
+            background: var(--primary-color);
+            color: #fff;
             border: none;
             border-radius: 8px;
             font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
             transition: background 0.3s;
             margin-top: 20px;
         }
+
         .btn:hover {
-            background: #2980b9;
+            background: var(--primary-hover);
         }
+
+        .btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
         #resultado-final {
             text-align: center;
             font-size: 24px;
             font-weight: bold;
             margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
             display: none;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Práctica UT1 - Arquitectura Web</h1>
-    
-    <div class="header-info">
-        <span>Preguntas: <span id="total-preguntas">0</span></span>
-        <span>Puntuación: <span id="puntuacion">0</span></span>
+    <h1>Práctica UT1</h1>
+
+    <!-- Pantalla de inicio para elegir preguntas -->
+    <div id="start-screen">
+        <p>Selecciona cuántas preguntas quieres realizar en este test:</p>
+        <div class="select-container">
+            <select id="num-preguntas">
+                <option value="10">10 preguntas</option>
+                <option value="15">15 preguntas</option>
+                <option value="20">20 preguntas</option>
+                <option value="999">Todas las preguntas</option>
+            </select>
+        </div>
+        <button class="btn" onclick="iniciarTest()">Comenzar Test</button>
     </div>
 
-    <div id="quiz-container">
-        <!-- Las preguntas se generarán con JavaScript -->
-    </div>
+    <!-- Pantalla del test -->
+    <div id="quiz-screen" class="hidden">
+        <div class="header-info">
+            <span>Preguntas: <span id="total-preguntas">0</span></span>
+            <span>Aciertos: <span id="puntuacion">0</span></span>
+        </div>
 
-    <button class="btn" onclick="corregirTest()">Corregir Test</button>
-    <div id="resultado-final"></div>
+        <div id="quiz-container">
+            <!-- Las preguntas se generarán con JavaScript -->
+        </div>
+
+        <button class="btn" id="btn-corregir" onclick="corregirTest()">Corregir Test</button>
+        <button class="btn hidden" id="btn-reiniciar" onclick="reiniciar()">Hacer otro Test</button>
+
+        <div id="resultado-final"></div>
+    </div>
 </div>
 
 <script>
-    // Aquí tienes las preguntas y respuestas exactas extraídas de tus apuntes.
-    // La propiedad 'correcta' indica el índice (empezando por 0) de la opción verdadera.
-    const preguntas = [
+    // BASE DE DATOS DE PREGUNTAS (Extraídas exactamente de tus apuntes)
+    const bancoPreguntas = [
         {
             enunciado: "Una aplicación oculta mediante código del cliente el botón Eliminar producto a los usuarios que no son administradores. Sin embargo, el servidor realiza la eliminación siempre que recibe la solicitud correspondiente, sin comprobar quién la ha enviado. ¿Cuál es el problema principal?",
             opciones: [
@@ -420,83 +517,165 @@
         }
     ];
 
-    const container = document.getElementById('quiz-container');
-    const totalSpan = document.getElementById('total-preguntas');
-    const puntuacionSpan = document.getElementById('puntuacion');
-    
-    totalSpan.textContent = preguntas.length;
+    let preguntasTest = [];
     let puntuacion = 0;
 
-    // Generar el HTML de las preguntas
-    preguntas.forEach((p, index) => {
-        const divPregunta = document.createElement('div');
-        divPregunta.className = 'pregunta';
-        divPregunta.id = `pregunta-${index}`;
+    // Función para mezclar un array (Algoritmo Fisher-Yates)
+    function mezclarArray(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
 
-        let html = `<div class="enunciado">${index + 1}. ${p.enunciado}</div>`;
-        
-        p.opciones.forEach((opcion, optIndex) => {
-            html += `
-                <label class="opcion" id="label-${index}-${optIndex}">
-                    <input type="radio" name="pregunta-${index}" value="${optIndex}">
-                    ${opcion}
-                </label>
-            `;
+    function iniciarTest() {
+        // Obtener cantidad seleccionada
+        let cantidad = parseInt(document.getElementById('num-preguntas').value);
+        if (cantidad > bancoPreguntas.length) cantidad = bancoPreguntas.length;
+
+        // Barajar todas las preguntas y cortar las que necesitemos
+        let preguntasBarajadas = mezclarArray([...bancoPreguntas]);
+        preguntasTest = preguntasBarajadas.slice(0, cantidad);
+
+        // Barajar las opciones de cada pregunta y reajustar el índice de la correcta
+        preguntasTest = preguntasTest.map(p => {
+            let opcionesConEstado = p.opciones.map((texto, index) => ({
+                texto: texto,
+                esCorrecta: index === p.correcta
+            }));
+
+            let opcionesBarajadas = mezclarArray(opcionesConEstado);
+            let nuevoIndiceCorrecto = opcionesBarajadas.findIndex(opt => opt.esCorrecta);
+
+            return {
+                enunciado: p.enunciado,
+                opciones: opcionesBarajadas.map(opt => opt.texto),
+                correcta: nuevoIndiceCorrecto
+            };
         });
 
-        html += `<div class="feedback" id="feedback-${index}"></div>`;
-        divPregunta.innerHTML = html;
-        container.appendChild(divPregunta);
-    });
+        // Cambiar pantallas
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('quiz-screen').classList.remove('hidden');
+        document.getElementById('btn-reiniciar').classList.add('hidden');
+        document.getElementById('btn-corregir').classList.remove('hidden');
+        document.getElementById('resultado-final').style.display = 'none';
+        
+        puntuacion = 0;
+        document.getElementById('puntuacion').textContent = puntuacion;
+        document.getElementById('total-preguntas').textContent = preguntasTest.length;
+
+        // Renderizar preguntas
+        const container = document.getElementById('quiz-container');
+        container.innerHTML = '';
+
+        preguntasTest.forEach((p, index) => {
+            const divPregunta = document.createElement('div');
+            divPregunta.className = 'pregunta';
+            divPregunta.id = `pregunta-${index}`;
+
+            let html = `<div class="enunciado">${index + 1}. ${p.enunciado}</div>`;
+            
+            p.opciones.forEach((opcion, optIndex) => {
+                html += `
+                    <label class="opcion" id="label-${index}-${optIndex}">
+                        <input type="radio" name="pregunta-${index}" value="${optIndex}">
+                        ${opcion}
+                    </label>
+                `;
+            });
+
+            html += `<div class="feedback" id="feedback-${index}"></div>`;
+            divPregunta.innerHTML = html;
+            container.appendChild(divPregunta);
+        });
+
+        // Hacer scroll al principio
+        window.scrollTo(0, 0);
+    }
 
     function corregirTest() {
         puntuacion = 0;
+        let desgloseHTML = '<h3>Resumen de respuestas:</h3><ul style="text-align:left; font-size: 16px;">';
 
-        preguntas.forEach((p, index) => {
+        preguntasTest.forEach((p, index) => {
             const seleccionada = document.querySelector(`input[name="pregunta-${index}"]:checked`);
             const feedbackDiv = document.getElementById(`feedback-${index}`);
             const labels = document.querySelectorAll(`#pregunta-${index} .opcion`);
             
-            // Limpiar estilos previos
-            labels.forEach(l => l.style.border = "1px solid #ccc");
+            labels.forEach(l => l.style.border = "1px solid var(--border-color)");
             feedbackDiv.style.display = 'block';
 
-            if (!seleccionada) {
-                feedbackDiv.className = 'feedback incorrecto';
-                feedbackDiv.textContent = '⚠️ No has contestado a esta pregunta.';
-                return;
+            let acerto = false;
+            let respuestaUsuario = "Sin contestar";
+
+            if (seleccionada) {
+                const valorSeleccionado = parseInt(seleccionada.value);
+                respuestaUsuario = p.opciones[valorSeleccionado];
+
+                if (valorSeleccionado === p.correcta) {
+                    acerto = true;
+                    document.getElementById(`label-${index}-${valorSeleccionado}`).style.border = "2px solid #28a745";
+                } else {
+                    document.getElementById(`label-${index}-${valorSeleccionado}`).style.border = "2px solid #dc3545";
+                }
             }
 
-            const valorSeleccionado = parseInt(seleccionada.value);
+            // Marcar siempre la correcta en verde
+            document.getElementById(`label-${index}-${p.correcta}`).style.border = "2px solid #28a745";
 
-            if (valorSeleccionado === p.correcta) {
+            if (acerto) {
                 puntuacion++;
                 feedbackDiv.className = 'feedback correcto';
                 feedbackDiv.textContent = '✅ ¡Correcto!';
-                document.getElementById(`label-${index}-${valorSeleccionado}`).style.border = "2px solid #28a745";
+                desgloseHTML += `<li style="margin-bottom: 10px; color: #81c784;">✅ <strong>Pregunta ${index + 1}:</strong> Acertaste.</li>`;
             } else {
                 feedbackDiv.className = 'feedback incorrecto';
                 feedbackDiv.innerHTML = `❌ Incorrecto. La respuesta correcta era: <strong>${p.opciones[p.correcta]}</strong>`;
-                document.getElementById(`label-${index}-${valorSeleccionado}`).style.border = "2px solid #dc3545";
-                document.getElementById(`label-${index}-${p.correcta}`).style.border = "2px solid #28a745";
+                desgloseHTML += `<li style="margin-bottom: 10px; color: #e57373;">❌ <strong>Pregunta ${index + 1}:</strong> Tu respuesta fue: <em>"${respuestaUsuario}"</em>.<br>La correcta es: <strong>"${p.opciones[p.correcta]}"</strong></li>`;
             }
         });
 
-        puntuacionSpan.textContent = puntuacion;
+        desgloseHTML += '</ul>';
+
+        document.getElementById('puntuacion').textContent = puntuacion;
         
         const finalDiv = document.getElementById('resultado-final');
         finalDiv.style.display = 'block';
         
-        if (puntuacion === preguntas.length) {
-            finalDiv.style.color = '#28a745';
-            finalDiv.textContent = `🎉 ¡Perfecto! Has acertado todas (${puntuacion}/${preguntas.length}).`;
-        } else if (puntuacion >= preguntas.length / 2) {
-            finalDiv.style.color = '#f39c12';
-            finalDiv.textContent = `Has acertado ${puntuacion} de ${preguntas.length}. ¡Sigue practicando!`;
+        let mensajeFinal = "";
+        if (puntuacion === preguntasTest.length) {
+            finalDiv.style.color = '#81c784';
+            finalDiv.style.backgroundColor = 'var(--correct-bg)';
+            mensajeFinal = `🎉 ¡Perfecto! Has acertado todas (${puntuacion}/${preguntasTest.length}).`;
+        } else if (puntuacion >= preguntasTest.length / 2) {
+            finalDiv.style.color = '#f8c555';
+            finalDiv.style.backgroundColor = '#3e3116';
+            mensajeFinal = `Has acertado ${puntuacion} de ${preguntasTest.length}. ¡Sigue practicando!`;
         } else {
-            finalDiv.style.color = '#dc3545';
-            finalDiv.textContent = `Has acertado ${puntuacion} de ${preguntas.length}. Necesitas repasar los apuntes.`;
+            finalDiv.style.color = '#e57373';
+            finalDiv.style.backgroundColor = 'var(--incorrect-bg)';
+            mensajeFinal = `Has acertado ${puntuacion} de ${preguntasTest.length}. Necesitas repasar los apuntes.`;
         }
+
+        finalDiv.innerHTML = `<div style="font-size: 24px; margin-bottom: 20px;">${mensajeFinal}</div>${desgloseHTML}`;
+
+        // Deshabilitar botón de corregir y mostrar el de reiniciar
+        document.getElementById('btn-corregir').classList.add('hidden');
+        document.getElementById('btn-reiniciar').classList.remove('hidden');
+        
+        // Deshabilitar los inputs
+        const inputs = document.querySelectorAll('input[type="radio"]');
+        inputs.forEach(input => input.disabled = true);
+    }
+
+    function reiniciar() {
+        // Volver a mostrar la pantalla de inicio
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('start-screen').classList.remove('hidden');
     }
 </script>
 
