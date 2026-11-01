@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Práctica UT1 · Arquitectura Web</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f4f9; --card:#ffffff; --ink:#18202f; --muted:#5b6579; --line:#dde2ec;
+  --accent:#3556e0; --accent-ink:#ffffff; --accent-soft:#e5eafd;
+  --ok:#14825a; --ok-soft:#dff4ea; --bad:#c8402f; --bad-soft:#fbe4e0; --warn:#a86a00; --warn-soft:#fdf0d5;
+  --code-bg:#eef1f8; --code-ink:#8a2f6b; --shadow:0 1px 2px rgba(24,32,47,.06),0 8px 24px rgba(24,32,47,.06);
+}
+[data-theme="dark"]{
+  --bg:#0f1420; --card:#171e2e; --ink:#e7ebf5; --muted:#9aa5bd; --line:#2a3348;
+  --accent:#7c97ff; --accent-ink:#0f1420; --accent-soft:#222c4d;
+  --ok:#4fd1a0; --ok-soft:#14352b; --bad:#ff8a78; --bad-soft:#3d1f1b; --warn:#f2c14e; --warn-soft:#3a2f12;
+  --code-bg:#0e1320; --code-ink:#f2b8dd; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Atkinson Hyperlegible',system-ui,'Segoe UI',sans-serif;font-size:17px;line-height:1.55;transition:background .25s,color .25s}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hidden{display:none!important}
+.wrap{max-width:880px;margin:0 auto;padding:20px 16px 80px}
+
+/* Cabecera */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{font-weight:700;font-size:20px;letter-spacing:-.01em}
+.brand small{display:block;font-weight:400;font-size:14px;color:var(--muted)}
+.icon-btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-size:15px}
+.icon-btn:hover{border-color:var(--accent)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:24px}
+h2{margin:0 0 6px;font-size:24px;letter-spacing:-.01em}
+h3{margin:22px 0 8px;font-size:16px}
+.muted{color:var(--muted)}
+
+/* Pantalla de inicio */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:680px){.grid2{grid-template-columns:1fr}}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:110px;border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;text-align:left}
+.seg button b{display:block;font-size:15px}
+.seg button span{font-size:13px;color:var(--muted);line-height:1.3;display:block}
+.seg button.on{border-color:var(--accent);background:var(--accent-soft)}
+.field{margin-bottom:6px}
+.field label.t{display:block;font-weight:700;font-size:15px;margin:16px 0 8px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);cursor:pointer}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent)}
+.check span{font-size:14px;color:var(--muted);line-height:1.35}
+.check b{display:block;color:var(--ink);font-size:15px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:13px 22px;font-weight:700;font-size:17px;background:var(--accent);color:var(--accent-ink);transition:transform .08s,filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn.big{width:100%;margin-top:22px;padding:16px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.hist{margin-top:26px}
+.hist-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.hist-row:last-child{border-bottom:none}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-weight:700;font-size:14px;font-family:'JetBrains Mono',monospace}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.mid{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.link{background:none;border:none;color:var(--muted);text-decoration:underline;font-size:14px;padding:0}
+
+/* Test */
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px}
+.bar-row{display:flex;justify-content:space-between;align-items:center;font-size:15px;margin-bottom:8px;gap:10px}
+.bar-row .stat{font-family:'JetBrains Mono',monospace;font-size:14px}
+.progress{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress>i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .3s}
+.navgrid{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 4px}
+.chip{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);font-weight:700;font-size:14px;font-family:'JetBrains Mono',monospace;color:var(--muted)}
+.chip.answered{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.chip.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.chip.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip.cur{outline:3px solid var(--ink);outline-offset:1px}
+
+.qcard{margin-top:12px}
+.qmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-size:14px;color:var(--muted)}
+.tag{padding:2px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px}
+.tag.multi{background:var(--warn-soft);color:var(--warn)}
+.enun{font-size:19px;font-weight:700;line-height:1.5;margin-bottom:18px;max-width:75ch}
+code{font-family:'JetBrains Mono',monospace;font-size:.88em;background:var(--code-bg);color:var(--code-ink);padding:2px 7px;border-radius:6px;display:inline-block;line-height:1.5}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;transition:border-color .12s,background .12s}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;width:28px;height:28px;border-radius:8px;border:1.5px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:14px;font-family:'JetBrains Mono',monospace;background:var(--card);color:var(--muted)}
+.opt.multi .k{border-radius:50%}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel .k{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt.missed{border-style:dashed;border-color:var(--ok);background:transparent}
+.opt:disabled{cursor:default}
+.opt .tx{flex:1}
+.opt .mark{flex:none;font-size:13px;font-weight:700}
+.fb{margin-top:16px;padding:12px 14px;border-radius:12px;font-size:15px;font-weight:700}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}
+.fb.bad{background:var(--bad-soft);color:var(--bad)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}
+.nav .grow{flex:1}
+.hint{font-size:13px;color:var(--muted);margin-top:14px}
+kbd{font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--card)}
+
+/* Resultados */
+.res-head{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+.dial{--p:0;flex:none;width:190px;height:190px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c,var(--accent)) calc(var(--p)*1%),var(--line) 0)}
+.dial>div{width:150px;height:150px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center}
+.dial .n{font-size:54px;font-weight:700;line-height:1;letter-spacing:-.03em}
+.dial .n small{font-size:20px;color:var(--muted);font-weight:400}
+.dial .l{font-size:14px;font-weight:700;margin-top:-26px}
+.res-info{flex:1;min-width:230px}
+.res-info h2{font-size:28px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi b{display:block;font-size:22px;font-family:'JetBrains Mono',monospace}
+.kpi span{font-size:13px;color:var(--muted)}
+.alt{margin-top:12px;font-size:14px;color:var(--muted)}
+.rev-tools{display:flex;gap:8px;margin:26px 0 12px;flex-wrap:wrap;align-items:center}
+.rev-tools .seg button{min-width:0;flex:none;padding:7px 14px}
+.rev{background:var(--card);border:1px solid var(--line);border-left-width:6px;border-radius:14px;padding:18px;margin-bottom:14px}
+.rev.ok{border-left-color:var(--ok)}
+.rev.bad{border-left-color:var(--bad)}
+.rev .enun{font-size:17px;margin-bottom:12px}
+.rev .opt{padding:9px 12px;font-size:16px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+
+@media(max-width:520px){body{font-size:16px}.dial{width:160px;height:160px}.dial>div{width:126px;height:126px}.dial .n{font-size:44px}.card{padding:18px}.enun{font-size:18px}.kpis{grid-template-columns:1fr 1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand">Práctica UT1<small>Arquitectura web · cliente, servidor y HTTP</small></div>
+    <button class="icon-btn" id="btn-tema" aria-label="Cambiar tema">🌙 Tema oscuro</button>
+  </div>
+
+  <!-- INICIO -->
+  <section id="start">
+    <div class="card">
+      <h2>Prepara tu test</h2>
+      <p class="muted" style="margin:0 0 4px">Elige cómo quieres practicar. Al terminar recibirás una nota de 0 a 10.</p>
+
+      <div class="grid2">
+        <div class="field">
+          <label class="t">Modo</label>
+          <div class="seg" id="seg-modo">
+            <button class="on" data-v="examen"><b>Examen</b><span>Corriges al final, como en la prueba real</span></button>
+            <button data-v="practica"><b>Práctica</b><span>Ves si aciertas nada más responder</span></button>
+          </div>
+
+          <label class="t">Número de preguntas</label>
+          <div class="seg" id="seg-num">
+            <button data-v="10"><b>10</b></button>
+            <button class="on" data-v="20"><b>20</b></button>
+            <button data-v="30"><b>30</b></button>
+            <button data-v="999"><b>Todas</b></button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="t">Tipo de preguntas</label>
+          <div class="seg" id="seg-tipo">
+            <button class="on" data-v="todas"><b>Todas</b></button>
+            <button data-v="unica"><b>Una opción</b></button>
+            <button data-v="multiple"><b>Varias</b></button>
+          </div>
+
+          <label class="t">Calificación</label>
+          <label class="check">
+            <input type="checkbox" id="chk-pen">
+            <span><b>Los errores restan</b>Cada fallo quita un tercio de acierto. Las preguntas en blanco no restan.</span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn big" id="btn-start">Empezar test</button>
+      <div id="retry-box" class="hidden" style="margin-top:10px">
+        <button class="btn ghost big" id="btn-retry" style="margin-top:0"></button>
+      </div>
+    </div>
+
+    <div class="card hist" id="hist-card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <h2 style="font-size:20px">Tus últimos intentos</h2>
+        <button class="link" id="btn-clear">Borrar historial</button>
+      </div>
+      <div id="hist-list"></div>
+    </div>
+  </section>
+
+  <!-- TEST -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <div class="bar-row">
+        <span id="q-count"><b>Pregunta 1</b> de 10</span>
+        <span class="stat" id="q-timer">00:00</span>
+      </div>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="navgrid" id="navgrid"></div>
+    </div>
+
+    <div class="card qcard" id="qcard"></div>
+
+    <div class="nav">
+      <button class="btn ghost" id="btn-prev">← Anterior</button>
+      <span class="grow"></span>
+      <button class="btn ghost hidden" id="btn-check">Comprobar</button>
+      <button class="btn" id="btn-next">Siguiente →</button>
+      <button class="btn hidden" id="btn-finish">Terminar y corregir</button>
+    </div>
+    <p class="hint">Atajos: <kbd>1</kbd>–<kbd>6</kbd> o <kbd>A</kbd>–<kbd>F</kbd> eligen opción · <kbd>←</kbd> <kbd>→</kbd> navegan · <kbd>Enter</kbd> comprueba o avanza</p>
+  </section>
+
+  <!-- RESULTADOS -->
+  <section id="results" class="hidden">
+    <div class="card">
+      <div class="res-head">
+        <div class="dial" id="dial"><div><div><div class="n" id="r-nota">0</div></div></div></div>
+        <div class="res-info">
+          <h2 id="r-titulo"></h2>
+          <div class="muted" id="r-sub"></div>
+          <div class="kpis">
+            <div class="kpi"><b id="r-ok">0</b><span>Aciertos</span></div>
+            <div class="kpi"><b id="r-bad">0</b><span>Fallos</span></div>
+            <div class="kpi"><b id="r-blank">0</b><span>En blanco</span></div>
+          </div>
+          <div class="alt" id="r-alt"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btn-again">Nuevo test</button>
+        <button class="btn ghost hidden" id="btn-fails">Repetir solo las falladas</button>
+      </div>
+    </div>
+
+    <div class="rev-tools">
+      <b>Revisión:</b>
+      <div class="seg" id="seg-rev">
+        <button class="on" data-v="todas">Todas</button>
+        <button data-v="bad">Falladas</button>
+        <button data-v="ok">Acertadas</button>
+      </div>
+    </div>
+    <div id="rev-list"></div>
+  </section>
+
+</div>
+
+<script>
+/* =====================================================
+   BANCO DE PREGUNTAS
+   U(enunciado, [opciones], índice_correcto)       → una respuesta
+   M(enunciado, [opciones], [índices_correctos])   → varias respuestas
+   ===================================================== */
+const U=(e,o,c)=>({tipo:'unica',enun:e,opts:o,ok:[c]});
+const M=(e,o,c)=>({tipo:'multiple',enun:e,opts:o,ok:c});
+
+const BANCO=[
+// ---------- BLOQUE 1: SELECCIÓN ÚNICA ----------
+U(`Una aplicación oculta mediante código del cliente el botón Eliminar producto a los usuarios que no son administradores. Sin embargo, el servidor realiza la eliminación siempre que recibe la solicitud correspondiente, sin comprobar quién la ha enviado. ¿Cuál es el problema principal?`,
+ ["La única solución es ejecutar toda la aplicación en el navegador.","El servidor debe comprobar los permisos antes de realizar la operación, aunque el botón esté oculto en el cliente.","El problema es que los administradores nunca deben poder eliminar productos.","No existe ningún problema porque un botón oculto no puede utilizarse de cualquier otra forma."],1),
+U(`Un usuario pulsa Ver productos. El navegador solicita la información al servidor. La aplicación procesa la solicitud, obtiene los datos necesarios y genera una respuesta. Finalmente, el navegador muestra el resultado. ¿Cuál de las siguientes afirmaciones describe correctamente la situación?`,
+ ["Todo el procesamiento descrito se ha realizado exclusivamente en el navegador.","Todo el proceso se ha realizado exclusivamente en el servidor y el navegador no ha intervenido.","Han participado tanto el cliente como el servidor en el proceso.","Para que funcione, el navegador debe ejecutar necesariamente el código Python del servidor."],2),
+U(`Un formulario utiliza JavaScript para comprobar que la edad introducida sea mayor que 0. El programador decide que, como ya se ha comprobado en el navegador, el servidor aceptará siempre el valor recibido. ¿Cuál es la valoración correcta?`,
+ ["Es incorrecto: puede realizarse una comprobación inicial en cliente, pero el servidor debe validar definitivamente los datos recibidos.","Es correcto siempre que el formulario se muestre correctamente en pantalla.","Es correcto: cualquier dato validado mediante JavaScript puede considerarse seguro.","Es incorrecto únicamente porque JavaScript no puede realizar ninguna comprobación de formularios."],0),
+U(`Una aplicación utiliza Python en el servidor para calcular una tabla de multiplicar. ¿Qué recibe normalmente el navegador?`,
+ ["El resultado generado por el servidor.","El código Python completo que ha realizado el cálculo.","El intérprete de Python utilizado por el servidor.","El entorno virtual del proyecto."],0),
+U(`Observa el siguiente fragmento:<br><code>&lt;button onclick="mostrar()"&gt;Mostrar&lt;/button&gt;</code><br>En el modelo estudiado, ¿dónde se interpreta este elemento HTML?`,
+ ["En el navegador del cliente.","Únicamente en el servidor Python.","En la base de datos.","En el sistema operativo del servidor antes de enviar la página."],0),
+U(`Observa el siguiente fragmento:<br><code>for producto in productos:<br>&nbsp;&nbsp;&nbsp;&nbsp;resultado += producto.nombre</code><br>En el modelo utilizado durante el curso, ¿dónde se ejecutaría normalmente este código?`,
+ ["En el archivo HTML una vez descargado.","Directamente en el navegador del usuario.","En el servidor.","En la hoja de estilos CSS."],2),
+U(`¿Cuál de las siguientes afirmaciones sobre cliente y servidor es incorrecta?`,
+ ["El servidor puede procesar una petición y generar una respuesta.","Cliente y servidor pueden estar muy alejados físicamente cuando se comunican a través de una red.","Cliente y servidor deben encontrarse siempre en máquinas físicas diferentes.","El cliente solicita información o servicios."],2),
+U(`¿Cuál de las siguientes descripciones representa mejor una aplicación web?`,
+ ["Un documento que siempre contiene únicamente información estática.","Un programa que necesariamente se instala y ejecuta por completo en el equipo del usuario.","Una aplicación a la que normalmente se accede mediante un navegador y que puede comunicarse con uno o varios servidores.","Un programa que no puede comunicarse con otros equipos."],2),
+U(`Un alumno explica el funcionamiento de una tienda web de esta forma: "El navegador consulta directamente la base de datos para obtener los productos y, después, comunica al servidor lo que ha encontrado." ¿Cuál es el error principal de esta explicación?`,
+ ["El navegador no debería acceder directamente a la base de datos; la aplicación del servidor debe realizar ese acceso.","El error es utilizar un navegador como cliente.","El servidor nunca puede utilizar una base de datos.","Una tienda web no puede almacenar productos en una base de datos."],0),
+U(`Una empresa modifica su aplicación en el servidor. Al volver a entrar desde el navegador, todos los usuarios utilizan la nueva versión sin instalarla manualmente en sus equipos. ¿Qué característica de las aplicaciones web se refleja principalmente en esta situación?`,
+ ["La aplicación puede actualizarse centralmente en el servidor.","La aplicación deja de utilizar una arquitectura cliente-servidor.","El navegador pasa a almacenar toda la aplicación de forma permanente.","Cada usuario debe instalar localmente la nueva versión."],0),
+U(`Una página contiene un título y una lista de productos. El título tiene un estilo personalizado. Al pulsar un botón se modifica inmediatamente una parte de la interfaz. El contenido inicial de la lista ha sido generado por una aplicación escrita en Python. ¿Qué descripción representa mejor el papel de las tecnologías utilizadas?`,
+ ["Flask es el lenguaje de marcas que define la estructura y CSS ejecuta el código Python.","HTML define la estructura, CSS la apariencia, JavaScript la interacción en el navegador y Python/Flask genera contenido y lógica en el servidor.","CSS genera los productos, Python modifica exclusivamente el aspecto y HTML ejecuta la lógica del servidor.","JavaScript sustituye a todas las demás tecnologías y realiza por sí solo estructura, estilo y lógica del servidor."],1),
+U(`Dos usuarios solicitan la misma dirección /perfil, pero cada uno recibe una página con su propio nombre e información. ¿Qué describe mejor esta situación?`,
+ ["Es necesariamente un único archivo HTML estático idéntico para todos los usuarios.","Significa que CSS está generando los datos del usuario.","Es contenido dinámico generado por la aplicación.","Significa que el navegador está sustituyendo completamente al servidor."],2),
+U(`¿Cuál de las siguientes descripciones define mejor Flask?`,
+ ["Una hoja de estilos utilizada para modificar la apariencia de una página.","Un framework web que permite desarrollar aplicaciones utilizando Python.","Un navegador web diseñado para ejecutar páginas HTML.","Un lenguaje de programación que sustituye a Python."],1),
+U(`Observa el siguiente fragmento:<br><code>h1 {<br>&nbsp;&nbsp;&nbsp;&nbsp;font-size: 30px;<br>&nbsp;&nbsp;&nbsp;&nbsp;margin-bottom: 15px;<br>}</code><br>¿Qué tecnología aparece principalmente en este fragmento?`,
+ ["Python","CSS","HTML","Flask"],1),
+U(`Observa el siguiente fragmento:<br><code>&lt;h1&gt;Productos&lt;/h1&gt;<br>&lt;ul&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;Teclado&lt;/li&gt;<br>&lt;/ul&gt;</code><br>¿Qué tecnología aparece principalmente en este fragmento?`,
+ ["Python","Flask","CSS","HTML"],3),
+U(`Observa el siguiente fragmento:<br><code>total = 0<br>for precio in precios:<br>&nbsp;&nbsp;&nbsp;&nbsp;total += precio</code><br>¿Qué tecnología aparece principalmente en este fragmento?`,
+ ["CSS","Python","JavaScript","HTML"],1),
+U(`Observa el siguiente mensaje:<br><code>HTTP/1.1 200 OK<br>Content-Type: text/html</code><br>¿Qué representa?`,
+ ["Una respuesta HTTP generada por el servidor.","Una petición HTTP enviada por el cliente.","Una consulta SQL.","Una orden para instalar Flask."],0),
+U(`El servidor acaba de recibir:<br><code>GET /productos HTTP/1.1</code><br>¿Cuál es el siguiente paso lógico en el flujo estudiado?`,
+ ["Enviar una respuesta antes de procesar la petición.","Procesar la petición y determinar qué respuesta debe generar.","Convertir GET en un archivo CSS.","Cerrar automáticamente el navegador."],1),
+U(`Un formulario envía al servidor los datos de un nuevo alumno para que sean procesados. ¿Qué método utilizaríamos habitualmente?`,
+ ["GET","PATCH","DELETE","POST"],3),
+U(`¿Cuál de las siguientes direcciones utiliza HTTPS?`,
+ ["https://www.ejemplo.com","http://www.ejemplo.com","ftp://www.ejemplo.com","file://www.ejemplo.com"],0),
+U(`Un formulario envía datos para crear un nuevo recurso. El servidor lo crea correctamente. ¿Qué combinación resulta coherente?`,
+ ["PATCH + 301 Moved Permanently","DELETE + 500 Internal Server Error","GET + 404 Not Found","POST + 201 Created"],3),
+U(`Una aplicación solicita al servidor que elimine un recurso existente. ¿Qué método expresa mejor esa operación?`,
+ ["GET","DELETE","PATCH","POST"],1),
+U(`En la dirección <code>https://www.ejemplo.com/productos</code>, ¿qué parte permite identificar que se está utilizando HTTPS?`,
+ ["/productos","https","www.ejemplo.com",".com"],1),
+U(`Una aplicación utiliza HTTPS. ¿Significa esto que cualquier dato introducido por el usuario puede aceptarse sin validarlo?`,
+ ["Sí. HTTPS sustituye cualquier control de seguridad del servidor.","Sí. HTTPS garantiza que todos los datos enviados por el usuario sean correctos.","No, porque HTTPS solo puede utilizarse para descargar imágenes.","No. HTTPS protege la comunicación, pero la aplicación debe seguir validando los datos y aplicando medidas de seguridad."],3),
+U(`Durante la ejecución de una aplicación aparece:<br><code>"GET /noexiste HTTP/1.1" 404</code><br>¿Qué podemos deducir?`,
+ ["Se ha solicitado /noexiste y el servidor no ha encontrado el recurso.","El servidor ha realizado una redirección permanente.","El recurso se ha creado correctamente.","La petición se ha procesado correctamente con código 200."],0),
+U(`Observa el siguiente mensaje:<br><code>GET /productos HTTP/1.1<br>Host: www.ejemplo.com</code><br>¿Qué recurso está solicitando el cliente?`,
+ ["/productos","www.ejemplo.com","HTTP/1.1","GET"],0),
+U(`El usuario solicita /productos/999, pero ese recurso no existe. ¿Qué respuesta resulta más coherente?`,
+ ["404 Not Found","201 Created","500 Internal Server Error","200 OK"],0),
+U(`El servidor procesa correctamente la solicitud y devuelve el recurso solicitado. ¿Qué código es el más representativo?`,
+ ["403 Forbidden","200 OK","500 Internal Server Error","404 Not Found"],1),
+U(`El servidor procesa una operación y crea correctamente un nuevo recurso. ¿Qué código resulta apropiado?`,
+ ["500 OK","404 Created","201 Created","200 Not Found"],2),
+U(`Un usuario pulsa un enlace en una página y el navegador solicita un nuevo recurso al servidor. ¿Qué se inicia?`,
+ ["Una compilación del navegador.","Una instalación de Python.","Una consulta directa a una base de datos.","Una petición HTTP."],3),
+U(`¿Cuál de las siguientes opciones describe mejor HTTP?`,
+ ["Un sistema operativo especializado en servidores.","Un lenguaje de programación utilizado para crear páginas web.","Un protocolo utilizado para intercambiar información entre clientes y servidores web.","Una base de datos utilizada por los navegadores."],2),
+U(`El usuario quiere consultar un listado de alumnos sin modificarlo. ¿Qué método HTTP representa mejor esta operación?`,
+ ["POST","GET","DELETE","PATCH"],1),
+U(`Observa el siguiente mensaje:<br><code>GET /productos HTTP/1.1<br>Host: www.ejemplo.com</code><br>¿Qué representa?`,
+ ["Una instrucción de Python.","Una petición HTTP enviada por un cliente.","Una hoja de estilos.","Una respuesta HTTP generada por el servidor."],1),
+U(`El servidor conoce al usuario, pero este no tiene permiso para acceder al recurso solicitado. ¿Qué código encaja mejor?`,
+ ["401 Unauthorized","200 OK","403 Forbidden","404 Not Found"],2),
+U(`Se produce el siguiente intercambio:<br><code>GET /productos HTTP/1.1<br><br>HTTP/1.1 200 OK<br>Content-Type: text/html<br><br>&lt;h1&gt;Productos&lt;/h1&gt;</code><br>¿Qué descripción es correcta?`,
+ ["El navegador ha solicitado /productos y el servidor ha respondido correctamente con contenido HTML.","El servidor ha solicitado /productos al navegador y este ha respondido con un error.","La petición ha fallado porque 200 representa un error.","El navegador ha recibido código Python para ejecutarlo directamente."],0),
+U(`Observa:<br><code>POST /alumnos HTTP/1.1<br><br>nombre=Laura&amp;curso=2ASIR</code><br>¿Qué describe mejor esta petición?`,
+ ["Se está solicitando eliminar el recurso /alumnos.","Se está produciendo una redirección.","Se están enviando datos al servidor para que sean procesados.","El servidor está devolviendo una página HTML."],2),
+U(`¿Cuál de las siguientes afirmaciones sobre HTTP es falsa?`,
+ ["HTTP permite la comunicación entre clientes y servidores web.","Un navegador puede actuar como cliente HTTP.","HTTP utiliza un modelo de peticiones y respuestas.","HTTP es un lenguaje de programación."],3),
+
+// ---------- BLOQUE 2: SELECCIÓN MÚLTIPLE ----------
+M(`Selecciona todas las afirmaciones correctas sobre una aplicación web.`,
+ ["El servidor puede generar una respuesta para el cliente.","Puede utilizar un navegador como cliente.","Siempre debe instalarse como programa local en cada equipo cliente.","El navegador debe acceder directamente a la base de datos.","Todo su funcionamiento debe encontrarse obligatoriamente en el equipo del usuario.","Puede repartir sus componentes entre distintos equipos."],[0,1,5]),
+M(`Selecciona los tres ejemplos que representan mejor aplicaciones web según el modelo estudiado.`,
+ ["Un programa de escritorio que funciona íntegramente en el equipo y sin conexión a otros servicios.","Un aula virtual a la que los alumnos acceden mediante el navegador.","Una tienda en línea utilizada desde el navegador.","Una aplicación de banca electrónica utilizada desde el navegador.","Un reproductor multimedia instalado localmente que solo reproduce archivos del equipo.","Un editor de imágenes instalado localmente que no utiliza ningún servicio remoto."],[1,2,3]),
+M(`Selecciona los tres elementos que puede recibir normalmente el navegador como parte de una aplicación web.`,
+ ["Las credenciales privadas utilizadas por el servidor para acceder a sus servicios.","El código Python interno del servidor.","El código interno de la aplicación Flask que no forma parte de la respuesta.","CSS.","JavaScript.","HTML."],[3,4,5]),
+M(`Selecciona las tres tareas que corresponden habitualmente al procesamiento del lado servidor.`,
+ ["Ejecutar necesariamente el JavaScript recibido por el navegador.","Consultar o modificar información almacenada.","Mostrar directamente los elementos gráficos en la pantalla del usuario.","Interpretar obligatoriamente las reglas CSS de la página.","Aplicar la lógica principal de la aplicación.","Comprobar permisos antes de realizar una operación protegida."],[1,4,5]),
+M(`Selecciona las tres tareas que pueden corresponder a Python y Flask en una aplicación web.`,
+ ["Aplicar la lógica de funcionamiento de la aplicación.","Definir exclusivamente el color y el tamaño de los títulos.","Procesar una solicitud recibida por la aplicación.","Ser obligatoriamente el lenguaje utilizado para describir la estructura de una página HTML.","Sustituir al navegador del usuario.","Generar contenido dinámico que será enviado al cliente."],[0,2,5]),
+M(`Selecciona los tres objetivos relacionados con el uso de HTTPS.`,
+ ["Confidencialidad.","Autenticación del servidor.","Aumentar obligatoriamente la velocidad de la aplicación.","Integridad.","Eliminar todos los errores de programación.","Sustituir HTML por otro lenguaje."],[0,1,3]),
+M(`Selecciona los tres elementos que son métodos HTTP.`,
+ ["SELECT","GET","OPEN","POST","EXECUTE","DELETE"],[1,3,5]),
+
+// ---------- BLOQUE 3: COMPLETAR TEXTO (como opción única) ----------
+U(`<b>Completar texto:</b> En una aplicación web, el ______ envía una _______ al _____. Este la procesa y devuelve una ______. ¿Cuál es la secuencia correcta?`,
+ ["Servidor, petición, cliente, respuesta.","Cliente, petición, servidor, respuesta.","Navegador, respuesta, servidor, petición.","Cliente, respuesta, servidor, petición."],1),
+U(`<b>Completar texto:</b> En una aplicación web, el código _____ puede ejecutarse en el ______, mientras que durante este curso el código ______ se ejecutará principalmente en el _______. El cliente recibe normalmente el _______ generado. ¿Qué opciones completan correctamente el texto?`,
+ ["JavaScript, cliente, Python, servidor, resultado","Python, cliente, JavaScript, servidor, código","JavaScript, servidor, Python, cliente, resultado","Python, servidor, JavaScript, cliente, código"],0),
+U(`<b>Completar texto:</b> ________ define principalmente la estructura y el contenido del documento, mientras que ______ se utiliza para su presentación. Para añadir comportamiento en el navegador podemos utilizar ________. En el servidor utilizaremos _________ como lenguaje de programación junto con el framework _______. ¿Cuál es la secuencia correcta?`,
+ ["HTML, CSS, JavaScript, Python, Flask","CSS, HTML, Python, JavaScript, Flask","HTML, Python, CSS, JavaScript, Flask","Python, HTML, CSS, JavaScript, Flask"],0),
+U(`<b>Completar texto:</b> El _______ envía una ______ al ______. Este la procesa y genera una _______. ¿Cuál es la secuencia correcta?`,
+ ["Servidor, petición, cliente, respuesta.","Cliente, petición, servidor, respuesta.","Navegador, respuesta, servidor, petición.","Cliente, respuesta, servidor, petición."],1)
+];
+
+/* =====================================================
+   UTILIDADES Y ALMACENAMIENTO
+   ===================================================== */
+const $=id=>document.getElementById(id);
+const LET='ABCDEF';
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmtTime=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const fmtNota=n=>n.toFixed(1).replace('.',',');
+
+const S={qs:[],i:0,modo:'examen',pen:false,t0:0,timer:null,done:false,retry:false,secs:0};
+const cfg={modo:'examen',num:'20',tipo:'todas'};
+
+/* =====================================================
+   INICIO
+   ===================================================== */
+function segInit(id,key){
+  $(id).addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    $(id).querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); cfg[key]=b.dataset.v;
+  });
+}
+segInit('seg-modo','modo'); segInit('seg-num','num'); segInit('seg-tipo','tipo');
+
+function claseNota(n){return n>=7?'ok':n>=5?'mid':'bad'}
+
+function pintarInicio(){
+  const hist=store.get('ut1_hist',[]);
+  $('hist-card').classList.toggle('hidden',!hist.length);
+  $('hist-list').innerHTML=hist.slice(0,6).map(h=>`
+    <div class="hist-row">
+      <span>${h.fecha} · ${h.modo==='examen'?'Examen':'Práctica'} · ${h.ok}/${h.total}</span>
+      <span class="pill ${claseNota(h.nota)}">${fmtNota(h.nota)}</span>
+    </div>`).join('');
+  const fallos=store.get('ut1_fallos',[]);
+  $('retry-box').classList.toggle('hidden',!fallos.length);
+  $('btn-retry').textContent=`Repasar mis ${fallos.length} preguntas falladas`;
+}
+$('btn-clear').onclick=()=>{if(confirm('¿Borrar historial y preguntas falladas?')){store.set('ut1_hist',[]);store.set('ut1_fallos',[]);pintarInicio()}};
+
+/* =====================================================
+   TEST
+   ===================================================== */
+function crearPregunta(id){
+  const b=BANCO[id];
+  const op=shuffle(b.opts.map((t,i)=>({t,c:b.ok.includes(i)})));
+  return {id,tipo:b.tipo,enun:b.enun,opts:op.map(o=>o.t),ok:op.map((o,i)=>o.c?i:-1).filter(i=>i>=0),sel:new Set(),checked:false};
+}
+
+function empezar(retry){
+  let ids;
+  if(retry){ids=store.get('ut1_fallos',[]).filter(i=>i<BANCO.length)}
+  else{
+    ids=BANCO.map((_,i)=>i).filter(i=>cfg.tipo==='todas'||BANCO[i].tipo===cfg.tipo);
+    ids=shuffle(ids).slice(0,parseInt(cfg.num));
+  }
+  if(!ids.length){alert('No hay preguntas con esa selección.');return}
+  S.qs=shuffle(ids).map(crearPregunta);
+  S.i=0;S.done=false;S.retry=retry;
+  S.modo=retry?'practica':cfg.modo;
+  S.pen=$('chk-pen').checked;
+  S.secs=0;clearInterval(S.timer);
+  S.timer=setInterval(()=>{S.secs++;$('q-timer').textContent='⏱ '+fmtTime(S.secs)},1000);
+  $('q-timer').textContent='⏱ 00:00';
+  mostrar('quiz');
+  render();
+}
+
+function mostrar(v){
+  ['start','quiz','results'].forEach(id=>$(id).classList.toggle('hidden',id!==v));
+  window.scrollTo({top:0});
+}
+
+const esOk=q=>q.sel.size===q.ok.length&&q.ok.every(i=>q.sel.has(i));
+const revelada=q=>S.done||(S.modo==='practica'&&q.checked);
+
+function render(){
+  const q=S.qs[S.i], n=S.qs.length;
+  const contestadas=S.qs.filter(x=>x.sel.size).length;
+  $('q-count').innerHTML=`<b>Pregunta ${S.i+1}</b> de ${n} · ${contestadas} respondidas`;
+  $('prog').style.width=(contestadas/n*100)+'%';
+
+  $('navgrid').innerHTML=S.qs.map((x,i)=>{
+    let c='chip';
+    if(revelada(x))c+=esOk(x)?' ok':' bad';
+    else if(x.sel.size)c+=' answered';
+    if(i===S.i)c+=' cur';
+    return `<button class="${c}" data-i="${i}" aria-label="Ir a la pregunta ${i+1}">${i+1}</button>`;
+  }).join('');
+
+  const rev=revelada(q), multi=q.tipo==='multiple';
+  let html=`<div class="qmeta"><span class="tag ${multi?'multi':''}">${multi?`Varias respuestas (${q.ok.length})`:'Una respuesta'}</span></div>
+    <div class="enun">${q.enun}</div><div class="opts">`;
+  q.opts.forEach((t,i)=>{
+    const sel=q.sel.has(i), ok=q.ok.includes(i);
+    let c='opt'+(multi?' multi':'');
+    let mark='';
+    if(rev){
+      if(ok&&sel){c+=' right';mark='✓ Correcta'}
+      else if(!ok&&sel){c+=' wrong';mark='✗ Tu elección'}
+      else if(ok&&!sel){c+=' missed';mark='Era correcta'}
+    }else if(sel)c+=' sel';
+    html+=`<button class="${c}" data-o="${i}" ${rev?'disabled':''}><span class="k">${LET[i]}</span><span class="tx">${t}</span><span class="mark">${mark}</span></button>`;
+  });
+  html+='</div>';
+  if(rev&&S.modo==='practica'){
+    html+=esOk(q)?`<div class="fb ok">✓ ¡Correcto!</div>`:`<div class="fb bad">✗ Incorrecto. ${q.sel.size?'Revisa las marcadas en verde.':'No has respondido.'}</div>`;
+  }
+  $('qcard').innerHTML=html;
+
+  const ultima=S.i===n-1;
+  $('btn-prev').disabled=S.i===0;
+  $('btn-check').classList.toggle('hidden',!(S.modo==='practica'&&!q.checked&&multi));
+  $('btn-check').disabled=!q.sel.size;
+  $('btn-next').classList.toggle('hidden',ultima);
+  $('btn-finish').classList.toggle('hidden',!ultima);
+}
+
+function elegir(i){
+  const q=S.qs[S.i];
+  if(revelada(q)||i>=q.opts.length)return;
+  if(q.tipo==='multiple'){q.sel.has(i)?q.sel.delete(i):q.sel.add(i)}
+  else{q.sel=new Set([i]);if(S.modo==='practica')q.checked=true}
+  render();
+}
+function comprobar(){const q=S.qs[S.i];if(q.sel.size){q.checked=true;render()}}
+function ir(d){const j=S.i+d;if(j>=0&&j<S.qs.length){S.i=j;render();window.scrollTo({top:0,behavior:'smooth'})}}
+
+$('qcard').addEventListener('click',e=>{const b=e.target.closest('.opt');if(b)elegir(+b.dataset.o)});
+$('navgrid').addEventListener('click',e=>{const b=e.target.closest('.chip');if(b){S.i=+b.dataset.i;render()}});
+$('btn-prev').onclick=()=>ir(-1);
+$('btn-next').onclick=()=>ir(1);
+$('btn-check').onclick=comprobar;
+$('btn-finish').onclick=terminar;
+
+document.addEventListener('keydown',e=>{
+  if($('quiz').classList.contains('hidden')||e.ctrlKey||e.metaKey||e.altKey)return;
+  const k=e.key.toLowerCase();
+  if(k==='arrowright'){ir(1)}
+  else if(k==='arrowleft'){ir(-1)}
+  else if(k==='enter'){
+    const q=S.qs[S.i];
+    if(S.modo==='practica'&&!q.checked&&q.sel.size)comprobar();
+    else if(S.i<S.qs.length-1)ir(1);
+  }
+  else if(/^[1-6]$/.test(k))elegir(+k-1);
+  else if(/^[a-f]$/.test(k))elegir(LET.toLowerCase().indexOf(k));
+});
+
+/* =====================================================
+   CORRECCIÓN Y NOTA (0 a 10)
+   ===================================================== */
+function terminar(){
+  const blancas=S.qs.filter(q=>!q.sel.size).length;
+  if(blancas&&!confirm(`Tienes ${blancas} pregunta(s) sin responder. ¿Terminar y corregir de todos modos?`))return;
+  S.done=true;clearInterval(S.timer);
+  const n=S.qs.length;
+  const ok=S.qs.filter(esOk).length;
+  const blank=blancas;
+  const bad=n-ok-blank;
+  const notaSimple=ok/n*10;
+  const notaPen=Math.max(0,(ok-bad/3)/n*10);
+  const nota=S.pen?notaPen:notaSimple;
+
+  // Guardar historial y falladas
+  const d=new Date();
+  const fecha=d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const hist=store.get('ut1_hist',[]);
+  hist.unshift({fecha,modo:S.modo,ok,total:n,nota:Math.round(nota*10)/10});
+  store.set('ut1_hist',hist.slice(0,30));
+  let fallos=new Set(store.get('ut1_fallos',[]));
+  S.qs.forEach(q=>{esOk(q)?fallos.delete(q.id):fallos.add(q.id)});
+  store.set('ut1_fallos',[...fallos]);
+
+  // Pintar resultados
+  const color=nota>=7?'var(--ok)':nota>=5?'var(--warn)':'var(--bad)';
+  const dial=$('dial');
+  dial.style.setProperty('--c',color);
+  dial.style.setProperty('--p',nota*10);
+  $('r-nota').innerHTML=`${fmtNota(nota)}<small>/10</small>`;
+  const nivel=nota>=9?'Sobresaliente':nota>=7?'Notable':nota>=6?'Bien':nota>=5?'Suficiente':'Insuficiente';
+  const msg=nota>=9?'Dominas este tema.':nota>=7?'Muy buen nivel, afina los detalles.':nota>=5?'Aprobado, pero repasa los fallos.':'Necesitas repasar los apuntes y volver a intentarlo.';
+  $('r-titulo').textContent=nivel;
+  $('r-sub').textContent=`${msg} Tiempo: ${fmtTime(S.secs)}.`;
+  $('r-ok').textContent=ok;$('r-bad').textContent=bad;$('r-blank').textContent=blank;
+  $('r-alt').textContent=S.pen
+    ?`Nota sin penalización: ${fmtNota(notaSimple)}`
+    :`Si los errores restaran un tercio: ${fmtNota(notaPen)}`;
+  $('btn-fails').classList.toggle('hidden',!fallos.size);
+  $('btn-fails').textContent=`Repetir las ${fallos.size} falladas`;
+
+  filtroRev='todas';
+  $('seg-rev').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v==='todas'));
+  pintarRevision();
+  mostrar('results');
+}
+
+let filtroRev='todas';
+function pintarRevision(){
+  const lista=S.qs.map((q,i)=>({q,i})).filter(({q})=>filtroRev==='todas'||(filtroRev==='ok'?esOk(q):!esOk(q)));
+  if(!lista.length){$('rev-list').innerHTML=`<div class="card muted">No hay preguntas en este filtro.</div>`;return}
+  $('rev-list').innerHTML=lista.map(({q,i})=>{
+    const ok=esOk(q);
+    const ops=q.opts.map((t,j)=>{
+      const sel=q.sel.has(j),c=q.ok.includes(j);
+      let cl='opt',mark='';
+      if(c&&sel){cl+=' right';mark='✓ Correcta'}
+      else if(!c&&sel){cl+=' wrong';mark='✗ Tu elección'}
+      else if(c){cl+=' missed';mark='Era correcta'}
+      return `<div class="${cl}" style="cursor:default"><span class="k">${LET[j]}</span><span class="tx">${t}</span><span class="mark">${mark}</span></div>`;
+    }).join('');
+    return `<div class="rev ${ok?'ok':'bad'}">
+      <div class="qmeta"><span class="tag ${q.tipo==='multiple'?'multi':''}">Pregunta ${i+1}</span><span>${ok?'✓ Acertada':q.sel.size?'✗ Fallada':'Sin responder'}</span></div>
+      <div class="enun">${q.enun}</div><div class="opts">${ops}</div></div>`;
+  }).join('');
+}
+$('seg-rev').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  $('seg-rev').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');filtroRev=b.dataset.v;pintarRevision();
+});
+
+/* =====================================================
+   BOTONES GENERALES Y TEMA
+   ===================================================== */
+$('btn-start').onclick=()=>empezar(false);
+$('btn-retry').onclick=()=>empezar(true);
+$('btn-again').onclick=()=>{pintarInicio();mostrar('start')};
+$('btn-fails').onclick=()=>empezar(true);
+
+function aplicarTema(t){
+  document.documentElement.setAttribute('data-theme',t);
+  $('btn-tema').textContent=t==='dark'?'☀️ Tema claro':'🌙 Tema oscuro';
+  store.set('ut1_tema',t);
+}
+$('btn-tema').onclick=()=>aplicarTema(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+aplicarTema(store.get('ut1_tema',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+
+pintarInicio();
+</script>
+</body>
+</html>

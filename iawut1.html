@@ -783,7 +783,7 @@
         return array;
     }
 
-    function iniciarTest() {
+    f    function iniciarTest() {
         let cantidad = parseInt(document.getElementById('num-preguntas').value);
         if (cantidad > bancoPreguntas.length) cantidad = bancoPreguntas.length;
 
@@ -793,16 +793,13 @@
 
         // Barajar opciones y recalcular índices correctos
         preguntasTest = preguntasTest.map(p => {
-            // Creamos un array de objetos con el texto original y si era correcta o no
             let opcionesConEstado = p.opciones.map((texto, index) => ({
                 texto: texto,
                 esCorrecta: p.correctas.includes(index)
             }));
 
-            // Barajamos las opciones
             let opcionesBarajadas = mezclarArray(opcionesConEstado);
             
-            // Buscamos cuáles son los nuevos índices correctos
             let nuevasCorrectas = [];
             opcionesBarajadas.forEach((opt, index) => {
                 if (opt.esCorrecta) nuevasCorrectas.push(index);
@@ -831,8 +828,6 @@
         container.innerHTML = '';
 
         preguntasTest.forEach((p, index) => {
-            const divPregunta
-             preguntasTest.forEach((p, index) => {
             const divPregunta = document.createElement('div');
             divPregunta.className = 'pregunta';
             divPregunta.id = `pregunta-${index}`;
@@ -870,22 +865,18 @@
             const feedbackDiv = document.getElementById(`feedback-${index}`);
             const labels = document.querySelectorAll(`#pregunta-${index} .opcion`);
             
-            // Resetear bordes
             labels.forEach(l => l.style.border = "1px solid var(--border-color)");
             feedbackDiv.style.display = 'block';
 
-            // Obtener seleccionadas (radio o checkbox)
             const seleccionadas = document.querySelectorAll(`input[name="pregunta-${index}"]:checked`);
             const indicesSeleccionados = Array.from(seleccionadas).map(inp => parseInt(inp.value));
 
-            // Comparar conjuntos (orden no importa)
             const correctasOrdenadas = [...p.correctas].sort((a,b) => a-b);
             const seleccionadasOrdenadas = [...indicesSeleccionados].sort((a,b) => a-b);
             const esCorrecta = 
                 correctasOrdenadas.length === seleccionadasOrdenadas.length &&
                 correctasOrdenadas.every((v, i) => v === seleccionadasOrdenadas[i]);
 
-            // Marcar visualmente: correctas en verde, incorrectas seleccionadas en rojo
             p.correctas.forEach(c => {
                 document.getElementById(`label-${index}-${c}`).style.border = "2px solid #28a745";
             });
@@ -895,7 +886,6 @@
                 }
             });
 
-            // Texto de respuestas del usuario y correctas
             const textoUsuario = indicesSeleccionados.length > 0
                 ? indicesSeleccionados.map(i => `"${p.opciones[i]}"`).join(', ')
                 : 'Sin contestar';
@@ -937,16 +927,13 @@
 
         finalDiv.innerHTML = `<div style="font-size: 24px; margin-bottom: 20px;">${mensajeFinal}</div>${desgloseHTML}`;
 
-        // Deshabilitar botón de corregir, mostrar reiniciar
         document.getElementById('btn-corregir').classList.add('hidden');
         document.getElementById('btn-reiniciar').classList.remove('hidden');
         
-        // Deshabilitar los inputs
         document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
             input.disabled = true;
         });
 
-        // Scroll al resultado
         finalDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
