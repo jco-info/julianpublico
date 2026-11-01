@@ -832,3 +832,130 @@
 
         preguntasTest.forEach((p, index) => {
             const divPregunta
+             preguntasTest.forEach((p, index) => {
+            const divPregunta = document.createElement('div');
+            divPregunta.className = 'pregunta';
+            divPregunta.id = `pregunta-${index}`;
+
+            // Indicar el tipo de pregunta
+            const tipoTexto = p.tipo === 'multiple' 
+                ? '<span style="color:#f8c555; font-size:13px;">(Selección múltiple — marca todas las correctas)</span>' 
+                : '';
+
+            let html = `<div class="enunciado">${index + 1}. ${p.enunciado} ${tipoTexto}</div>`;
+            
+            p.opciones.forEach((opcion, optIndex) => {
+                const inputType = p.tipo === 'multiple' ? 'checkbox' : 'radio';
+                html += `
+                    <label class="opcion" id="label-${index}-${optIndex}">
+                        <input type="${inputType}" name="pregunta-${index}" value="${optIndex}">
+                        ${opcion}
+                    </label>
+                `;
+            });
+
+            html += `<div class="feedback" id="feedback-${index}"></div>`;
+            divPregunta.innerHTML = html;
+            container.appendChild(divPregunta);
+        });
+
+        window.scrollTo(0, 0);
+    }
+
+    function corregirTest() {
+        puntuacion = 0;
+        let desgloseHTML = '<h3>Resumen de respuestas:</h3><ul style="text-align:left; font-size: 16px;">';
+
+        preguntasTest.forEach((p, index) => {
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            const labels = document.querySelectorAll(`#pregunta-${index} .opcion`);
+            
+            // Resetear bordes
+            labels.forEach(l => l.style.border = "1px solid var(--border-color)");
+            feedbackDiv.style.display = 'block';
+
+            // Obtener seleccionadas (radio o checkbox)
+            const seleccionadas = document.querySelectorAll(`input[name="pregunta-${index}"]:checked`);
+            const indicesSeleccionados = Array.from(seleccionadas).map(inp => parseInt(inp.value));
+
+            // Comparar conjuntos (orden no importa)
+            const correctasOrdenadas = [...p.correctas].sort((a,b) => a-b);
+            const seleccionadasOrdenadas = [...indicesSeleccionados].sort((a,b) => a-b);
+            const esCorrecta = 
+                correctasOrdenadas.length === seleccionadasOrdenadas.length &&
+                correctasOrdenadas.every((v, i) => v === seleccionadasOrdenadas[i]);
+
+            // Marcar visualmente: correctas en verde, incorrectas seleccionadas en rojo
+            p.correctas.forEach(c => {
+                document.getElementById(`label-${index}-${c}`).style.border = "2px solid #28a745";
+            });
+            indicesSeleccionados.forEach(s => {
+                if (!p.correctas.includes(s)) {
+                    document.getElementById(`label-${index}-${s}`).style.border = "2px solid #dc3545";
+                }
+            });
+
+            // Texto de respuestas del usuario y correctas
+            const textoUsuario = indicesSeleccionados.length > 0
+                ? indicesSeleccionados.map(i => `"${p.opciones[i]}"`).join(', ')
+                : 'Sin contestar';
+            const textoCorrectas = p.correctas.map(i => `"${p.opciones[i]}"`).join(', ');
+
+            if (esCorrecta) {
+                puntuacion++;
+                feedbackDiv.className = 'feedback correcto';
+                feedbackDiv.textContent = '✅ ¡Correcto!';
+                desgloseHTML += `<li style="margin-bottom: 10px; color: #81c784;">✅ <strong>Pregunta ${index + 1}:</strong> Acertaste.</li>`;
+            } else {
+                feedbackDiv.className = 'feedback incorrecto';
+                feedbackDiv.innerHTML = `❌ Incorrecto. La respuesta correcta era: <strong>${textoCorrectas}</strong>`;
+                desgloseHTML += `<li style="margin-bottom: 10px; color: #e57373;">❌ <strong>Pregunta ${index + 1}:</strong> Tu respuesta fue: <em>${textoUsuario}</em>.<br>La correcta es: <strong>${textoCorrectas}</strong></li>`;
+            }
+        });
+
+        desgloseHTML += '</ul>';
+
+        document.getElementById('puntuacion').textContent = puntuacion;
+        
+        const finalDiv = document.getElementById('resultado-final');
+        finalDiv.style.display = 'block';
+        
+        let mensajeFinal = "";
+        if (puntuacion === preguntasTest.length) {
+            finalDiv.style.color = '#81c784';
+            finalDiv.style.backgroundColor = 'var(--correct-bg)';
+            mensajeFinal = `🎉 ¡Perfecto! Has acertado todas (${puntuacion}/${preguntasTest.length}).`;
+        } else if (puntuacion >= preguntasTest.length / 2) {
+            finalDiv.style.color = '#f8c555';
+            finalDiv.style.backgroundColor = '#3e3116';
+            mensajeFinal = `Has acertado ${puntuacion} de ${preguntasTest.length}. ¡Sigue practicando!`;
+        } else {
+            finalDiv.style.color = '#e57373';
+            finalDiv.style.backgroundColor = 'var(--incorrect-bg)';
+            mensajeFinal = `Has acertado ${puntuacion} de ${preguntasTest.length}. Necesitas repasar los apuntes.`;
+        }
+
+        finalDiv.innerHTML = `<div style="font-size: 24px; margin-bottom: 20px;">${mensajeFinal}</div>${desgloseHTML}`;
+
+        // Deshabilitar botón de corregir, mostrar reiniciar
+        document.getElementById('btn-corregir').classList.add('hidden');
+        document.getElementById('btn-reiniciar').classList.remove('hidden');
+        
+        // Deshabilitar los inputs
+        document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+            input.disabled = true;
+        });
+
+        // Scroll al resultado
+        finalDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function reiniciar() {
+        document.getElementById('quiz-screen').classList.add('hidden');
+        document.getElementById('start-screen').classList.remove('hidden');
+        window.scrollTo(0, 0);
+    }
+</script>
+
+</body>
+</html>
