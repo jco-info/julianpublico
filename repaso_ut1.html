@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repaso UT1 · Bases de datos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f4f9; --card:#ffffff; --ink:#18202f; --muted:#5b6579; --line:#dde2ec;
+  --accent:#3556e0; --accent-ink:#ffffff; --accent-soft:#e5eafd;
+  --ok:#14825a; --ok-soft:#dff4ea; --bad:#c8402f; --bad-soft:#fbe4e0; --warn:#a86a00; --warn-soft:#fdf0d5;
+  --code-bg:#eef1f8; --code-ink:#8a2f6b; --shadow:0 1px 2px rgba(24,32,47,.06),0 8px 24px rgba(24,32,47,.06);
+}
+[data-theme="dark"]{
+  --bg:#0f1420; --card:#171e2e; --ink:#e7ebf5; --muted:#9aa5bd; --line:#2a3348;
+  --accent:#7c97ff; --accent-ink:#0f1420; --accent-soft:#222c4d;
+  --ok:#4fd1a0; --ok-soft:#14352b; --bad:#ff8a78; --bad-soft:#3d1f1b; --warn:#f2c14e; --warn-soft:#3a2f12;
+  --code-bg:#0e1320; --code-ink:#f2b8dd; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Atkinson Hyperlegible',system-ui,'Segoe UI',sans-serif;font-size:17px;line-height:1.55;transition:background .25s,color .25s}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hidden{display:none!important}
+.wrap{max-width:880px;margin:0 auto;padding:20px 16px 80px}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{font-weight:700;font-size:20px;letter-spacing:-.01em}
+.brand small{display:block;font-weight:400;font-size:14px;color:var(--muted)}
+.icon-btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-size:15px}
+.icon-btn:hover{border-color:var(--accent)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:24px}
+h2{margin:0 0 6px;font-size:24px;letter-spacing:-.01em}
+.muted{color:var(--muted)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:680px){.grid2{grid-template-columns:1fr}}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:110px;border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;text-align:left}
+.seg button b{display:block;font-size:15px}
+.seg button span{font-size:13px;color:var(--muted);line-height:1.3;display:block}
+.seg button.on{border-color:var(--accent);background:var(--accent-soft)}
+.field label.t{display:block;font-weight:700;font-size:15px;margin:16px 0 8px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);cursor:pointer}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent)}
+.check span{font-size:14px;color:var(--muted);line-height:1.35}
+.check b{display:block;color:var(--ink);font-size:15px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:13px 22px;font-weight:700;font-size:17px;background:var(--accent);color:var(--accent-ink);transition:transform .08s,filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn.big{width:100%;margin-top:22px;padding:16px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.hist{margin-top:26px}
+.hist-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.hist-row:last-child{border-bottom:none}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-weight:700;font-size:14px;font-family:'JetBrains Mono',monospace}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.mid{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.link{background:none;border:none;color:var(--muted);text-decoration:underline;font-size:14px;padding:0}
+
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px}
+.bar-row{display:flex;justify-content:space-between;align-items:center;font-size:15px;margin-bottom:8px;gap:10px}
+.bar-row .stat{font-family:'JetBrains Mono',monospace;font-size:14px}
+.progress{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress>i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .3s}
+.navgrid{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 4px}
+.chip{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);font-weight:700;font-size:14px;font-family:'JetBrains Mono',monospace;color:var(--muted)}
+.chip.answered{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.chip.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.chip.part{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip.cur{outline:3px solid var(--ink);outline-offset:1px}
+
+.qcard{margin-top:12px}
+.qmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-size:14px;color:var(--muted)}
+.tag{padding:2px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px}
+.tag.multi{background:var(--warn-soft);color:var(--warn)}
+.enun{font-size:19px;font-weight:700;line-height:1.5;margin-bottom:18px;max-width:75ch}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;transition:border-color .12s,background .12s}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;width:28px;height:28px;border-radius:8px;border:1.5px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:14px;font-family:'JetBrains Mono',monospace;background:var(--card);color:var(--muted)}
+.opt.multi .k{border-radius:50%}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel .k{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt.missed{border-style:dashed;border-color:var(--ok);background:transparent}
+.opt:disabled{cursor:default}
+.opt .tx{flex:1}
+.opt .mark{flex:none;font-size:13px;font-weight:700}
+
+/* relacionar y respuesta corta */
+.rels{display:grid;gap:10px}
+.relrow{display:grid;grid-template-columns:1fr minmax(210px,50%);gap:12px;align-items:center;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg)}
+@media(max-width:620px){.relrow{grid-template-columns:1fr}}
+.relrow .rt{font-weight:700}
+.relrow.ok{border-color:var(--ok);background:var(--ok-soft)}
+.relrow.bad{border-color:var(--bad);background:var(--bad-soft)}
+.relrow .ra{font-size:15px}
+.relrow.ok .ra{color:var(--ok);font-weight:700}
+.relrow.bad .ra s{opacity:.75}
+select.sel{width:100%;border:1.5px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:8px 10px;font-size:15px;cursor:pointer}
+select.sel option{background:var(--card);color:var(--ink)}
+.txt{width:100%;border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:13px 14px;font-size:18px}
+.txt:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.short{padding:12px 14px;border-radius:12px;font-size:17px;border:1.5px solid}
+.short.ok{border-color:var(--ok);background:var(--ok-soft)}
+.short.bad{border-color:var(--bad);background:var(--bad-soft)}
+.short div+div{margin-top:4px}
+
+.fb{margin-top:16px;padding:12px 14px;border-radius:12px;font-size:15px;font-weight:700}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}
+.fb.part{background:var(--warn-soft);color:var(--warn)}
+.fb.bad{background:var(--bad-soft);color:var(--bad)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}
+.nav .grow{flex:1}
+.hint{font-size:13px;color:var(--muted);margin-top:14px}
+kbd{font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--card)}
+
+.res-head{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+.dial{--p:0;flex:none;width:190px;height:190px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c,var(--accent)) calc(var(--p)*1%),var(--line) 0)}
+.dial>div{width:150px;height:150px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center}
+.dial .n{font-size:54px;font-weight:700;line-height:1;letter-spacing:-.03em}
+.dial .n small{font-size:20px;color:var(--muted);font-weight:400}
+.res-info{flex:1;min-width:230px}
+.res-info h2{font-size:28px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi b{display:block;font-size:22px;font-family:'JetBrains Mono',monospace}
+.kpi span{font-size:13px;color:var(--muted)}
+.alt{margin-top:12px;font-size:14px;color:var(--muted)}
+.rev-tools{display:flex;gap:8px;margin:26px 0 12px;flex-wrap:wrap;align-items:center}
+.rev-tools .seg button{min-width:0;flex:none;padding:7px 14px}
+.rev{background:var(--card);border:1px solid var(--line);border-left-width:6px;border-radius:14px;padding:18px;margin-bottom:14px}
+.rev.ok{border-left-color:var(--ok)}
+.rev.part{border-left-color:var(--warn)}
+.rev.bad{border-left-color:var(--bad)}
+.rev .enun{font-size:17px;margin-bottom:12px}
+.rev .opt{padding:9px 12px;font-size:16px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+
+@media(max-width:520px){body{font-size:16px}.dial{width:160px;height:160px}.dial>div{width:126px;height:126px}.dial .n{font-size:44px}.card{padding:18px}.enun{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand">Repaso UT1<small>Bases de datos · configuración, logs, arquitectura y conexión</small></div>
+    <button class="icon-btn" id="btn-tema" aria-label="Cambiar tema">🌙 Tema oscuro</button>
+  </div>
+
+  <!-- INICIO -->
+  <section id="start">
+    <div class="card">
+      <h2>Prepara tu test</h2>
+      <p class="muted" style="margin:0 0 4px">Elige cómo quieres practicar. Al terminar recibirás una nota de 0 a 10.</p>
+
+      <div class="grid2">
+        <div class="field">
+          <label class="t">Modo</label>
+          <div class="seg" id="seg-modo">
+            <button class="on" data-v="examen"><b>Examen</b><span>Corriges al final, como en la prueba real</span></button>
+            <button data-v="practica"><b>Práctica</b><span>Ves si aciertas nada más responder</span></button>
+          </div>
+
+          <label class="t">Número de preguntas</label>
+          <div class="seg" id="seg-num">
+            <button data-v="10"><b>10</b></button>
+            <button class="on" data-v="20"><b>20</b></button>
+            <button data-v="30"><b>30</b></button>
+            <button data-v="999"><b>Todas</b></button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="t">Tipo de preguntas</label>
+          <div class="seg" id="seg-tipo">
+            <button class="on" data-v="todas"><b>Todas</b></button>
+            <button data-v="unica"><b>Una opción</b></button>
+            <button data-v="multiple"><b>Varias</b></button>
+            <button data-v="otras"><b>Relacionar y escribir</b></button>
+          </div>
+
+          <label class="t">Calificación</label>
+          <label class="check">
+            <input type="checkbox" id="chk-pen">
+            <span><b>Los errores restan</b>Cada fallo quita un tercio de acierto. Las preguntas en blanco no restan.</span>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn big" id="btn-start">Empezar test</button>
+      <div id="retry-box" class="hidden" style="margin-top:10px">
+        <button class="btn ghost big" id="btn-retry" style="margin-top:0"></button>
+      </div>
+    </div>
+
+    <div class="card hist" id="hist-card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <h2 style="font-size:20px">Tus últimos intentos</h2>
+        <button class="link" id="btn-clear">Borrar historial</button>
+      </div>
+      <div id="hist-list"></div>
+    </div>
+  </section>
+
+  <!-- TEST -->
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <div class="bar-row">
+        <span id="q-count"><b>Pregunta 1</b> de 10</span>
+        <span class="stat" id="q-timer">00:00</span>
+      </div>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="navgrid" id="navgrid"></div>
+    </div>
+
+    <div class="card qcard" id="qcard"></div>
+
+    <div class="nav">
+      <button class="btn ghost" id="btn-prev">← Anterior</button>
+      <span class="grow"></span>
+      <button class="btn ghost hidden" id="btn-check">Comprobar</button>
+      <button class="btn" id="btn-next">Siguiente →</button>
+      <button class="btn hidden" id="btn-finish">Terminar y corregir</button>
+    </div>
+    <p class="hint">Atajos: <kbd>1</kbd>–<kbd>8</kbd> o <kbd>A</kbd>–<kbd>H</kbd> eligen opción · <kbd>←</kbd> <kbd>→</kbd> navegan · <kbd>Enter</kbd> comprueba o avanza</p>
+  </section>
+
+  <!-- RESULTADOS -->
+  <section id="results" class="hidden">
+    <div class="card">
+      <div class="res-head">
+        <div class="dial" id="dial"><div><div class="n" id="r-nota">0</div></div></div>
+        <div class="res-info">
+          <h2 id="r-titulo"></h2>
+          <div class="muted" id="r-sub"></div>
+          <div class="kpis">
+            <div class="kpi"><b id="r-ok">0</b><span>Aciertos</span></div>
+            <div class="kpi"><b id="r-bad">0</b><span>Fallos</span></div>
+            <div class="kpi"><b id="r-blank">0</b><span>En blanco</span></div>
+          </div>
+          <div class="alt" id="r-alt"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btn-again">Nuevo test</button>
+        <button class="btn ghost hidden" id="btn-fails">Repetir solo las falladas</button>
+      </div>
+    </div>
+
+    <div class="rev-tools">
+      <b>Revisión:</b>
+      <div class="seg" id="seg-rev">
+        <button class="on" data-v="todas">Todas</button>
+        <button data-v="bad">Falladas</button>
+        <button data-v="ok">Acertadas</button>
+      </div>
+    </div>
+    <div id="rev-list"></div>
+  </section>
+
+</div>
+
+<script>
+/* =====================================================
+   BANCO DE PREGUNTAS (sin repetidas exactas)
+   U(enunciado, [opciones], índice_correcto)       → una respuesta
+   M(enunciado, [opciones], [índices_correctos])   → varias respuestas
+   R(enunciado, [[elemento, respuesta],...])       → relacionar
+   T(enunciado, [respuestas aceptadas])            → respuesta corta escrita
+   ===================================================== */
+const U=(e,o,c)=>({tipo:'unica',enun:e,opts:o,ok:[c]});
+const M=(e,o,c)=>({tipo:'multiple',enun:e,opts:o,ok:c});
+const R=(e,pares)=>({tipo:'rel',enun:e,pares});
+const T=(e,acc)=>({tipo:'corta',enun:e,acc});
+
+const BANCO=[
+// ---------- UNA RESPUESTA ----------
+U(`Tu centro educativo necesita un sistema para la biblioteca del aula con pocos usuarios, bajo mantenimiento y preferencia por integración con herramientas ofimáticas. ¿Cuál sería la opción más razonable según el enfoque de adecuación a necesidades?`,
+ ["Un servidor dedicado con arquitectura de tres capas y balanceador.","Un SGBD relacional empresarial con licenciamiento de alto coste por CPU.","Un clúster distribuido NoSQL con replicación en múltiples nodos.","Una hoja de cálculo o un gestor ofimático como LibreOffice Base/Access en modo monousuario."],3),
+U(`Elige la opción que mejor contribuye a una documentación útil y mantenible del servidor de BD:`,
+ ["Guardar únicamente el diagrama ER; los logs no aportan.","Confiar en la memoria del DBA y no generar documentos estáticos.","Incluir hardware, S.O., versiones del SGBD, tareas de mantenimiento, modelos ER y esquemas, usuarios y permisos.","Solo anotar la capacidad de disco y la versión de S.O.; el resto se infiere."],2),
+U(`Tras detectar latencias, decides revisar cómo el SGBD decide qué páginas permanecen en caché. ¿Qué componente del SGBD está más directamente implicado en esa decisión?`,
+ ["Gestor de memoria intermedia (buffer manager).","Motor de evaluación de consultas.","Intérprete DDL.","Compilador DML."],0),
+U(`Cambias el esquema lógico (p. ej., renombrar una columna y ajustar vistas) sin tocar el almacenamiento físico ni romper aplicaciones. ¿Qué independencia describes?`,
+ ["Independencia lógica","Independencia externa","Independencia física","No hay independencia"],0),
+U(`Tras configurar MySQL para aceptar conexiones remotas, los clientes de la red siguen sin conectar al host Windows. ¿Qué acción falta probablemente?`,
+ ["Crear una regla de entrada en el Firewall para el puerto TCP 3306","Deshabilitar el servicio MySQL para reiniciarlo manualmente en cada conexión","Activar el General Log de forma permanente","Cambiar el puerto de MySQL a 1521"],0),
+U(`Cuando cambiamos la organización física de los ficheros sin alterar el esquema conceptual, ¿qué tipo de independencia de datos estamos ejerciendo?`,
+ ["No existe independencia","Independencia lógica","Independencia externa","Independencia física"],3),
+U(`Vas a modificar la organización física de los ficheros de datos para optimizar I/O, sin alterar los esquemas y vistas. ¿Qué tipo de independencia estás ejerciendo?`,
+ ["No existe independencia en este caso.","Independencia externa.","Independencia física.","Independencia lógica."],2),
+U(`Un alumno intenta insertar filas en INFORMATION_SCHEMA de MySQL para 'crear' una tabla. Según el diseño del diccionario de datos, ¿por qué no funcionará?`,
+ ["Porque son vistas de solo lectura que representan metadatos estandarizados.","Porque esas tablas son temporales y cambian en cada sesión.","Porque el servidor se detiene automáticamente si se modifica.","Porque INFORMATION_SCHEMA está cifrada y no acepta conexiones."],0),
+U(`Para estudiar por qué ciertas consultas tardan demasiado, configuras un umbral y revisas el registro generado. ¿Qué mecanismo estás utilizando?`,
+ ["Binary Log porque registra todo el SQL con tiempos exactos en texto claro.","Error Log con trazas extendidas.","Slow Query Log controlado por la variable de tiempo umbral.","General Log con compresión de tiempos"],2),
+U(`Para analizar consultas que superan un umbral de tiempo, ¿qué registro debes habilitar y revisar?`,
+ ["Slow Query Log","General Log","Error Log","Binary Log"],0),
+U(`En Oracle XE, para permitir conexiones remotas, ¿qué componente debe estar configurado y en ejecución?`,
+ ["Oracle Net Listener (LISTENER) en el puerto 1521","Demonio mongod en el puerto 27017","Proceso postmaster en el puerto 5432","Servicio mysqld en el puerto 3306"],0),
+U(`¿En qué archivo se define en PostgreSQL el parámetro max_connections?`,
+ ["pg_ident.conf","pg_hba.conf","recovery.conf","postgresql.conf"],3),
+U(`En una aplicación que actualmente se conecta desde el cliente directamente a la base de datos (2 capas), se propone migrar a 3 capas. ¿Cuál es el beneficio principal que motiva ese cambio?`,
+ ["Permitir que el cliente invoque SQL sin autenticación.","Encapsular la lógica de negocio en un servidor de aplicaciones y mejorar el control de acceso y mantenimiento.","Eliminar la necesidad de un servidor de base de datos.","Distribuir la lógica de negocio en todos los clientes para reducir carga del servidor."],1),
+U(`Un equipo desarrolla una aplicación Java multiplataforma que debe ser independiente del sistema operativo. ¿Qué interfaz de acceso a datos encaja mejor con esa decisión tecnológica?`,
+ ["ODBC, porque está pensado para Java y es independiente de S.O.","ODBC y JDBC son equivalentes y se eligen al azar.","Ninguna, deben usar sockets crudos para mantener portabilidad.","JDBC, porque define una API para Java con independencia del S.O."],3),
+U(`Necesitas analizar todas las sentencias ejecutadas (no solo las que modifican datos) en orden cronológico para depurar un problema. ¿Qué registro es el más adecuado?`,
+ ["Binary Log.","Slow Query Log.","General Log.","Error Log."],2),
+U(`¿Cuál de los siguientes logs de MySQL contiene información de arranque, parada y errores críticos del servidor?`,
+ ["General Log","Slow Query Log","Binary Log","Error Log"],3),
+U(`Tras instalar PostgreSQL en Windows, ¿qué archivo se modifica específicamente para aceptar conexiones de clientes externos?`,
+ ["pg_log.conf","pg_network.conf","pg_hba.conf","postgresql.conf"],2),
+U(`¿Qué ajuste en mongod.conf permite aceptar conexiones desde otras máquinas?`,
+ ["Activar authorization a disabled","Establecer net.bindIp a una IP del servidor o 0.0.0.0","Subir maxIncomingConnections a 0","Cambiar storage.engine a MyISAM"],1),
+U(`En MySQL, ¿qué parámetro configurarías para fijar el máximo de conexiones simultáneas del servidor?`,
+ ["wait_timeout","connect_timeout","thread_cache_size","max_connections"],3),
+U(`Para una aplicación Java multiplataforma que accede a una base de datos, ¿qué interfaz estándar es la más adecuada?`,
+ ["JDBC","ADO.NET","ODBC","DB-Library"],0),
+U(`En una instalación de MySQL en Linux, ¿qué archivo de configuración debe editarse para permitir conexiones externas (p. ej., revisar bind-address)?`,
+ ["/etc/my.cnf.d/security.cnf","/etc/mysql/secure.conf","/var/lib/mysql/mysql.log","/etc/mysql/my.cnf"],3),
+U(`Para habilitar conexiones SSL en PostgreSQL de forma básica, ¿qué combinación es imprescindible?`,
+ ["Establecer ssl=on en postgresql.conf y disponer de server.key/server.crt válidos","Activar hostssl en pg_hba.conf y desactivar SSL en el servidor","Solo copiar server.key al directorio de datos","Editar pg_hba.conf para usar método trust"],0),
+
+// ---------- VARIAS RESPUESTAS ----------
+M(`Marca las acciones de endurecimiento (hardening) adecuadas tras instalar el SGBD.`,
+ ["MySQL: ejecutar mysql_secure_installation","Oracle XE: deshabilitar el listener para mayor seguridad","MongoDB: activar authorization (RBAC) y ajustar bindIp","MySQL: dejar general_log activo permanentemente en producción","MongoDB: exponer 0.0.0.0 sin autenticación en entornos sensibles","PostgreSQL: evitar trust en pg_hba.conf en redes","PostgreSQL: permitir peer a cualquier IP","MySQL: habilitar componente validate_password"],[0,2,5,7]),
+M(`Selecciona las afirmaciones correctas sobre la arquitectura ANSI/SPARC.`,
+ ["Hay múltiples esquemas conceptuales por BD","El objetivo es la independencia entre sistema y datos","Nivel externo: vistas personalizadas para cada tipo de usuario","Nivel interno: organización física y ficheros","Las correspondencias entre niveles se almacenan en el diccionario de datos","Nivel conceptual: estructura lógica global de la BD","El usuario opera habitualmente en el nivel interno"],[1,2,3,4,5]),
+M(`Elige las configuraciones adecuadas para un despliegue básico de MongoDB.`,
+ ["Usar WiredTiger como motor de almacenamiento","Desactivar authorization para facilitar el acceso","Configurar TLS/SSL cuando haya clientes fuera de la LAN","Permitir acceso admin sin password para tareas de mantenimiento","Ajustar net.bindIp para conexiones remotas","Subir maxIncomingConnections según necesidades","Escuchar solo en 127.0.0.1 en producción para mayor seguridad"],[0,2,4,5]),
+M(`Selecciona las opciones correctas para habilitar acceso de red y ajustar la instancia Oracle XE.`,
+ ["Conceder SYSDBA a todos los desarrolladores","Excluir el registro de auditoría para mejorar rendimiento","Usar TCPS (SSL) para cifrado de conexiones remotas","Listener activo en 1521 (u otro puerto configurado)","Aumentar processes/sessions si la carga lo requiere","Permitir remote_login_passwordfile=EXCLUSIVE y controlar acceso","Deshabilitar el listener para evitar conexiones no deseadas","Configurar sqlnet.ora y listener.ora según política"],[2,3,4,5,7]),
+M(`Selecciona las afirmaciones correctas acerca de los registros (logs) de MySQL.`,
+ ["Cache Log: lista de páginas del buffer pool","Optimizer Log: decisiones del planificador siempre en claro","Trace Log: seguimiento del parser por defecto en producción","DDL Log: registra solo DDL en texto plano por defecto","Error Log: arranque, parada y errores críticos","General Log: conexiones y todas las sentencias","Binary Log: transacciones para replicación/recuperación","Slow Query Log: consultas que exceden long_query_time"],[4,5,6,7]),
+M(`Marca los elementos que deben formar parte de la documentación de un servidor de BD en producción.`,
+ ["Versión del SGBD y del S.O.","Solo el tamaño del disco (el resto se infiere)","Usuarios, roles y permisos","Políticas de acceso, auditoría y simulacros","Procedimientos de backup y restauración","Modelo ER/esquema y objetos (vistas, disparadores)","Omitir cualquier mención a logs para reducir ruido documental","Puertos, rutas de datos y logs"],[0,2,3,4,5,7]),
+
+// ---------- RELACIONAR ----------
+R(`Relaciona cada tipo de log con su utilidad principal.`,[
+ ["Binary Log","Replicación y recuperación de transacciones"],
+ ["Slow Query Log","Detección de consultas que superan un umbral de tiempo"],
+ ["General Log","Registro cronológico de todas las sentencias SQL"],
+ ["Error Log","Registro de problemas y errores del servidor"]]),
+R(`Relaciona el motor con la característica destacada.`,[
+ ["Memory","Almacena tablas en RAM para acceso rápido"],
+ ["MyISAM","Más rápido en lecturas, sin soporte de transacciones"],
+ ["InnoDB","Soporta transacciones y claves foráneas"]]),
+R(`Relaciona la herramienta o interfaz con lo que permite hacer.`,[
+ ["SQL Developer","Interfaz gráfica para Oracle"],
+ ["pgAdmin","Administración gráfica para PostgreSQL"],
+ ["Workbench","Interfaz gráfica oficial de MySQL"],
+ ["MongoDB Compass","Cliente visual para MongoDB"]]),
+R(`Relaciona la tarea con el comando o herramienta más directamente asociada.`,[
+ ["Ver estado de servicio en Linux","systemctl status"],
+ ["Conectarse a Oracle en consola","sqlplus"],
+ ["Crear usuario en PostgreSQL","CREATE ROLE / CREATE USER"],
+ ["Ejecutar sentencias SQL en MySQL","mysql"]]),
+R(`Relaciona cada nivel de la arquitectura ANSI/SPARC con su descripción.`,[
+ ["Nivel interno","Almacenamiento físico y organización de ficheros"],
+ ["Nivel externo","Vistas de usuario, personalización de acceso"],
+ ["Nivel conceptual","Estructura lógica global de la base de datos"]]),
+R(`Relaciona el tipo de independencia con el escenario descrito.`,[
+ ["Independencia lógica","Modificar esquemas conceptuales sin afectar a programas"],
+ ["Independencia física","Cambiar ficheros de almacenamiento sin alterar esquemas"],
+ ["Independencia externa","Cambiar vistas sin afectar el modelo lógico"]]),
+
+// ---------- RESPUESTA CORTA ----------
+T(`Indica el tipo de independencia de datos que ejercemos cuando cambiamos la organización de ficheros y almacenamiento sin alterar esquemas ni vistas.`,["independencia física","física","independencia fisica de los datos"]),
+T(`Indica la herramienta gráfica más usada para administrar PostgreSQL.`,["pgAdmin","pgAdmin 4","pgAdmin4"]),
+T(`Indica el motor de MySQL que soporta transacciones y claves foráneas.`,["InnoDB"]),
+T(`¿Qué nivel de la arquitectura ANSI/SPARC recoge las vistas de usuario?`,["nivel externo","externo","esquema externo"]),
+T(`¿Cómo se llama el cliente de línea de comandos para conectarse a MySQL?`,["mysql","cliente mysql"]),
+T(`Escribe la API estándar para acceso a bases de datos en aplicaciones Java.`,["JDBC"]),
+T(`¿Cómo se llama el registro utilizado para detectar consultas lentas en MySQL?`,["Slow Query Log","slow query","slow log"])
+];
+
+/* =====================================================
+   UTILIDADES Y ALMACENAMIENTO
+   ===================================================== */
+const $=id=>document.getElementById(id);
+const LET='ABCDEFGH';
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmtTime=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const fmtNota=n=>n.toFixed(1).replace('.',',');
+const norm=s=>String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[_\-.,;:¿?¡!]/g,' ').replace(/\s+/g,' ').trim().replace(/^(el|la|los|las|un|una) /,'');
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+
+const S={qs:[],i:0,modo:'examen',pen:false,timer:null,done:false,secs:0};
+const cfg={modo:'examen',num:'20',tipo:'todas'};
+
+/* =====================================================
+   INICIO
+   ===================================================== */
+function segInit(id,key){
+  $(id).addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    $(id).querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); cfg[key]=b.dataset.v;
+  });
+}
+segInit('seg-modo','modo'); segInit('seg-num','num'); segInit('seg-tipo','tipo');
+
+const claseNota=n=>n>=7?'ok':n>=5?'mid':'bad';
+
+function pintarInicio(){
+  const hist=store.get('repaso_hist',[]);
+  $('hist-card').classList.toggle('hidden',!hist.length);
+  $('hist-list').innerHTML=hist.slice(0,6).map(h=>`
+    <div class="hist-row">
+      <span>${h.fecha} · ${h.modo==='examen'?'Examen':'Práctica'} · ${h.ok}/${h.total}</span>
+      <span class="pill ${claseNota(h.nota)}">${fmtNota(h.nota)}</span>
+    </div>`).join('');
+  const fallos=store.get('repaso_fallos',[]).filter(i=>i<BANCO.length);
+  $('retry-box').classList.toggle('hidden',!fallos.length);
+  $('btn-retry').textContent=`Repasar mis ${fallos.length} preguntas falladas`;
+}
+$('btn-clear').onclick=()=>{if(confirm('¿Borrar historial y preguntas falladas?')){store.set('repaso_hist',[]);store.set('repaso_fallos',[]);pintarInicio()}};
+
+/* =====================================================
+   TEST
+   ===================================================== */
+function crearPregunta(id){
+  const b=BANCO[id];
+  const q={id,tipo:b.tipo,enun:b.enun,checked:false};
+  if(b.tipo==='unica'||b.tipo==='multiple'){
+    const op=shuffle(b.opts.map((t,i)=>({t,c:b.ok.includes(i)})));
+    q.opts=op.map(o=>o.t);
+    q.ok=op.map((o,i)=>o.c?i:-1).filter(i=>i>=0);
+    q.sel=new Set();
+  }else if(b.tipo==='rel'){
+    q.pares=shuffle(b.pares);
+    q.opts=shuffle([...new Set(b.pares.map(p=>p[1]))]);
+    q.resp=b.pares.map(()=>'');
+  }else{
+    q.acc=b.acc;q.resp=[''];
+  }
+  return q;
+}
+
+function empezar(retry){
+  let ids;
+  if(retry){ids=store.get('repaso_fallos',[]).filter(i=>i<BANCO.length)}
+  else{
+    ids=BANCO.map((_,i)=>i).filter(i=>{
+      const t=BANCO[i].tipo;
+      return cfg.tipo==='todas'||t===cfg.tipo||(cfg.tipo==='otras'&&(t==='rel'||t==='corta'));
+    });
+    ids=shuffle(ids).slice(0,parseInt(cfg.num));
+  }
+  if(!ids.length){alert('No hay preguntas con esa selección.');return}
+  S.qs=shuffle(ids).map(crearPregunta);
+  S.i=0;S.done=false;
+  S.modo=retry?'practica':cfg.modo;
+  S.pen=$('chk-pen').checked;
+  S.secs=0;clearInterval(S.timer);
+  S.timer=setInterval(()=>{S.secs++;$('q-timer').textContent='⏱ '+fmtTime(S.secs)},1000);
+  $('q-timer').textContent='⏱ 00:00';
+  mostrar('quiz');
+  render();
+}
+
+function mostrar(v){
+  ['start','quiz','results'].forEach(id=>$(id).classList.toggle('hidden',id!==v));
+  window.scrollTo({top:0});
+}
+
+/* Puntuación de cada pregunta: de 0 a 1 */
+const aciertosRel=q=>q.resp.filter((r,k)=>r===q.pares[k][1]).length;
+function score(q){
+  if(q.tipo==='unica'||q.tipo==='multiple')
+    return q.sel.size===q.ok.length&&q.ok.every(i=>q.sel.has(i))?1:0;
+  if(q.tipo==='rel')return aciertosRel(q)/q.pares.length;
+  return q.acc.some(a=>norm(a)===norm(q.resp[0]))?1:0;
+}
+const esOk=q=>score(q)===1;
+const respondida=q=>(q.tipo==='unica'||q.tipo==='multiple')?q.sel.size>0:q.resp.some(r=>String(r).trim()!=='');
+const revelada=q=>S.done||(S.modo==='practica'&&q.checked);
+const claseRes=q=>{const s=score(q);return s===1?'ok':s>0?'part':'bad'};
+
+function etiqueta(q){
+  if(q.tipo==='unica')return ['Una respuesta',''];
+  if(q.tipo==='multiple')return [`Varias respuestas (${q.ok.length})`,'multi'];
+  if(q.tipo==='rel')return ['Relacionar','multi'];
+  return ['Respuesta corta','multi'];
+}
+
+/* Cuerpo de la pregunta (opciones, relaciones o campo de texto) */
+function cuerpo(q,rev,live){
+  if(q.tipo==='unica'||q.tipo==='multiple'){
+    const multi=q.tipo==='multiple';
+    let h='<div class="opts">';
+    q.opts.forEach((t,i)=>{
+      const sel=q.sel.has(i),ok=q.ok.includes(i);
+      let c='opt'+(multi?' multi':''),mark='';
+      if(rev){
+        if(ok&&sel){c+=' right';mark='✓ Correcta'}
+        else if(!ok&&sel){c+=' wrong';mark='✗ Tu elección'}
+        else if(ok){c+=' missed';mark='Era correcta'}
+      }else if(sel)c+=' sel';
+      const tag=live?'button':'div';
+      h+=`<${tag} class="${c}" ${live?`data-o="${i}"`:'style="cursor:default"'} ${live&&rev?'disabled':''}><span class="k">${LET[i]}</span><span class="tx">${t}</span><span class="mark">${mark}</span></${tag}>`;
+    });
+    return h+'</div>';
+  }
+  if(q.tipo==='rel'){
+    return '<div class="rels">'+q.pares.map(([item,corr],k)=>{
+      const r=q.resp[k];
+      if(rev){
+        if(r===corr)return `<div class="relrow ok"><span class="rt">${item}</span><span class="ra">✓ ${corr}</span></div>`;
+        return `<div class="relrow bad"><span class="rt">${item}</span><span class="ra">${r?`✗ <s>${r}</s>`:'<i>Sin responder</i>'}<br>→ <b>${corr}</b></span></div>`;
+      }
+      return `<div class="relrow"><span class="rt">${item}</span><select class="sel" data-k="${k}" aria-label="Respuesta para ${esc(item)}"><option value="">Elige…</option>${q.opts.map(o=>`<option value="${esc(o)}" ${o===r?'selected':''}>${o}</option>`).join('')}</select></div>`;
+    }).join('')+'</div>';
+  }
+  // corta
+  if(rev){
+    const ok=esOk(q);
+    return `<div class="short ${ok?'ok':'bad'}"><div><b>Tu respuesta:</b> ${q.resp[0].trim()?esc(q.resp[0]):'<i>sin responder</i>'}</div>${ok?'':`<div><b>Correcta:</b> ${q.acc[0]}</div>`}</div>`;
+  }
+  return `<input class="txt" type="text" autocomplete="off" spellcheck="false" placeholder="Escribe tu respuesta…" value="${esc(q.resp[0])}" aria-label="Tu respuesta">`;
+}
+
+/* Barra superior, cuadrícula y botones (no toca la tarjeta) */
+function chrome(){
+  const q=S.qs[S.i],n=S.qs.length;
+  const cont=S.qs.filter(respondida).length;
+  $('q-count').innerHTML=`<b>Pregunta ${S.i+1}</b> de ${n} · ${cont} respondidas`;
+  $('prog').style.width=(cont/n*100)+'%';
+  $('navgrid').innerHTML=S.qs.map((x,i)=>{
+    let c='chip';
+    if(revelada(x))c+=' '+claseRes(x);
+    else if(respondida(x))c+=' answered';
+    if(i===S.i)c+=' cur';
+    return `<button class="${c}" data-i="${i}" aria-label="Ir a la pregunta ${i+1}">${i+1}</button>`;
+  }).join('');
+  const ultima=S.i===n-1;
+  $('btn-prev').disabled=S.i===0;
+  $('btn-check').classList.toggle('hidden',!(S.modo==='practica'&&!q.checked&&q.tipo!=='unica'));
+  $('btn-check').disabled=!respondida(q);
+  $('btn-next').classList.toggle('hidden',ultima);
+  $('btn-finish').classList.toggle('hidden',!ultima);
+}
+
+function renderCard(){
+  const q=S.qs[S.i],rev=revelada(q);
+  const [txt,cls]=etiqueta(q);
+  let html=`<div class="qmeta"><span class="tag ${cls}">${txt}</span></div><div class="enun">${q.enun}</div>${cuerpo(q,rev,true)}`;
+  if(rev&&S.modo==='practica'){
+    const s=score(q);
+    html+=s===1?`<div class="fb ok">✓ ¡Correcto!</div>`
+      :s>0?`<div class="fb part">Casi: has acertado ${aciertosRel(q)} de ${q.pares.length}.</div>`
+      :`<div class="fb bad">✗ Incorrecto.${respondida(q)?'':' No has respondido.'}</div>`;
+  }
+  $('qcard').innerHTML=html;
+}
+function render(){chrome();renderCard()}
+
+function elegir(i){
+  const q=S.qs[S.i];
+  if(revelada(q)||(q.tipo!=='unica'&&q.tipo!=='multiple')||i>=q.opts.length)return;
+  if(q.tipo==='multiple'){q.sel.has(i)?q.sel.delete(i):q.sel.add(i)}
+  else{q.sel=new Set([i]);if(S.modo==='practica')q.checked=true}
+  render();
+}
+function comprobar(){const q=S.qs[S.i];if(respondida(q)){q.checked=true;render()}}
+function ir(d){const j=S.i+d;if(j>=0&&j<S.qs.length){S.i=j;render();window.scrollTo({top:0,behavior:'smooth'})}}
+
+$('qcard').addEventListener('click',e=>{const b=e.target.closest('.opt');if(b&&b.dataset.o!==undefined)elegir(+b.dataset.o)});
+$('qcard').addEventListener('change',e=>{
+  const s=e.target.closest('select.sel');if(!s)return;
+  S.qs[S.i].resp[+s.dataset.k]=s.value;chrome();
+});
+$('qcard').addEventListener('input',e=>{
+  if(!e.target.classList.contains('txt'))return;
+  S.qs[S.i].resp[0]=e.target.value;chrome();
+});
+$('qcard').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.classList.contains('txt')){
+    e.preventDefault();
+    const q=S.qs[S.i];
+    if(S.modo==='practica'&&!q.checked)comprobar();else ir(1);
+  }
+});
+$('navgrid').addEventListener('click',e=>{const b=e.target.closest('.chip');if(b){S.i=+b.dataset.i;render()}});
+$('btn-prev').onclick=()=>ir(-1);
+$('btn-next').onclick=()=>ir(1);
+$('btn-check').onclick=comprobar;
+$('btn-finish').onclick=terminar;
+
+document.addEventListener('keydown',e=>{
+  if($('quiz').classList.contains('hidden')||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;
+  const k=e.key.toLowerCase();
+  if(k==='arrowright')ir(1);
+  else if(k==='arrowleft')ir(-1);
+  else if(k==='enter'){
+    const q=S.qs[S.i];
+    if(S.modo==='practica'&&!q.checked&&respondida(q)&&q.tipo!=='unica')comprobar();
+    else if(S.i<S.qs.length-1)ir(1);
+  }
+  else if(/^[1-8]$/.test(k))elegir(+k-1);
+  else if(/^[a-h]$/.test(k))elegir(LET.toLowerCase().indexOf(k));
+});
+
+/* =====================================================
+   CORRECCIÓN Y NOTA (0 a 10)
+   ===================================================== */
+function terminar(){
+  const blank=S.qs.filter(q=>!respondida(q)).length;
+  if(blank&&!confirm(`Tienes ${blank} pregunta(s) sin responder. ¿Terminar y corregir de todos modos?`))return;
+  S.done=true;clearInterval(S.timer);
+  const n=S.qs.length;
+  const ok=S.qs.filter(esOk).length;
+  const bad=n-ok-blank;
+  const suma=S.qs.reduce((a,q)=>a+score(q),0);
+  const resta=S.qs.reduce((a,q)=>a+(respondida(q)?(1-score(q))/3:0),0);
+  const notaSimple=suma/n*10;
+  const notaPen=Math.max(0,(suma-resta)/n*10);
+  const nota=S.pen?notaPen:notaSimple;
+
+  const d=new Date();
+  const fecha=d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const hist=store.get('repaso_hist',[]);
+  hist.unshift({fecha,modo:S.modo,ok,total:n,nota:Math.round(nota*10)/10});
+  store.set('repaso_hist',hist.slice(0,30));
+  const fallos=new Set(store.get('repaso_fallos',[]));
+  S.qs.forEach(q=>{esOk(q)?fallos.delete(q.id):fallos.add(q.id)});
+  store.set('repaso_fallos',[...fallos]);
+
+  const color=nota>=7?'var(--ok)':nota>=5?'var(--warn)':'var(--bad)';
+  const dial=$('dial');
+  dial.style.setProperty('--c',color);
+  dial.style.setProperty('--p',nota*10);
+  $('r-nota').innerHTML=`${fmtNota(nota)}<small>/10</small>`;
+  const nivel=nota>=9?'Sobresaliente':nota>=7?'Notable':nota>=6?'Bien':nota>=5?'Suficiente':'Insuficiente';
+  const msg=nota>=9?'Dominas este tema.':nota>=7?'Muy buen nivel, afina los detalles.':nota>=5?'Aprobado, pero repasa los fallos.':'Necesitas repasar los apuntes y volver a intentarlo.';
+  $('r-titulo').textContent=nivel;
+  $('r-sub').textContent=`${msg} Tiempo: ${fmtTime(S.secs)}.`;
+  $('r-ok').textContent=ok;$('r-bad').textContent=bad;$('r-blank').textContent=blank;
+  $('r-alt').textContent=(S.pen
+    ?`Nota sin penalización: ${fmtNota(notaSimple)}.`
+    :`Si los errores restaran un tercio: ${fmtNota(notaPen)}.`)+' En las preguntas de relacionar cuentan las parejas acertadas.';
+  $('btn-fails').classList.toggle('hidden',!fallos.size);
+  $('btn-fails').textContent=`Repetir las ${fallos.size} falladas`;
+
+  filtroRev='todas';
+  $('seg-rev').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v==='todas'));
+  pintarRevision();
+  mostrar('results');
+}
+
+let filtroRev='todas';
+function pintarRevision(){
+  const lista=S.qs.map((q,i)=>({q,i})).filter(({q})=>filtroRev==='todas'||(filtroRev==='ok'?esOk(q):!esOk(q)));
+  if(!lista.length){$('rev-list').innerHTML=`<div class="card muted">No hay preguntas en este filtro.</div>`;return}
+  $('rev-list').innerHTML=lista.map(({q,i})=>{
+    const c=claseRes(q);
+    const estado=c==='ok'?'✓ Acertada':c==='part'?'◐ Parcial':respondida(q)?'✗ Fallada':'Sin responder';
+    const [txt,cls]=etiqueta(q);
+    return `<div class="rev ${c}">
+      <div class="qmeta"><span class="tag ${cls}">Pregunta ${i+1} · ${txt}</span><span>${estado}</span></div>
+      <div class="enun">${q.enun}</div>${cuerpo(q,true,false)}</div>`;
+  }).join('');
+}
+$('seg-rev').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  $('seg-rev').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');filtroRev=b.dataset.v;pintarRevision();
+});
+
+/* =====================================================
+   BOTONES GENERALES Y TEMA
+   ===================================================== */
+$('btn-start').onclick=()=>empezar(false);
+$('btn-retry').onclick=()=>empezar(true);
+$('btn-again').onclick=()=>{pintarInicio();mostrar('start')};
+$('btn-fails').onclick=()=>empezar(true);
+
+function aplicarTema(t){
+  document.documentElement.setAttribute('data-theme',t);
+  $('btn-tema').textContent=t==='dark'?'☀️ Tema claro':'🌙 Tema oscuro';
+  store.set('repaso_tema',t);
+}
+$('btn-tema').onclick=()=>aplicarTema(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+aplicarTema(store.get('repaso_tema',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+
+pintarInicio();
+</script>
+</body>
+</html>
