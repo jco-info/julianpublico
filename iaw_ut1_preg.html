@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repaso UT1 · Arquitectura web</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f4f9;--card:#fff;--ink:#18202f;--muted:#5b6579;--line:#dde2ec;--accent:#3556e0;--accent-ink:#fff;--accent-soft:#e5eafd;--ok:#14825a;--ok-soft:#dff4ea;--bad:#c8402f;--bad-soft:#fbe4e0;--warn:#a86a00;--warn-soft:#fdf0d5;--shadow:0 1px 2px rgba(24,32,47,.06),0 8px 24px rgba(24,32,47,.06)}
+[data-theme="dark"]{--bg:#0f1420;--card:#171e2e;--ink:#e7ebf5;--muted:#9aa5bd;--line:#2a3348;--accent:#7c97ff;--accent-ink:#0f1420;--accent-soft:#222c4d;--ok:#4fd1a0;--ok-soft:#14352b;--bad:#ff8a78;--bad-soft:#3d1f1b;--warn:#f2c14e;--warn-soft:#3a2f12;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Atkinson Hyperlegible',system-ui,'Segoe UI',sans-serif;font-size:17px;line-height:1.55;transition:background .25s,color .25s}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hidden{display:none!important}
+.wrap{max-width:880px;margin:0 auto;padding:20px 16px 80px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{font-weight:700;font-size:20px}
+.brand small{display:block;font-weight:400;font-size:14px;color:var(--muted)}
+.icon-btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 12px;font-size:15px}
+.icon-btn:hover{border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:24px}
+h2{margin:0 0 6px;font-size:24px}
+.muted{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:680px){.grid2{grid-template-columns:1fr}}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:110px;border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;text-align:left}
+.seg button b{display:block;font-size:15px}
+.seg button span{font-size:13px;color:var(--muted);line-height:1.3;display:block}
+.seg button.on{border-color:var(--accent);background:var(--accent-soft)}
+.field label.t{display:block;font-weight:700;font-size:15px;margin:16px 0 8px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);cursor:pointer}
+.check input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent)}
+.check span{font-size:14px;color:var(--muted);line-height:1.35}
+.check b{display:block;color:var(--ink);font-size:15px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:13px 22px;font-weight:700;font-size:17px;background:var(--accent);color:var(--accent-ink);transition:transform .08s,filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn.big{width:100%;margin-top:22px;padding:16px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.hist{margin-top:26px}
+.hist-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.hist-row:last-child{border-bottom:none}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-weight:700;font-size:14px;font-family:'JetBrains Mono',monospace}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.mid{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.link{background:none;border:none;color:var(--muted);text-decoration:underline;font-size:14px;padding:0}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px}
+.bar-row{display:flex;justify-content:space-between;align-items:center;font-size:15px;margin-bottom:8px;gap:10px}
+.bar-row .stat{font-family:'JetBrains Mono',monospace;font-size:14px}
+.progress{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.progress>i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .3s}
+.navgrid{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 4px}
+.chip{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);font-weight:700;font-size:14px;font-family:'JetBrains Mono',monospace;color:var(--muted)}
+.chip.answered{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.chip.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.chip.part{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.chip.cur{outline:3px solid var(--ink);outline-offset:1px}
+.qcard{margin-top:12px}
+.qmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-size:14px;color:var(--muted)}
+.tag{padding:2px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px}
+.tag.multi{background:var(--warn-soft);color:var(--warn)}
+.enun{font-size:19px;font-weight:700;line-height:1.5;margin-bottom:18px;max-width:75ch;white-space:pre-line}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;transition:border-color .12s,background .12s}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:none;width:28px;height:28px;border-radius:8px;border:1.5px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:14px;font-family:'JetBrains Mono',monospace;background:var(--card);color:var(--muted)}
+.opt.multi .k{border-radius:50%}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel .k{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.right .k{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt.missed{border-style:dashed;border-color:var(--ok);background:transparent}
+.opt:disabled{cursor:default}
+.opt .tx{flex:1}
+.opt .mark{flex:none;font-size:13px;font-weight:700}
+.rels{display:grid;gap:10px}
+.relrow{display:grid;grid-template-columns:1fr minmax(210px,50%);gap:12px;align-items:center;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg)}
+@media(max-width:620px){.relrow{grid-template-columns:1fr}}
+.relrow .rt{font-weight:700}
+.relrow.ok{border-color:var(--ok);background:var(--ok-soft)}
+.relrow.bad{border-color:var(--bad);background:var(--bad-soft)}
+.relrow .ra{font-size:15px}
+.relrow.ok .ra{color:var(--ok);font-weight:700}
+.relrow.bad .ra s{opacity:.75}
+select.sel{width:100%;border:1.5px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:8px 10px;font-size:15px;cursor:pointer}
+select.sel option{background:var(--card);color:var(--ink)}
+.fb{margin-top:16px;padding:12px 14px;border-radius:12px;font-size:15px;font-weight:700}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}
+.fb.part{background:var(--warn-soft);color:var(--warn)}
+.fb.bad{background:var(--bad-soft);color:var(--bad)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px;flex-wrap:wrap}
+.nav .grow{flex:1}
+.hint{font-size:13px;color:var(--muted);margin-top:14px}
+kbd{font-family:'JetBrains Mono',monospace;font-size:12px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;background:var(--card)}
+.res-head{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+.dial{--p:0;flex:none;width:190px;height:190px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--c,var(--accent)) calc(var(--p)*1%),var(--line) 0)}
+.dial>div{width:150px;height:150px;border-radius:50%;background:var(--card);display:grid;place-items:center;text-align:center}
+.dial .n{font-size:54px;font-weight:700;line-height:1;letter-spacing:-.03em}
+.dial .n small{font-size:20px;color:var(--muted);font-weight:400}
+.res-info{flex:1;min-width:230px}
+.res-info h2{font-size:28px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi b{display:block;font-size:22px;font-family:'JetBrains Mono',monospace}
+.kpi span{font-size:13px;color:var(--muted)}
+.alt{margin-top:12px;font-size:14px;color:var(--muted)}
+.rev-tools{display:flex;gap:8px;margin:26px 0 12px;flex-wrap:wrap;align-items:center}
+.rev-tools .seg button{min-width:0;flex:none;padding:7px 14px}
+.rev{background:var(--card);border:1px solid var(--line);border-left-width:6px;border-radius:14px;padding:18px;margin-bottom:14px}
+.rev.ok{border-left-color:var(--ok)}
+.rev.part{border-left-color:var(--warn)}
+.rev.bad{border-left-color:var(--bad)}
+.rev .enun{font-size:17px;margin-bottom:12px}
+.rev .opt{padding:9px 12px;font-size:16px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+@media(max-width:520px){body{font-size:16px}.dial{width:160px;height:160px}.dial>div{width:126px;height:126px}.dial .n{font-size:44px}.card{padding:18px}.enun{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">Repaso UT1<small>IAW · Arquitectura web, HTTP y entorno de trabajo</small></div>
+    <button class="icon-btn" id="btn-tema" aria-label="Cambiar tema">🌙 Tema oscuro</button>
+  </div>
+
+  <section id="start">
+    <div class="card">
+      <h2>Prepara tu test</h2>
+      <p class="muted" style="margin:0 0 4px">Elige cómo quieres practicar. Al terminar recibirás una nota de 0 a 10.</p>
+      <div class="grid2">
+        <div class="field">
+          <label class="t">Modo</label>
+          <div class="seg" id="seg-modo">
+            <button class="on" data-v="examen"><b>Examen</b><span>Corriges al final, como en la prueba real</span></button>
+            <button data-v="practica"><b>Práctica</b><span>Ves si aciertas nada más responder</span></button>
+          </div>
+          <label class="t">Número de preguntas</label>
+          <div class="seg" id="seg-num">
+            <button data-v="10"><b>10</b></button>
+            <button class="on" data-v="20"><b>20</b></button>
+            <button data-v="30"><b>30</b></button>
+            <button data-v="999"><b>Todas</b></button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="t">Tipo de preguntas</label>
+          <div class="seg" id="seg-tipo">
+            <button class="on" data-v="todas"><b>Todas</b></button>
+            <button data-v="unica"><b>Una opción</b></button>
+            <button data-v="multiple"><b>Varias</b></button>
+            <button data-v="otras"><b>Relacionar y completar</b></button>
+          </div>
+          <label class="t">Calificación</label>
+          <label class="check">
+            <input type="checkbox" id="chk-pen">
+            <span><b>Los errores restan</b>Cada fallo quita un tercio de acierto. Las preguntas en blanco no restan.</span>
+          </label>
+        </div>
+      </div>
+      <button class="btn big" id="btn-start">Empezar test</button>
+      <div id="retry-box" class="hidden" style="margin-top:10px">
+        <button class="btn ghost big" id="btn-retry" style="margin-top:0"></button>
+      </div>
+    </div>
+    <div class="card hist" id="hist-card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <h2 style="font-size:20px">Tus últimos intentos</h2>
+        <button class="link" id="btn-clear">Borrar historial</button>
+      </div>
+      <div id="hist-list"></div>
+    </div>
+  </section>
+
+  <section id="quiz" class="hidden">
+    <div class="bar">
+      <div class="bar-row">
+        <span id="q-count"><b>Pregunta 1</b> de 10</span>
+        <span class="stat" id="q-timer">00:00</span>
+      </div>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="navgrid" id="navgrid"></div>
+    </div>
+    <div class="card qcard" id="qcard"></div>
+    <div class="nav">
+      <button class="btn ghost" id="btn-prev">← Anterior</button>
+      <span class="grow"></span>
+      <button class="btn ghost hidden" id="btn-check">Comprobar</button>
+      <button class="btn" id="btn-next">Siguiente →</button>
+      <button class="btn hidden" id="btn-finish">Terminar y corregir</button>
+    </div>
+    <p class="hint">Atajos: <kbd>1</kbd>–<kbd>8</kbd> o <kbd>A</kbd>–<kbd>H</kbd> eligen opción · <kbd>←</kbd> <kbd>→</kbd> navegan · <kbd>Enter</kbd> comprueba o avanza</p>
+  </section>
+
+  <section id="results" class="hidden">
+    <div class="card">
+      <div class="res-head">
+        <div class="dial" id="dial"><div><div class="n" id="r-nota">0</div></div></div>
+        <div class="res-info">
+          <h2 id="r-titulo"></h2>
+          <div class="muted" id="r-sub"></div>
+          <div class="kpis">
+            <div class="kpi"><b id="r-ok">0</b><span>Aciertos</span></div>
+            <div class="kpi"><b id="r-bad">0</b><span>Fallos</span></div>
+            <div class="kpi"><b id="r-blank">0</b><span>En blanco</span></div>
+          </div>
+          <div class="alt" id="r-alt"></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btn-again">Nuevo test</button>
+        <button class="btn ghost hidden" id="btn-fails">Repetir solo las falladas</button>
+      </div>
+    </div>
+    <div class="rev-tools">
+      <b>Revisión:</b>
+      <div class="seg" id="seg-rev">
+        <button class="on" data-v="todas">Todas</button>
+        <button data-v="bad">Falladas</button>
+        <button data-v="ok">Acertadas</button>
+      </div>
+    </div>
+    <div id="rev-list"></div>
+  </section>
+</div>
+
+<script>
+/* =====================================================
+   BANCO DE PREGUNTAS (se conservan las repetidas)
+   A(enun, correcta, ...incorrectas)  → una respuesta (se mezclan al mostrar)
+   X(enun, [correctas], [incorrectas]) → varias respuestas
+   R(enun, [[elemento, respuesta],...]) → relacionar / completar / ordenar (desplegables)
+   O(enun, [pasos en orden correcto])   → ordenar pasos del 1 al N
+   H(enun, [huecos en orden])           → completar texto (cada hueco con desplegable)
+   ===================================================== */
+const A=(e,c,...w)=>({tipo:'unica',enun:e,opts:[c,...w],ok:[0]});
+const X=(e,c,w)=>({tipo:'multiple',enun:e,opts:[...c,...w],ok:c.map((_,i)=>i)});
+const R=(e,pares)=>({tipo:'rel',enun:e,pares});
+const O=(e,p)=>R(e,p.map((s,i)=>[s,String(i+1)]));
+const H=(e,h)=>R(e,h.map((s,i)=>['Hueco '+(i+1),s]));
+
+const BANCO=[
+// ---------- COMPLETAR TEXTO ----------
+H(`Completa el texto seleccionando el término adecuado en cada caso.\n\nEn una aplicación web, el [1] envía una [2] al [3]. Este la procesa y devuelve una [4], que será recibida habitualmente por el [5].`,["cliente","petición","servidor","respuesta","navegador"]),
+H(`Completa el texto seleccionando la opción correcta en cada caso.\n\nEn una aplicación web, el código [1] puede ejecutarse en el [2], mientras que durante este curso el código [3] se ejecutará principalmente en el [4]. El cliente recibe normalmente el [5] generado, no necesariamente el código utilizado para producirlo.`,["JavaScript","navegador","Python","servidor","resultado"]),
+H(`Completa el texto seleccionando la tecnología adecuada en cada caso.\n\n[1] define principalmente la estructura y el contenido del documento, mientras que [2] se utiliza para su presentación. Para añadir comportamiento en el navegador podemos utilizar [3]. En el servidor utilizaremos [4] como lenguaje de programación junto con el framework [5].`,["HTML","CSS","JavaScript","Python","Flask"]),
+H(`Completa el texto seleccionando la opción adecuada:\n\nEl [1] envía una [2] al [3]. Este la procesa y genera una [4].`,["cliente","petición","servidor","respuesta"]),
+
+// ---------- UNA RESPUESTA ----------
+A(`Una aplicación oculta mediante código del cliente el botón Eliminar producto a los usuarios que no son administradores. Sin embargo, el servidor realiza la eliminación siempre que recibe la solicitud correspondiente, sin comprobar quién la ha enviado.\n\n¿Cuál es el problema principal?`,
+ "El servidor debe comprobar los permisos antes de realizar la operación, aunque el botón esté oculto en el cliente.","La única solución es ejecutar toda la aplicación en el navegador.","El problema es que los administradores nunca deben poder eliminar productos.","No existe ningún problema porque un botón oculto no puede utilizarse de ninguna otra forma."),
+A(`Un usuario pulsa Ver productos. El navegador solicita la información al servidor. La aplicación procesa la solicitud, obtiene los datos necesarios y genera una respuesta. Finalmente, el navegador muestra el resultado.\n\n¿Cuál de las siguientes afirmaciones describe correctamente la situación?`,
+ "Han participado tanto el cliente como el servidor en el proceso.","Todo el procesamiento descrito se ha realizado exclusivamente en el navegador.","Todo el proceso se ha realizado exclusivamente en el servidor y el navegador no ha intervenido.","Para que funcione, el navegador debe ejecutar necesariamente el código Python del servidor."),
+A(`Un formulario utiliza JavaScript para comprobar que la edad introducida sea mayor que 0. El programador decide que, como ya se ha comprobado en el navegador, el servidor aceptará siempre el valor recibido.\n\n¿Cuál es la valoración correcta?`,
+ "Es incorrecto: puede realizarse una comprobación inicial en cliente, pero el servidor debe validar definitivamente los datos recibidos.","Es correcto siempre que el formulario se muestre correctamente en pantalla.","Es correcto: cualquier dato validado mediante JavaScript puede considerarse seguro.","Es incorrecto únicamente porque JavaScript no puede realizar ninguna comprobación de formularios."),
+A(`Una aplicación utiliza Python en el servidor para calcular una tabla de multiplicar. ¿Qué recibe normalmente el navegador?`,
+ "El resultado generado por el servidor.","El código Python completo que ha realizado el cálculo.","El intérprete de Python utilizado por el servidor.","El entorno virtual del proyecto."),
+A(`Observa el siguiente fragmento:\n\n<button onclick="mostrar()">Mostrar</button>\n\nEn el modelo estudiado, ¿dónde se interpreta este elemento HTML?`,
+ "En el navegador del cliente.","Únicamente en el servidor Python.","En la base de datos.","En el sistema operativo del servidor antes de enviar la página."),
+A(`Observa el siguiente fragmento:\n\nfor producto in productos:\n    resultado += producto.nombre\n\nEn el modelo utilizado durante el curso, ¿dónde se ejecutaría normalmente este código?`,
+ "En el servidor.","En el archivo HTML una vez descargado.","Directamente en el navegador del usuario.","En la hoja de estilos CSS."),
+A(`¿Cuál de las siguientes afirmaciones sobre cliente y servidor es incorrecta?`,
+ "Cliente y servidor deben encontrarse siempre en máquinas físicas diferentes.","El servidor puede procesar una petición y generar una respuesta.","Cliente y servidor pueden estar muy alejados físicamente cuando se comunican a través de una red.","El cliente solicita información o servicios."),
+A(`¿Cuál de las siguientes descripciones representa mejor una aplicación web?`,
+ "Una aplicación a la que normalmente se accede mediante un navegador y que puede comunicarse con uno o varios servidores.","Un documento que siempre contiene únicamente información estática.","Un programa que necesariamente se instala y ejecuta por completo en el equipo del usuario.","Un programa que no puede comunicarse con otros equipos."),
+A(`Un alumno explica el funcionamiento de una tienda web de esta forma: "El navegador consulta directamente la base de datos para obtener los productos y, después, comunica al servidor lo que ha encontrado."\n\n¿Cuál es el error principal de esta explicación?`,
+ "El navegador no debería acceder directamente a la base de datos; la aplicación del servidor debe realizar ese acceso.","El error es utilizar un navegador como cliente.","El servidor nunca puede utilizar una base de datos.","Una tienda web no puede almacenar productos en una base de datos."),
+A(`Un usuario pulsa el enlace Ver catálogo. Instantes después aparece en pantalla el listado de productos. En el modelo explicado, ¿qué elemento envía la petición inicial al servidor?`,
+ "El navegador del usuario.","El sistema operativo del servidor.","El servidor, antes de que el usuario realice ninguna acción.","La base de datos."),
+A(`¿Cuál de los siguientes esquemas representa mejor la arquitectura explicada para una aplicación web que utiliza una base de datos?`,
+ "Navegador <---> Servidor / aplicación <---> Base de datos","Servidor / aplicación ---> Navegador ---> Base de datos","Navegador <---> Base de datos <---> Servidor / aplicación","Base de datos ---> Navegador ---> Servidor / aplicación"),
+A(`Una empresa modifica su aplicación en el servidor. Al volver a entrar desde el navegador, todos los usuarios utilizan la nueva versión sin instalarla manualmente en sus equipos.\n\n¿Qué característica de las aplicaciones web se refleja principalmente en esta situación?`,
+ "La aplicación puede actualizarse centralmente en el servidor.","La aplicación deja de utilizar una arquitectura cliente-servidor.","El navegador pasa a almacenar toda la aplicación de forma permanente.","Cada usuario debe instalar localmente la nueva versión."),
+A(`Una página contiene un título y una lista de productos. El título tiene un estilo personalizado. Al pulsar un botón se modifica inmediatamente una parte de la interfaz. El contenido inicial de la lista ha sido generado por una aplicación escrita en Python.\n\n¿Qué descripción representa mejor el papel de las tecnologías utilizadas?`,
+ "HTML define la estructura, CSS la apariencia, JavaScript la interacción en el navegador y Python/Flask genera contenido y lógica en el servidor.","Flask es el lenguaje de marcas que define la estructura y CSS ejecuta el código Python.","CSS genera los productos, Python modifica exclusivamente el aspecto y HTML ejecuta la lógica del servidor.","JavaScript sustituye a todas las demás tecnologías y realiza por sí solo estructura, estilo y lógica del servidor."),
+A(`Dos usuarios solicitan la misma dirección /perfil, pero cada uno recibe una página con su propio nombre e información.\n\n¿Qué describe mejor esta situación?`,
+ "Es contenido dinámico generado por la aplicación.","Es necesariamente un único archivo HTML estático idéntico para todos los usuarios.","Significa que CSS está generando los datos del usuario.","Significa que el navegador está sustituyendo completamente al servidor."),
+A(`¿Cuál de las siguientes descripciones define mejor Flask?`,
+ "Un framework web que permite desarrollar aplicaciones utilizando Python.","Una hoja de estilos utilizada para modificar la apariencia de una página.","Un navegador web diseñado para ejecutar páginas HTML.","Un lenguaje de programación que sustituye a Python."),
+A(`Observa el siguiente fragmento:\n\nh1 {\n    font-size: 30px;\n    margin-bottom: 15px;\n}\n\n¿Qué tecnología aparece principalmente en este fragmento?`,
+ "CSS","Python","HTML","Flask"),
+A(`Observa el siguiente fragmento:\n\n<h1>Productos</h1>\n<ul>\n    <li>Teclado</li>\n    <li>Ratón</li>\n</ul>\n\n¿Qué tecnología aparece principalmente en este fragmento?`,
+ "HTML","Python","Flask","CSS"),
+A(`Observa el siguiente fragmento:\n\ntotal = 0\n\nfor precio in precios:\n    total += precio\n\n¿Qué tecnología aparece principalmente en este fragmento?`,
+ "Python","CSS","JavaScript","HTML"),
+A(`Observa el siguiente mensaje:\n\nHTTP/1.1 200 OK\nContent-Type: text/html\n\n¿Qué representa?`,
+ "Una respuesta HTTP generada por el servidor.","Una petición HTTP enviada por el cliente.","Una consulta SQL.","Una orden para instalar Flask."),
+A(`El servidor acaba de recibir:\n\nGET /productos HTTP/1.1\n\n¿Cuál es el siguiente paso lógico en el flujo estudiado?`,
+ "Procesar la petición y determinar qué respuesta debe generar.","Enviar una respuesta antes de procesar la petición.","Convertir GET en un archivo CSS.","Cerrar automáticamente el navegador"),
+A(`Un formulario envía al servidor los datos de un nuevo alumno para que sean procesados. ¿Qué método utilizaríamos habitualmente?`,
+ "POST","GET","PATCH","DELETE"),
+A(`¿Cuál de las siguientes direcciones utiliza HTTPS?`,
+ "https://www.ejemplo.com","http://www.ejemplo.com","ftp://www.ejemplo.com","file://www.ejemplo.com"),
+A(`Un formulario envía datos para crear un nuevo recurso. El servidor lo crea correctamente. ¿Qué combinación resulta coherente?`,
+ "POST + 201 Created","PATCH + 301 Moved Permanently","DELETE + 500 Internal Server Error","GET + 404 Not Found"),
+A(`Una aplicación solicita al servidor que elimine un recurso existente. ¿Qué método expresa mejor esa operación?`,
+ "DELETE","GET","PATCH","POST"),
+A(`En la dirección https://www.ejemplo.com/productos, ¿qué parte permite identificar que se está utilizando HTTPS?`,
+ "https","/productos","www.ejemplo.com",".com"),
+A(`Una aplicación utiliza HTTPS. ¿Significa esto que cualquier dato introducido por el usuario puede aceptarse sin validarlo?`,
+ "No. HTTPS protege la comunicación, pero la aplicación debe seguir validando los datos y aplicando medidas de seguridad.","Sí. HTTPS sustituye cualquier control de seguridad del servidor.","Sí. HTTPS garantiza que todos los datos enviados por el usuario sean correctos.","No, porque HTTPS solo puede utilizarse para descargar imágenes."),
+A(`Durante la ejecución de una aplicación aparece:\n\n"GET /noexiste HTTP/1.1" 404\n\n¿Qué podemos deducir?`,
+ "Se ha solicitado /noexiste y el servidor no ha encontrado el recurso.","El servidor ha realizado una redirección permanente.","El recurso se ha creado correctamente.","La petición se ha procesado correctamente con código 200."),
+A(`Observa el siguiente mensaje:\n\nGET /productos HTTP/1.1\nHost: www.ejemplo.com\n\n¿Qué recurso está solicitando el cliente?`,
+ "/productos","www.ejemplo.com","HTTP/1.1","GET"),
+A(`El usuario solicita /productos/999, pero ese recurso no existe. ¿Qué respuesta resulta más coherente?`,
+ "404 Not Found","201 Created","500 Internal Server Error","200 OK"),
+A(`El servidor procesa correctamente la solicitud y devuelve el recurso solicitado. ¿Qué código es el más representativo?`,
+ "200 OK","403 Forbidden","500 Internal Server Error","404 Not Found"),
+A(`El servidor procesa una operación y crea correctamente un nuevo recurso. ¿Qué código resulta apropiado?`,
+ "201 Created","500 OK","404 Created","200 Not Found"),
+A(`Un usuario pulsa un enlace en una página y el navegador solicita un nuevo recurso al servidor. ¿Qué se inicia?`,
+ "Una petición HTTP.","Una compilación del navegador.","Una instalación de Python.","Una consulta directa a una base de datos."),
+A(`¿Cuál de las siguientes opciones describe mejor HTTP?`,
+ "Un protocolo utilizado para intercambiar información entre clientes y servidores web.","Un sistema operativo especializado en servidores.","Un lenguaje de programación utilizado para crear páginas web.","Una base de datos utilizada por los navegadores."),
+A(`¿Cuál de los siguientes códigos pertenece a la familia de errores del servidor?`,
+ "500","200","404","301"),
+A(`El navegador acaba de mostrar correctamente una página al usuario. ¿Qué ha sucedido inmediatamente antes dentro del flujo simplificado estudiado?`,
+ "El navegador ha recibido e interpretado la respuesta del servidor.","El usuario ha instalado Flask.","El navegador ha creado un servidor web.","El servidor ha enviado una petición al navegador."),
+A(`El usuario quiere consultar un listado de alumnos sin modificarlo. ¿Qué método HTTP representa mejor esta operación?`,
+ "GET","POST","DELETE","PATCH"),
+A(`Observa el siguiente mensaje:\n\nGET /productos HTTP/1.1\nHost: www.ejemplo.com\n\n¿Qué representa?`,
+ "Una petición HTTP enviada por un cliente.","Una instrucción de Python.","Una hoja de estilos.","Una respuesta HTTP generada por el servidor."),
+A(`El servidor conoce al usuario, pero este no tiene permiso para acceder al recurso solicitado. ¿Qué código encaja mejor?`,
+ "403 Forbidden","401 Unauthorized","200 OK","404 Not Found"),
+A(`El servidor recibe la petición, pero la aplicación produce una excepción mientras intenta procesarla. ¿Qué código es el más coherente?`,
+ "500 Internal Server Error","301 Moved Permanently","404 Not Found","200 OK"),
+A(`Se produce el siguiente intercambio:\n\nGET /productos HTTP/1.1\n\nHTTP/1.1 200 OK\nContent-Type: text/html\n\n<h1>Productos</h1>\n\n¿Qué descripción es correcta?`,
+ "El navegador ha solicitado /productos y el servidor ha respondido correctamente con contenido HTML.","El servidor ha solicitado /productos al navegador y este ha respondido con un error.","La petición ha fallado porque 200 representa un error.","El navegador ha recibido código Python para ejecutarlo directamente."),
+A(`Observa:\n\nPOST /alumnos HTTP/1.1\n\nnombre=Laura&curso=2ASIR\n\n¿Qué describe mejor esta petición?`,
+ "Se están enviando datos al servidor para que sean procesados.","Se está solicitando eliminar el recurso /alumnos.","Se está produciendo una redirección.","El servidor está devolviendo una página HTML."),
+A(`¿Cuál de las siguientes afirmaciones sobre HTTP es falsa?`,
+ "HTTP es un lenguaje de programación.","HTTP permite la comunicación entre clientes y servidores web.","Un navegador puede actuar como cliente HTTP.","HTTP utiliza un modelo de peticiones y respuestas."),
+
+// ---------- VARIAS RESPUESTAS ----------
+X(`Selecciona todas las afirmaciones correctas sobre una aplicación web.`,
+ ["El servidor puede generar una respuesta para el cliente.","Puede utilizar un navegador como cliente.","Puede repartir sus componentes entre distintos equipos."],
+ ["Siempre debe instalarse como programa local en cada equipo cliente.","El navegador debe acceder directamente a la base de datos.","Todo su funcionamiento debe encontrarse obligatoriamente en el equipo del usuario."]),
+X(`Selecciona los tres ejemplos que representan mejor aplicaciones web según el modelo estudiado.`,
+ ["Un aula virtual a la que los alumnos acceden mediante el navegador.","Una tienda en línea utilizada desde el navegador.","Una aplicación de banca electrónica utilizada desde el navegador."],
+ ["Un programa de escritorio que funciona íntegramente en el equipo y sin conexión a otros servicios.","Un reproductor multimedia instalado localmente que solo reproduce archivos del equipo.","Un editor de imágenes instalado localmente que no utiliza ningún servicio remoto."]),
+X(`Selecciona los tres elementos que puede recibir normalmente el navegador como parte de una aplicación web.`,
+ ["CSS.","JavaScript.","HTML."],
+ ["Las credenciales privadas utilizadas por el servidor para acceder a sus servicios.","El código Python interno del servidor.","El código interno de la aplicación Flask que no forma parte de la respuesta."]),
+X(`Selecciona las tres tareas que corresponden habitualmente al procesamiento del lado servidor.`,
+ ["Consultar o modificar información almacenada.","Aplicar la lógica principal de la aplicación.","Comprobar permisos antes de realizar una operación protegida."],
+ ["Ejecutar necesariamente el JavaScript recibido por el navegador.","Mostrar directamente los elementos gráficos en la pantalla del usuario.","Interpretar obligatoriamente las reglas CSS de la página."]),
+X(`Selecciona las tres tareas que pueden corresponder a Python y Flask en una aplicación web.`,
+ ["Aplicar la lógica de funcionamiento de la aplicación.","Procesar una solicitud recibida por la aplicación.","Generar contenido dinámico que será enviado al cliente."],
+ ["Definir exclusivamente el color y el tamaño de los títulos.","Ser obligatoriamente el lenguaje utilizado para describir la estructura de una página HTML.","Sustituir al navegador del usuario."]),
+X(`Selecciona los tres objetivos relacionados con el uso de HTTPS.`,
+ ["Confidencialidad","Autenticación del servidor","Integridad"],
+ ["Aumentar obligatoriamente la velocidad de la aplicación","Eliminar todos los errores de programación","Sustituir HTML por otro lenguaje"]),
+X(`Selecciona los tres objetivos relacionados con el uso de HTTPS.`,
+ ["Confidencialidad","Autenticación del servidor","Integridad"],
+ ["Aumentar obligatoriamente la velocidad de la aplicación","Eliminar todos los errores de programación","Sustituir HTML por otro lenguaje"]),
+X(`Selecciona los tres elementos que son métodos HTTP.`,
+ ["GET","POST","DELETE"],["SELECT","OPEN","EXECUTE"]),
+
+// ---------- ORDENAR (1 = primer paso, 8 = último) ----------
+O(`Relaciona cada acción con la posición que ocupa en el flujo de una petición web. 1 es el primer paso y 8 el último.`,[
+ "El usuario introduce una dirección o pulsa un enlace.","El navegador genera y envía una petición.","El servidor recibe la petición.","La aplicación determina qué operación debe realizar.","Si es necesario, la aplicación obtiene información de otros servicios.","La aplicación genera el contenido de la respuesta.","El servidor envía la respuesta al navegador.","El navegador interpreta la respuesta y muestra el resultado al usuario."]),
+O(`Relaciona cada acción con su posición en el flujo. 1 es el primer paso y 8 el último.`,[
+ "El usuario solicita /productos.","El navegador genera la petición.","La petición llega al servidor.","El servidor procesa la petición.","El servidor genera una respuesta.","La respuesta llega al navegador.","El navegador interpreta el contenido.","El usuario visualiza el resultado."]),
+
+// ---------- RELACIONAR ----------
+R(`Indica qué modelo describe mejor cada característica.`,[
+ ["El programa suele instalarse directamente en el equipo del usuario.","Aplicación de Escritorio"],
+ ["El acceso se realiza habitualmente mediante un navegador.","Aplicación Web"],
+ ["Una actualización puede requerir modificar cada instalación local.","Aplicación de Escritorio"],
+ ["La aplicación puede actualizarse centralmente en el servidor.","Aplicación Web"],
+ ["Puede funcionar completamente de forma local y sin conexión a un servidor.","Aplicación de Escritorio"],
+ ["Habitualmente necesita comunicarse con uno o varios servidores.","Aplicación Web"]]),
+R(`Relaciona cada elemento con la definición que le corresponde.`,[
+ ["Solicita información o servicios.","Cliente"],
+ ["Comunicación enviada desde el cliente hacia el servidor.","Petición"],
+ ["Recibe solicitudes, las procesa y genera una respuesta.","Servidor"],
+ ["Programa que suele actuar como cliente en una aplicación web.","Navegador"],
+ ["Información que el servidor devuelve al cliente.","Respuesta"]]),
+R(`Relaciona cada tecnología con el entorno en el que se utiliza principalmente en el modelo estudiado.`,[
+ ["Python","Servidor"],["JavaScript","Cliente"],["HTML","Cliente"],["CSS","Cliente"],["Flask","Servidor"]]),
+R(`Relaciona cada decisión con el motivo que mejor la justifica.`,[
+ ["Realizar el acceso a los datos desde el servidor.","Permite mantener el acceso a la información bajo control de la aplicación."],
+ ["Validar de nuevo en el servidor los datos de un formulario.","Los datos procedentes del cliente pueden ser manipulados."],
+ ["Comprobar permisos en el servidor.","No se debe confiar en el entorno controlado por el usuario."],
+ ["Modificar inmediatamente el aspecto de un botón en el cliente.","Permite responder de forma inmediata en la interfaz."]]),
+R(`Relaciona cada tarea con el entorno en el que se realiza habitualmente.`,[
+ ["Generar dinámicamente una respuesta para el navegador.","Servidor"],
+ ["Comprobar los permisos de un usuario.","Servidor"],
+ ["Consultar información almacenada en una base de datos.","Servidor"],
+ ["Realizar una comprobación inicial de los datos de un formulario.","Cliente"],
+ ["Modificar la apariencia de un elemento de la interfaz.","Cliente"],
+ ["Validar definitivamente los datos recibidos.","Servidor"],
+ ["Mostrar u ocultar un elemento de la página.","Cliente"]]),
+R(`Relaciona cada tecnología con la función que desempeña principalmente en una aplicación web.`,[
+ ["Flask","Framework web utilizado con Python"],
+ ["HTML","Estructura y contenido del documento"],
+ ["Python","Lógica de la aplicación en el servidor"],
+ ["CSS","Presentación y apariencia"],
+ ["JavaScript","Comportamiento e interacción en el navegador"]]),
+R(`Relaciona cada acción con el componente que la realiza principalmente en el modelo estudiado.`,[
+ ["Ejecutar un cálculo con Python para producir una respuesta.","Aplicación"],
+ ["Generar una página cuyo contenido depende de una operación realizada por el programa.","Aplicación"],
+ ["Entregar un archivo CSS almacenado.","Servidor web"],
+ ["Entregar una imagen almacenada.","Servidor web"]]),
+R(`Relaciona cada necesidad con la tecnología que utilizaríamos principalmente para resolverla.`,[
+ ["Construir una aplicación web utilizando Python.","Flask"],
+ ["Realizar un cálculo en el servidor.","Python"],
+ ["Responder a la pulsación de un botón en el navegador.","JavaScript"],
+ ["Crear un título y una lista en una página.","HTML"],
+ ["Cambiar el tamaño y los márgenes de los títulos.","CSS"]]),
+R(`Clasifica cada ejemplo como contenido estático o contenido dinámico.`,[
+ ["Una página que muestra el nombre del usuario que ha accedido.","Contenido dinámico"],
+ ["Un listado creado al ejecutar código Python.","Contenido dinámico"],
+ ["Un archivo contacto.html almacenado y enviado sin modificar.","Contenido estático"],
+ ["Una imagen almacenada que se entrega directamente al navegador.","Contenido estático"]]),
+R(`Relaciona cada elemento con su función.`,[
+ ["Servidor","Procesa la petición y genera la respuesta"],
+ ["HTTP","Define las reglas de comunicación"],
+ ["Cliente","Envía la petición"],
+ ["Navegador","Cliente habitual en una aplicación web"]]),
+R(`Relaciona cada concepto con su descripción.`,[
+ ["HTTP","Comunicación web sin la protección proporcionada por HTTPS"],
+ ["HTTPS","Comunicación HTTP protegida mediante mecanismos criptográficos"],
+ ["Certificado digital","Ayuda a comprobar la identidad del servidor"]]),
+R(`Relaciona cada elemento con su significado.`,[
+ ["200","Código de estado"],["/productos","Recurso solicitado"],["GET","Método HTTP"],["text/html","Tipo de contenido"],["HTTP/1.1","Versión del protocolo"]]),
+R(`Relaciona cada método HTTP con su uso habitual.`,[
+ ["POST","Enviar información al servidor para que sea procesada"],
+ ["GET","Solicitar información o un recurso"],
+ ["DELETE","Solicitar la eliminación de un recurso"],
+ ["PATCH","Modificar parcialmente un recurso"],
+ ["PUT","Crear o reemplazar un recurso"]]),
+R(`Relaciona cada familia de códigos con su significado general.`,[
+ ["1xx","Información"],["4xx","Error relacionado con la petición del cliente"],["5xx","Error producido en el servidor"],["2xx","Operación correcta"],["3xx","Redirección"]]),
+R(`Relaciona cada situación con el código más apropiado.`,[
+ ["Es necesario que el usuario se autentique para acceder.","401 Unauthorized"],
+ ["El usuario está identificado, pero no tiene permiso para acceder.","403 Forbidden"]]),
+R(`Relaciona cada código con su significado.`,[
+ ["302 Found","Redirección temporal"],["301 Moved Permanently","Redirección permanente"]]),
+R(`Relaciona cada método HTTP con su uso habitual.`,[
+ ["DELETE","Solicitar la eliminación de un recurso"],
+ ["GET","Solicitar información o un recurso"],
+ ["PUT","Crear o reemplazar un recurso"],
+ ["POST","Enviar información al servidor para que sea procesada"],
+ ["PATCH","Modificar parcialmente un recurso"]])
+];
+
+/* =====================================================
+   UTILIDADES Y ALMACENAMIENTO
+   ===================================================== */
+const $=id=>document.getElementById(id);
+const LET='ABCDEFGH';
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmtTime=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+const fmtNota=n=>n.toFixed(1).replace('.',',');
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const numOrd=s=>/^\d+$/.test(s);
+
+const S={qs:[],i:0,modo:'examen',pen:false,timer:null,done:false,secs:0};
+const cfg={modo:'examen',num:'20',tipo:'todas'};
+
+function segInit(id,key){
+  $(id).addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b)return;
+    $(id).querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); cfg[key]=b.dataset.v;
+  });
+}
+segInit('seg-modo','modo'); segInit('seg-num','num'); segInit('seg-tipo','tipo');
+
+const claseNota=n=>n>=7?'ok':n>=5?'mid':'bad';
+
+function pintarInicio(){
+  const hist=store.get('iaw_ut1_hist',[]);
+  $('hist-card').classList.toggle('hidden',!hist.length);
+  $('hist-list').innerHTML=hist.slice(0,6).map(h=>`
+    <div class="hist-row">
+      <span>${h.fecha} · ${h.modo==='examen'?'Examen':'Práctica'} · ${h.ok}/${h.total}</span>
+      <span class="pill ${claseNota(h.nota)}">${fmtNota(h.nota)}</span>
+    </div>`).join('');
+  const fallos=store.get('iaw_ut1_fallos',[]).filter(i=>i<BANCO.length);
+  $('retry-box').classList.toggle('hidden',!fallos.length);
+  $('btn-retry').textContent=`Repasar mis ${fallos.length} preguntas falladas`;
+}
+$('btn-clear').onclick=()=>{if(confirm('¿Borrar historial y preguntas falladas?')){store.set('iaw_ut1_hist',[]);store.set('iaw_ut1_fallos',[]);pintarInicio()}};
+
+/* =====================================================
+   TEST
+   ===================================================== */
+function crearPregunta(id){
+  const b=BANCO[id];
+  const q={id,tipo:b.tipo,enun:b.enun,checked:false};
+  if(b.tipo==='unica'||b.tipo==='multiple'){
+    const op=shuffle(b.opts.map((t,i)=>({t,c:b.ok.includes(i)})));
+    q.opts=op.map(o=>o.t);
+    q.ok=op.map((o,i)=>o.c?i:-1).filter(i=>i>=0);
+    q.sel=new Set();
+  }else{
+    const ord=b.pares.every(p=>numOrd(p[1]));
+    q.pares=ord&&b.pares.length>2&&!b.pares[0][0].startsWith('Hueco')?shuffle(b.pares):(b.pares[0][0].startsWith('Hueco')?b.pares:shuffle(b.pares));
+    const u=[...new Set(b.pares.map(p=>p[1]))];
+    q.opts=ord?u.sort((a,c)=>a-c):shuffle(u);
+    q.resp=b.pares.map(()=>'');
+  }
+  return q;
+}
+
+function empezar(retry){
+  let ids;
+  if(retry){ids=store.get('iaw_ut1_fallos',[]).filter(i=>i<BANCO.length)}
+  else{
+    ids=BANCO.map((_,i)=>i).filter(i=>{
+      const t=BANCO[i].tipo;
+      return cfg.tipo==='todas'||t===cfg.tipo||(cfg.tipo==='otras'&&t==='rel');
+    });
+    ids=shuffle(ids).slice(0,parseInt(cfg.num));
+  }
+  if(!ids.length){alert('No hay preguntas con esa selección.');return}
+  S.qs=shuffle(ids).map(crearPregunta);
+  S.i=0;S.done=false;
+  S.modo=retry?'practica':cfg.modo;
+  S.pen=$('chk-pen').checked;
+  S.secs=0;clearInterval(S.timer);
+  S.timer=setInterval(()=>{S.secs++;$('q-timer').textContent='⏱ '+fmtTime(S.secs)},1000);
+  $('q-timer').textContent='⏱ 00:00';
+  mostrar('quiz');
+  render();
+}
+
+function mostrar(v){
+  ['start','quiz','results'].forEach(id=>$(id).classList.toggle('hidden',id!==v));
+  window.scrollTo({top:0});
+}
+
+const aciertosRel=q=>q.resp.filter((r,k)=>r===q.pares[k][1]).length;
+function score(q){
+  if(q.tipo==='unica'||q.tipo==='multiple')
+    return q.sel.size===q.ok.length&&q.ok.every(i=>q.sel.has(i))?1:0;
+  return aciertosRel(q)/q.pares.length;
+}
+const esOk=q=>score(q)===1;
+const respondida=q=>(q.tipo==='unica'||q.tipo==='multiple')?q.sel.size>0:q.resp.some(r=>r!=='');
+const revelada=q=>S.done||(S.modo==='practica'&&q.checked);
+const claseRes=q=>{const s=score(q);return s===1?'ok':s>0?'part':'bad'};
+
+function etiqueta(q){
+  if(q.tipo==='unica')return ['Una respuesta',''];
+  if(q.tipo==='multiple')return [`Varias respuestas (${q.ok.length})`,'multi'];
+  if(q.pares.every(p=>numOrd(p[1])))return ['Ordenar pasos','multi'];
+  if(q.pares[0][0].startsWith('Hueco'))return ['Completar texto','multi'];
+  return ['Relacionar','multi'];
+}
+
+/* Enunciado: en los textos con huecos se resalta [n] */
+function enun(q){
+  let h=esc(q.enun);
+  if(q.tipo==='rel'&&q.pares[0][0].startsWith('Hueco'))h=h.replace(/\[(\d)\]/g,'<u>&nbsp;$1&nbsp;</u>');
+  return h;
+}
+
+function cuerpo(q,rev,live){
+  if(q.tipo==='unica'||q.tipo==='multiple'){
+    const multi=q.tipo==='multiple';
+    let h='<div class="opts">';
+    q.opts.forEach((t,i)=>{
+      const sel=q.sel.has(i),ok=q.ok.includes(i);
+      let c='opt'+(multi?' multi':''),mark='';
+      if(rev){
+        if(ok&&sel){c+=' right';mark='✓ Correcta'}
+        else if(!ok&&sel){c+=' wrong';mark='✗ Tu elección'}
+        else if(ok){c+=' missed';mark='Era correcta'}
+      }else if(sel)c+=' sel';
+      const tag=live?'button':'div';
+      h+=`<${tag} class="${c}" ${live?`data-o="${i}"`:'style="cursor:default"'} ${live&&rev?'disabled':''}><span class="k">${LET[i]}</span><span class="tx">${esc(t)}</span><span class="mark">${mark}</span></${tag}>`;
+    });
+    return h+'</div>';
+  }
+  return '<div class="rels">'+q.pares.map(([item,corr],k)=>{
+    const r=q.resp[k];
+    if(rev){
+      if(r===corr)return `<div class="relrow ok"><span class="rt">${esc(item)}</span><span class="ra">✓ ${esc(corr)}</span></div>`;
+      return `<div class="relrow bad"><span class="rt">${esc(item)}</span><span class="ra">${r?`✗ <s>${esc(r)}</s>`:'<i>Sin responder</i>'}<br>→ <b>${esc(corr)}</b></span></div>`;
+    }
+    return `<div class="relrow"><span class="rt">${esc(item)}</span><select class="sel" data-k="${k}" aria-label="Respuesta para ${esc(item)}"><option value="">Elige…</option>${q.opts.map(o=>`<option value="${esc(o)}" ${o===r?'selected':''}>${esc(o)}</option>`).join('')}</select></div>`;
+  }).join('')+'</div>';
+}
+
+function chrome(){
+  const q=S.qs[S.i],n=S.qs.length;
+  const cont=S.qs.filter(respondida).length;
+  $('q-count').innerHTML=`<b>Pregunta ${S.i+1}</b> de ${n} · ${cont} respondidas`;
+  $('prog').style.width=(cont/n*100)+'%';
+  $('navgrid').innerHTML=S.qs.map((x,i)=>{
+    let c='chip';
+    if(revelada(x))c+=' '+claseRes(x);
+    else if(respondida(x))c+=' answered';
+    if(i===S.i)c+=' cur';
+    return `<button class="${c}" data-i="${i}" aria-label="Ir a la pregunta ${i+1}">${i+1}</button>`;
+  }).join('');
+  const ultima=S.i===n-1;
+  $('btn-prev').disabled=S.i===0;
+  $('btn-check').classList.toggle('hidden',!(S.modo==='practica'&&!q.checked&&q.tipo!=='unica'));
+  $('btn-check').disabled=!respondida(q);
+  $('btn-next').classList.toggle('hidden',ultima);
+  $('btn-finish').classList.toggle('hidden',!ultima);
+}
+
+function renderCard(){
+  const q=S.qs[S.i],rev=revelada(q);
+  const [txt,cls]=etiqueta(q);
+  let html=`<div class="qmeta"><span class="tag ${cls}">${txt}</span></div><div class="enun">${enun(q)}</div>${cuerpo(q,rev,true)}`;
+  if(rev&&S.modo==='practica'){
+    const s=score(q);
+    html+=s===1?`<div class="fb ok">✓ ¡Correcto!</div>`
+      :s>0?`<div class="fb part">Casi: has acertado ${aciertosRel(q)} de ${q.pares.length}.</div>`
+      :`<div class="fb bad">✗ Incorrecto.${respondida(q)?'':' No has respondido.'}</div>`;
+  }
+  $('qcard').innerHTML=html;
+}
+function render(){chrome();renderCard()}
+
+function elegir(i){
+  const q=S.qs[S.i];
+  if(revelada(q)||(q.tipo!=='unica'&&q.tipo!=='multiple')||i>=q.opts.length)return;
+  if(q.tipo==='multiple'){q.sel.has(i)?q.sel.delete(i):q.sel.add(i)}
+  else{q.sel=new Set([i]);if(S.modo==='practica')q.checked=true}
+  render();
+}
+function comprobar(){const q=S.qs[S.i];if(respondida(q)){q.checked=true;render()}}
+function ir(d){const j=S.i+d;if(j>=0&&j<S.qs.length){S.i=j;render();window.scrollTo({top:0,behavior:'smooth'})}}
+
+$('qcard').addEventListener('click',e=>{const b=e.target.closest('.opt');if(b&&b.dataset.o!==undefined)elegir(+b.dataset.o)});
+$('qcard').addEventListener('change',e=>{
+  const s=e.target.closest('select.sel');if(!s)return;
+  S.qs[S.i].resp[+s.dataset.k]=s.value;chrome();
+});
+$('navgrid').addEventListener('click',e=>{const b=e.target.closest('.chip');if(b){S.i=+b.dataset.i;render()}});
+$('btn-prev').onclick=()=>ir(-1);
+$('btn-next').onclick=()=>ir(1);
+$('btn-check').onclick=comprobar;
+$('btn-finish').onclick=terminar;
+
+document.addEventListener('keydown',e=>{
+  if($('quiz').classList.contains('hidden')||e.ctrlKey||e.metaKey||e.altKey)return;
+  if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;
+  const k=e.key.toLowerCase();
+  if(k==='arrowright')ir(1);
+  else if(k==='arrowleft')ir(-1);
+  else if(k==='enter'){
+    const q=S.qs[S.i];
+    if(S.modo==='practica'&&!q.checked&&respondida(q)&&q.tipo!=='unica')comprobar();
+    else if(S.i<S.qs.length-1)ir(1);
+  }
+  else if(/^[1-8]$/.test(k))elegir(+k-1);
+  else if(/^[a-h]$/.test(k))elegir(LET.toLowerCase().indexOf(k));
+});
+
+/* =====================================================
+   CORRECCIÓN Y NOTA (0 a 10)
+   ===================================================== */
+function terminar(){
+  const blank=S.qs.filter(q=>!respondida(q)).length;
+  if(blank&&!confirm(`Tienes ${blank} pregunta(s) sin responder. ¿Terminar y corregir de todos modos?`))return;
+  S.done=true;clearInterval(S.timer);
+  const n=S.qs.length;
+  const ok=S.qs.filter(esOk).length;
+  const bad=n-ok-blank;
+  const suma=S.qs.reduce((a,q)=>a+score(q),0);
+  const resta=S.qs.reduce((a,q)=>a+(respondida(q)?(1-score(q))/3:0),0);
+  const notaSimple=suma/n*10;
+  const notaPen=Math.max(0,(suma-resta)/n*10);
+  const nota=S.pen?notaPen:notaSimple;
+
+  const d=new Date();
+  const fecha=d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+  const hist=store.get('iaw_ut1_hist',[]);
+  hist.unshift({fecha,modo:S.modo,ok,total:n,nota:Math.round(nota*10)/10});
+  store.set('iaw_ut1_hist',hist.slice(0,30));
+  const fallos=new Set(store.get('iaw_ut1_fallos',[]));
+  S.qs.forEach(q=>{esOk(q)?fallos.delete(q.id):fallos.add(q.id)});
+  store.set('iaw_ut1_fallos',[...fallos]);
+
+  const color=nota>=7?'var(--ok)':nota>=5?'var(--warn)':'var(--bad)';
+  const dial=$('dial');
+  dial.style.setProperty('--c',color);
+  dial.style.setProperty('--p',nota*10);
+  $('r-nota').innerHTML=`${fmtNota(nota)}<small>/10</small>`;
+  const nivel=nota>=9?'Sobresaliente':nota>=7?'Notable':nota>=6?'Bien':nota>=5?'Suficiente':'Insuficiente';
+  const msg=nota>=9?'Dominas este tema.':nota>=7?'Muy buen nivel, afina los detalles.':nota>=5?'Aprobado, pero repasa los fallos.':'Necesitas repasar los apuntes y volver a intentarlo.';
+  $('r-titulo').textContent=nivel;
+  $('r-sub').textContent=`${msg} Tiempo: ${fmtTime(S.secs)}.`;
+  $('r-ok').textContent=ok;$('r-bad').textContent=bad;$('r-blank').textContent=blank;
+  $('r-alt').textContent=(S.pen
+    ?`Nota sin penalización: ${fmtNota(notaSimple)}.`
+    :`Si los errores restaran un tercio: ${fmtNota(notaPen)}.`)+' En relacionar, ordenar y completar cuentan las parejas acertadas.';
+  $('btn-fails').classList.toggle('hidden',!fallos.size);
+  $('btn-fails').textContent=`Repetir las ${fallos.size} falladas`;
+
+  filtroRev='todas';
+  $('seg-rev').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v==='todas'));
+  pintarRevision();
+  mostrar('results');
+}
+
+let filtroRev='todas';
+function pintarRevision(){
+  const lista=S.qs.map((q,i)=>({q,i})).filter(({q})=>filtroRev==='todas'||(filtroRev==='ok'?esOk(q):!esOk(q)));
+  if(!lista.length){$('rev-list').innerHTML=`<div class="card muted">No hay preguntas en este filtro.</div>`;return}
+  $('rev-list').innerHTML=lista.map(({q,i})=>{
+    const c=claseRes(q);
+    const estado=c==='ok'?'✓ Acertada':c==='part'?'◐ Parcial':respondida(q)?'✗ Fallada':'Sin responder';
+    const [txt,cls]=etiqueta(q);
+    return `<div class="rev ${c}">
+      <div class="qmeta"><span class="tag ${cls}">Pregunta ${i+1} · ${txt}</span><span>${estado}</span></div>
+      <div class="enun">${enun(q)}</div>${cuerpo(q,true,false)}</div>`;
+  }).join('');
+}
+$('seg-rev').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  $('seg-rev').querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');filtroRev=b.dataset.v;pintarRevision();
+});
+
+$('btn-start').onclick=()=>empezar(false);
+$('btn-retry').onclick=()=>empezar(true);
+$('btn-again').onclick=()=>{pintarInicio();mostrar('start')};
+$('btn-fails').onclick=()=>empezar(true);
+
+function aplicarTema(t){
+  document.documentElement.setAttribute('data-theme',t);
+  $('btn-tema').textContent=t==='dark'?'☀️ Tema claro':'🌙 Tema oscuro';
+  store.set('iaw_ut1_tema',t);
+}
+$('btn-tema').onclick=()=>aplicarTema(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+aplicarTema(store.get('iaw_ut1_tema',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+
+pintarInicio();
+</script>
+</body>
+</html>
